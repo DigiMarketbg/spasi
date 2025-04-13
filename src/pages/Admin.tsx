@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
@@ -10,10 +10,96 @@ import SignalsManagement from '@/components/admin/SignalsManagement';
 import UsersManagement from '@/components/admin/UsersManagement';
 import { BookOpen, Users, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+// Define the interfaces for signals and users data
+interface SignalData {
+  id: string;
+  title: string;
+  category: string;
+  city: string;
+  created_at: string;
+  is_approved: boolean;
+  is_resolved: boolean;
+  profiles?: {
+    full_name: string | null;
+    email: string | null;
+  } | null;
+}
+
+interface UserData {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  created_at: string | null;
+  is_admin: boolean;
+}
 
 const Admin = () => {
   const { user, profile, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // State for signals and users
+  const [signals, setSignals] = useState<SignalData[]>([]);
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [loadingSignals, setLoadingSignals] = useState(true);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+
+  // Fetch signals data
+  const fetchSignals = async () => {
+    setLoadingSignals(true);
+    try {
+      const { data, error } = await supabase
+        .from('signals')
+        .select('*, profiles(full_name, email)')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setSignals(data || []);
+    } catch (error: any) {
+      console.error('Error fetching signals:', error);
+      toast({
+        title: "Грешка",
+        description: "Възникна проблем при зареждането на сигналите.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingSignals(false);
+    }
+  };
+
+  // Fetch users data
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setUsers(data || []);
+    } catch (error: any) {
+      console.error('Error fetching users:', error);
+      toast({
+        title: "Грешка",
+        description: "Възникна проблем при зареждането на потребителите.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    if (user && isAdmin) {
+      fetchSignals();
+      fetchUsers();
+    }
+  }, [user, isAdmin]);
 
   // If not logged in or not admin
   if (!user || !isAdmin) {
@@ -93,7 +179,11 @@ const Admin = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <SignalsManagement />
+                  <SignalsManagement 
+                    signals={signals} 
+                    loadingSignals={loadingSignals} 
+                    onRefresh={fetchSignals} 
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -107,7 +197,11 @@ const Admin = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <UsersManagement />
+                  <UsersManagement 
+                    users={users} 
+                    loadingUsers={loadingUsers} 
+                    onRefresh={fetchUsers} 
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
