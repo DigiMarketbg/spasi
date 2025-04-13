@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, LogOut } from 'lucide-react'; // Add LogOut import here
+import { X, LogOut, Settings } from 'lucide-react'; // Add Settings icon
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Logo from '../Logo';
@@ -13,9 +13,10 @@ interface MobileMenuProps {
   triggerButton: React.ReactNode;
   handleSignOut: () => Promise<void>;
   isLoggedIn: boolean;
+  isAdmin?: boolean; // Add the isAdmin prop
 }
 
-const MobileMenu = ({ displayName, triggerButton, handleSignOut, isLoggedIn }: MobileMenuProps) => {
+const MobileMenu = ({ displayName, triggerButton, handleSignOut, isLoggedIn, isAdmin = false }: MobileMenuProps) => {
   const navigate = useNavigate();
   
   return (
@@ -48,6 +49,18 @@ const MobileMenu = ({ displayName, triggerButton, handleSignOut, isLoggedIn }: M
                 <div className="px-4 py-2 text-foreground font-medium">
                   {displayName}
                 </div>
+                
+                {isAdmin && (
+                  <Button 
+                    variant="outline" 
+                    className="justify-start"
+                    onClick={() => navigate('/admin')}
+                  >
+                    <Settings className="h-5 w-5 mr-2" />
+                    <span>Админ панел</span>
+                  </Button>
+                )}
+                
                 <Button 
                   className="bg-spasi-red hover:bg-spasi-red/90"
                   onClick={() => navigate('/submit-signal')}
@@ -59,7 +72,7 @@ const MobileMenu = ({ displayName, triggerButton, handleSignOut, isLoggedIn }: M
                   className="justify-start"
                   onClick={handleSignOut}
                 >
-                  <LogOut className="h-5 w-5 mr-2" /> {/* Corrected icon import */}
+                  <LogOut className="h-5 w-5 mr-2" />
                   <span>Изход</span>
                 </Button>
               </>
