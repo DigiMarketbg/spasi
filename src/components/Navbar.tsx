@@ -30,7 +30,7 @@ const navLinks = [
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   
@@ -47,6 +47,8 @@ const Navbar = () => {
     await signOut();
     navigate('/');
   };
+
+  const displayName = profile?.full_name || user?.email || 'Потребител';
 
   return (
     <header 
@@ -93,7 +95,7 @@ const Navbar = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Моят профил</DropdownMenuLabel>
+                    <DropdownMenuLabel>{displayName}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
@@ -170,6 +172,9 @@ const Navbar = () => {
                     
                     {user ? (
                       <>
+                        <div className="px-4 py-2 text-foreground font-medium">
+                          {displayName}
+                        </div>
                         <Button className="bg-spasi-red hover:bg-spasi-red/90">
                           Подай сигнал
                         </Button>

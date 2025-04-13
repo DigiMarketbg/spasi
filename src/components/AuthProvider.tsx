@@ -2,10 +2,12 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { Tables } from '@/integrations/supabase/types';
 
 interface AuthContextType {
   session: Session | null;
   user: User | null;
+  profile: Tables<'profiles'> | null;
   loading: boolean;
   signOut: () => Promise<void>;
 }
@@ -14,8 +16,29 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Tables<'profiles'> | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Fetch user profile data
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      setProfile(data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
 
   useEffect(() => {
     // First set up the auth state listener
@@ -23,6 +46,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       (event, currentSession) => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
+        
+        if (currentSession?.user) {
+          // Use setTimeout to prevent potential recursive auth state changes
+          setTimeout(() => {
+            fetchProfile(currentSession.user.id);
+          }, 0);
+        } else {
+          setProfile(null);
+        }
+        
         setLoading(false);
       }
     );
@@ -31,6 +64,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
+      
+      if (currentSession?.user) {
+        fetchProfile(currentSession.user.id);
+      }
+      
       setLoading(false);
     });
 
@@ -44,6 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const value = {
     session,
     user,
+    profile,
     loading,
     signOut,
   };
