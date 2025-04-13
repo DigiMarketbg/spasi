@@ -1,232 +1,35 @@
-import React, { useState, useEffect } from 'react';
+
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import SignalsManagement from '@/components/admin/SignalsManagement';
-import UsersManagement from '@/components/admin/UsersManagement';
-import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagement';
-import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
-import { BookOpen, Users, Bell, MessageCircle, Building } from 'lucide-react';
+import AdminDashboardGrid from '@/components/admin/dashboard/AdminDashboardGrid';
+import AdminTabs from '@/components/admin/tabs/AdminTabs';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-
-// Define the interfaces for signals and users data
-interface SignalData {
-  id: string;
-  title: string;
-  category: string;
-  city: string;
-  created_at: string;
-  is_approved: boolean;
-  is_resolved: boolean;
-  user_id: string;
-  user_full_name?: string;
-  user_email?: string;
-}
-
-interface UserData {
-  id: string;
-  full_name: string | null;
-  email: string | null;
-  created_at: string | null;
-  is_admin: boolean | null;
-}
-
-interface PartnerRequestData {
-  id: string;
-  company_name: string;
-  contact_person: string;
-  email: string;
-  phone: string | null;
-  message: string | null;
-  logo_url: string | null;
-  created_at: string;
-  is_approved: boolean;
-}
-
-interface ContactMessageData {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  subject: string | null;
-  message: string;
-  created_at: string;
-  is_read: boolean;
-}
+import { useAdminData } from '@/components/admin/hooks/useAdminData';
 
 const Admin = () => {
-  const { user, profile, isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  // State for signals and users
-  const [signals, setSignals] = useState<SignalData[]>([]);
-  const [users, setUsers] = useState<UserData[]>([]);
-  const [partnerRequests, setPartnerRequests] = useState<PartnerRequestData[]>([]);
-  const [contactMessages, setContactMessages] = useState<ContactMessageData[]>([]);
-  const [loadingSignals, setLoadingSignals] = useState(true);
-  const [loadingUsers, setLoadingUsers] = useState(true);
-  const [loadingPartnerRequests, setLoadingPartnerRequests] = useState(true);
-  const [loadingContactMessages, setLoadingContactMessages] = useState(true);
-
-  // Fetch signals data with better error handling
-  const fetchSignals = async () => {
-    setLoadingSignals(true);
-    try {
-      console.log("Fetching signals...");
-      
-      // First, get all signals
-      const { data: signalsData, error: signalsError } = await supabase
-        .from('signals')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (signalsError) {
-        console.error('Error fetching signals:', signalsError);
-        throw signalsError;
-      }
-      
-      console.log("Signals data received:", signalsData);
-      
-      if (!signalsData || signalsData.length === 0) {
-        setSignals([]);
-        setLoadingSignals(false);
-        return;
-      }
-      
-      // Then, get all profiles to join manually
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('*');
-        
-      if (profilesError) {
-        console.error('Error fetching profiles:', profilesError);
-      }
-      
-      console.log("Profiles data received:", profilesData);
-      
-      // Join the data manually
-      const enrichedSignals = signalsData.map(signal => {
-        const userProfile = profilesData?.find(profile => profile.id === signal.user_id);
-        
-        return {
-          id: signal.id,
-          title: signal.title,
-          category: signal.category,
-          city: signal.city,
-          created_at: signal.created_at,
-          is_approved: signal.is_approved,
-          is_resolved: signal.is_resolved,
-          user_id: signal.user_id,
-          user_full_name: userProfile?.full_name || 'Неизвестен',
-          user_email: userProfile?.email || 'Неизвестен имейл'
-        };
-      });
-      
-      setSignals(enrichedSignals);
-    } catch (error: any) {
-      console.error('Error fetching signals:', error);
-      toast({
-        title: "Грешка",
-        description: "Възникна проблем при зареждането на сигналите: " + (error.message || error),
-        variant: "destructive",
-      });
-      setSignals([]);
-    } finally {
-      setLoadingSignals(false);
-    }
-  };
-
-  // Fetch users data
-  const fetchUsers = async () => {
-    setLoadingUsers(true);
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setUsers(data || []);
-    } catch (error: any) {
-      console.error('Error fetching users:', error);
-      toast({
-        title: "Грешка",
-        description: "Възникна проблем при зареждането на потребителите.",
-        variant: "destructive",
-      });
-      setUsers([]);
-    } finally {
-      setLoadingUsers(false);
-    }
-  };
-
-  // Fetch partner requests
-  const fetchPartnerRequests = async () => {
-    setLoadingPartnerRequests(true);
-    try {
-      const { data, error } = await supabase
-        .from('partners_requests')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setPartnerRequests(data || []);
-    } catch (error: any) {
-      console.error('Error fetching partner requests:', error);
-      toast({
-        title: "Грешка",
-        description: "Възникна проблем при зареждането на партньорските заявки.",
-        variant: "destructive",
-      });
-      setPartnerRequests([]);
-    } finally {
-      setLoadingPartnerRequests(false);
-    }
-  };
-
-  // Fetch contact messages
-  const fetchContactMessages = async () => {
-    setLoadingContactMessages(true);
-    try {
-      // Using any here to avoid TypeScript errors until Supabase types are properly updated
-      const { data, error } = await supabase
-        .from('contact_messages' as any)
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      
-      // Correctly cast the data to the expected type
-      setContactMessages(data as unknown as ContactMessageData[] || []);
-    } catch (error: any) {
-      console.error('Error fetching contact messages:', error);
-      toast({
-        title: "Грешка",
-        description: "Възникна проблем при зареждането на съобщенията.",
-        variant: "destructive",
-      });
-      setContactMessages([]);
-    } finally {
-      setLoadingContactMessages(false);
-    }
-  };
-
-  // Fetch data on component mount
-  useEffect(() => {
-    if (user && isAdmin) {
-      fetchSignals();
-      fetchUsers();
-      fetchPartnerRequests();
-      fetchContactMessages();
-    }
-  }, [user, isAdmin]);
+  // Use the custom hook to manage all admin data
+  const {
+    signals,
+    users,
+    partnerRequests,
+    contactMessages,
+    loadingSignals,
+    loadingUsers,
+    loadingPartnerRequests,
+    loadingContactMessages,
+    fetchSignals,
+    fetchUsers,
+    fetchPartnerRequests,
+    fetchContactMessages,
+    unreadCount,
+    pendingRequestsCount
+  } = useAdminData(isAdmin, user);
 
   // If not logged in or not admin
   if (!user || !isAdmin) {
@@ -245,11 +48,6 @@ const Admin = () => {
     );
   }
 
-  // Count unread messages
-  const unreadCount = contactMessages.filter(msg => !msg.is_read).length;
-  // Count pending partner requests
-  const pendingRequestsCount = partnerRequests.filter(req => !req.is_approved).length;
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -258,155 +56,29 @@ const Admin = () => {
         <div className="container mx-auto">
           <h1 className="text-3xl font-bold mb-8">Административен панел</h1>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card className="hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/admin/blog')}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl font-medium">Блог статии</CardTitle>
-                <BookOpen className="h-6 w-6 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Управление на блог статии, публикуване и редактиране на съдържание.
-                </CardDescription>
-              </CardContent>
-            </Card>
-            
-            <Card className="hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/admin/volunteers')}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl font-medium">Доброволци</CardTitle>
-                <Users className="h-6 w-6 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Преглед и одобрение на заявки от доброволци.
-                </CardDescription>
-              </CardContent>
-            </Card>
-            
-            <Card className="hover:shadow-lg transition-all">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl font-medium">Сигнали</CardTitle>
-                <Bell className="h-6 w-6 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Преглед и управление на всички подадени сигнали.
-                </CardDescription>
-              </CardContent>
-            </Card>
-            
-            <Card className="hover:shadow-lg transition-all cursor-pointer">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl font-medium">
-                  Съобщения
-                  {unreadCount > 0 && (
-                    <Badge className="ml-2 bg-blue-500" variant="default">{unreadCount}</Badge>
-                  )}
-                </CardTitle>
-                <MessageCircle className="h-6 w-6 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Преглед на съобщения от контактната форма.
-                </CardDescription>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Dashboard Cards */}
+          <AdminDashboardGrid 
+            unreadMessagesCount={unreadCount} 
+            pendingRequestsCount={pendingRequestsCount} 
+          />
           
-          <Tabs defaultValue="signals">
-            <TabsList className="mb-4">
-              <TabsTrigger value="signals">Сигнали</TabsTrigger>
-              <TabsTrigger value="users">Потребители</TabsTrigger>
-              <TabsTrigger value="partners">
-                Партньори
-                {pendingRequestsCount > 0 && (
-                  <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-500 rounded-full">
-                    {pendingRequestsCount}
-                  </span>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="messages">
-                Съобщения
-                {unreadCount > 0 && (
-                  <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-500 rounded-full">
-                    {unreadCount}
-                  </span>
-                )}
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="signals" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Управление на сигнали</CardTitle>
-                  <CardDescription>
-                    Преглед на всички сигнали в системата, одобрение и отбелязване като решени.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <SignalsManagement 
-                    signals={signals} 
-                    loadingSignals={loadingSignals} 
-                    onRefresh={fetchSignals} 
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="users" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Управление на потребители</CardTitle>
-                  <CardDescription>
-                    Преглед и управление на всички регистрирани потребители.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <UsersManagement 
-                    users={users} 
-                    loadingUsers={loadingUsers} 
-                    onRefresh={fetchUsers} 
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="partners" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Заявки за партньорство</CardTitle>
-                  <CardDescription>
-                    Преглед и управление на заявките за партньорство.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <PartnerRequestsManagement 
-                    requests={partnerRequests} 
-                    loadingRequests={loadingPartnerRequests} 
-                    onRefresh={fetchPartnerRequests} 
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="messages" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Съобщения от контактната форма</CardTitle>
-                  <CardDescription>
-                    Преглед и управление на съобщенията от контактната форма.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ContactMessagesManagement 
-                    messages={contactMessages} 
-                    loadingMessages={loadingContactMessages} 
-                    onRefresh={fetchContactMessages} 
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          {/* Admin Tabs */}
+          <AdminTabs 
+            signals={signals}
+            users={users}
+            partnerRequests={partnerRequests}
+            contactMessages={contactMessages}
+            loadingSignals={loadingSignals}
+            loadingUsers={loadingUsers}
+            loadingPartnerRequests={loadingPartnerRequests}
+            loadingContactMessages={loadingContactMessages}
+            unreadCount={unreadCount}
+            pendingRequestsCount={pendingRequestsCount}
+            onRefreshSignals={fetchSignals}
+            onRefreshUsers={fetchUsers}
+            onRefreshPartnerRequests={fetchPartnerRequests}
+            onRefreshContactMessages={fetchContactMessages}
+          />
         </div>
       </main>
       
