@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { cn } from '@/lib/utils';
 import { Eye, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
+import { cardStyles, categoryTranslations } from '@/lib/card-styles';
 
 export interface SignalProps {
   id: string;
@@ -15,16 +15,6 @@ export interface SignalProps {
   createdAt: string;
   categoryColor?: string;
 }
-
-// Bulgarian translations for categories
-const categoryTranslations: { [key: string]: string } = {
-  'blood': 'Кръводаряване',
-  'missing': 'Изчезнал човек',
-  'stolen': 'Откраднат автомобил',
-  'danger': 'Опасен участък',
-  'help': 'Хора в беда',
-  'other': 'Друго'
-};
 
 interface SignalCardProps {
   signal: SignalProps;
@@ -42,37 +32,31 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
   const translatedCategory = categoryTranslations[signal.category] || signal.category;
 
   return (
-    <div 
-      className={cn(
-        "bg-green-600 text-white p-5 rounded-xl h-full flex flex-col justify-between transition-all duration-300",
-        "hover:translate-y-[-5px] hover:shadow-lg",
-        className
-      )}
-    >
+    <div className={cardStyles.container(className)}>
       <div>
         <Badge 
           variant="outline"
-          className="mb-4 text-white border-white/50 bg-white/20"
+          className={cardStyles.badge}
         >
           {translatedCategory}
         </Badge>
         
-        <h3 className="text-xl font-semibold mb-2 line-clamp-1">{signal.title}</h3>
+        <h3 className={cardStyles.title}>{signal.title}</h3>
         
-        <div className="flex items-center text-sm text-white/80 mb-3">
+        <div className={cardStyles.metadata}>
           <MapPin className="h-3.5 w-3.5 mr-1" />
           <span>{signal.city}</span>
           <span className="mx-2">•</span>
           <span>{signal.createdAt}</span>
         </div>
         
-        <p className="text-white/90 mb-4 line-clamp-2">{signal.description}</p>
+        <p className={cardStyles.description}>{signal.description}</p>
       </div>
       
       <Button 
         variant="outline" 
         size="sm" 
-        className="w-full mt-auto flex items-center gap-2 group text-white border-white/50 hover:bg-white/20"
+        className={cardStyles.button}
         onClick={handleViewSignal}
       >
         <Eye className="h-4 w-4 group-hover:text-white transition-colors" />
