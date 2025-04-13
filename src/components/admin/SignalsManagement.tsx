@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Card,
@@ -18,7 +19,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, X, AlertTriangle } from 'lucide-react';
+import { Check, X, AlertTriangle, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface SignalData {
@@ -43,6 +44,7 @@ interface SignalsManagementProps {
 
 const SignalsManagement = ({ signals, loadingSignals, onRefresh }: SignalsManagementProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Toggle signal approval
   const toggleSignalApproval = async (id: string, currentStatus: boolean) => {
@@ -94,6 +96,11 @@ const SignalsManagement = ({ signals, loadingSignals, onRefresh }: SignalsManage
         variant: "destructive",
       });
     }
+  };
+
+  // View signal details
+  const viewSignalDetails = (id: string) => {
+    navigate(`/admin/signals/${id}`);
   };
 
   // Format date
@@ -151,7 +158,15 @@ const SignalsManagement = ({ signals, loadingSignals, onRefresh }: SignalsManage
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => viewSignalDetails(signal.id)}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Детайли
+                        </Button>
                         <Button 
                           size="sm" 
                           variant={signal.is_approved ? "destructive" : "default"}

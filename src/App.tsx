@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import SubmitSignal from "./pages/SubmitSignal";
 import Admin from "./pages/Admin";
+import SignalDetail from "./pages/SignalDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/submit-signal" element={<SubmitSignal />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/signals/:id" element={<SignalDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
