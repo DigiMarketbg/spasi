@@ -1,10 +1,24 @@
 
 import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
 import { useTheme } from './ThemeProvider';
-import { Sun, Moon, Menu, X } from 'lucide-react';
+import { useAuth } from './AuthProvider';
+import { Sun, Moon, Menu, X, LogOut, User as UserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetTrigger 
+} from '@/components/ui/sheet';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const navLinks = [
   { name: 'Начало', href: '/' },
@@ -16,6 +30,8 @@ const navLinks = [
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   
   useEffect(() => {
@@ -26,6 +42,11 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   return (
     <header 
@@ -63,9 +84,45 @@ const Navbar = () => {
               )}
             </Button>
             
-            <Button className="hidden md:flex bg-spasi-red hover:bg-spasi-red/90">
-              Подай сигнал
-            </Button>
+            {user ? (
+              <>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="icon" className="rounded-full hidden md:flex">
+                      <UserIcon className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Моят профил</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Изход</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                <Button className="hidden md:flex bg-spasi-red hover:bg-spasi-red/90">
+                  Подай сигнал
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="outline" 
+                  className="hidden md:flex" 
+                  onClick={() => navigate('/auth')}
+                >
+                  Вход
+                </Button>
+                <Button 
+                  className="hidden md:flex bg-spasi-red hover:bg-spasi-red/90"
+                  onClick={() => navigate('/auth?signup=true')}
+                >
+                  Регистрация
+                </Button>
+              </>
+            )}
             
             <Sheet>
               <SheetTrigger asChild>
@@ -111,9 +168,36 @@ const Navbar = () => {
                       )}
                     </Button>
                     
-                    <Button className="bg-spasi-red hover:bg-spasi-red/90">
-                      Подай сигнал
-                    </Button>
+                    {user ? (
+                      <>
+                        <Button className="bg-spasi-red hover:bg-spasi-red/90">
+                          Подай сигнал
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          className="justify-start"
+                          onClick={handleSignOut}
+                        >
+                          <LogOut className="h-5 w-5 mr-2" />
+                          <span>Изход</span>
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button 
+                          onClick={() => navigate('/auth')} 
+                          variant="outline"
+                        >
+                          Вход
+                        </Button>
+                        <Button 
+                          className="bg-spasi-red hover:bg-spasi-red/90"
+                          onClick={() => navigate('/auth?signup=true')}
+                        >
+                          Регистрация
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>
