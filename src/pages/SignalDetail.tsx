@@ -76,13 +76,15 @@ const SignalDetail = () => {
       
       // Add null check before accessing profiles data
       let profileData = null;
-      if (data.profiles && typeof data.profiles === 'object') {
+      const profiles = data?.profiles;
+      
+      if (profiles && typeof profiles === 'object') {
         // Make sure profiles is not an error object
-        if (!('code' in data.profiles) && !('details' in data.profiles) && 
-            !('hint' in data.profiles) && !('message' in data.profiles)) {
+        if (!('code' in profiles) && !('details' in profiles) && 
+            !('hint' in profiles) && !('message' in profiles)) {
           profileData = {
-            full_name: 'full_name' in data.profiles ? data.profiles.full_name : undefined,
-            email: 'email' in data.profiles ? data.profiles.email : undefined
+            full_name: 'full_name' in profiles ? profiles.full_name : undefined,
+            email: 'email' in profiles ? profiles.email : undefined
           };
         }
       }
