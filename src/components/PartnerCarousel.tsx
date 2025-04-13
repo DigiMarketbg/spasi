@@ -31,7 +31,7 @@ const PartnerCarousel = () => {
       const { data, error } = await supabase
         .from('partners')
         .select('*')
-        .eq('website_url', true);
+        .not('website_url', 'is', null);  // Changed to filter non-null website URLs
       
       if (error) {
         console.error('Error fetching partners:', error);
