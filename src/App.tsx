@@ -19,6 +19,7 @@ import SignalDetailPublic from "./pages/SignalDetailPublic";
 import Blog from "./pages/Blog";
 import BlogPostDetail from "./pages/BlogPostDetail";
 import AdminBlog from "./pages/AdminBlog";
+import Donations from "./pages/Donations"; // New import
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/signal/:id" element={<SignalDetailPublic />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:id" element={<BlogPostDetail />} />
+              <Route path="/donations" element={<Donations />} /> {/* New Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

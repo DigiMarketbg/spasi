@@ -42,6 +42,66 @@ export type Database = {
         }
         Relationships: []
       }
+      partners: {
+        Row: {
+          company_name: string
+          created_at: string
+          id: string
+          logo_url: string
+          website_url: string | null
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          id?: string
+          logo_url: string
+          website_url?: string | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          id?: string
+          logo_url?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      partners_requests: {
+        Row: {
+          company_name: string
+          contact_person: string
+          created_at: string
+          email: string
+          id: string
+          is_approved: boolean
+          logo_url: string | null
+          message: string | null
+          phone: string | null
+        }
+        Insert: {
+          company_name: string
+          contact_person: string
+          created_at?: string
+          email: string
+          id?: string
+          is_approved?: boolean
+          logo_url?: string | null
+          message?: string | null
+          phone?: string | null
+        }
+        Update: {
+          company_name?: string
+          contact_person?: string
+          created_at?: string
+          email?: string
+          id?: string
+          is_approved?: boolean
+          logo_url?: string | null
+          message?: string | null
+          phone?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null

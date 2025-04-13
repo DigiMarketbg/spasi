@@ -3,8 +3,11 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import ParticleBackground from './ParticleBackground';
+import { useNavigate } from 'react-router-dom';
 
 const PartnerSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative py-24 px-4 md:px-6 lg:px-8 overflow-hidden">
       <ParticleBackground count={30} className="opacity-50" />
@@ -20,9 +23,10 @@ const PartnerSection = () => {
           
           <Button 
             className="bg-spasi-green hover:bg-spasi-green/90 text-white py-6 px-8 rounded-lg text-lg font-medium flex items-center gap-2"
+            onClick={() => navigate('/donations')}
           >
             <Heart className="h-5 w-5" />
-            <span>Стани партньор</span>
+            <span>Направи дарение</span>
           </Button>
         </div>
       </div>
