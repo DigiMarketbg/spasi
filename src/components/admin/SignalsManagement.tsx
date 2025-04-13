@@ -46,10 +46,9 @@ interface SignalData {
   created_at: string;
   is_approved: boolean;
   is_resolved: boolean;
-  profiles?: {
-    full_name: string | null;
-    email: string | null;
-  } | null;
+  user_id: string;
+  user_full_name?: string;
+  user_email?: string;
 }
 
 interface SignalsManagementProps {
@@ -333,7 +332,7 @@ const SignalsManagement = ({ signals, loadingSignals, onRefresh }: SignalsManage
                     <TableCell className="font-medium">{signal.title}</TableCell>
                     <TableCell>{signal.category}</TableCell>
                     <TableCell>{signal.city}</TableCell>
-                    <TableCell>{signal.profiles?.full_name || signal.profiles?.email || 'Неизвестен'}</TableCell>
+                    <TableCell>{signal.user_full_name || signal.user_email || 'Неизвестен'}</TableCell>
                     <TableCell>{formatDate(signal.created_at)}</TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">

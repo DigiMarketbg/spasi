@@ -22,10 +22,9 @@ interface SignalData {
   created_at: string;
   is_approved: boolean;
   is_resolved: boolean;
-  profiles?: {
-    full_name: string | null;
-    email: string | null;
-  } | null | any; // Added 'any' to handle potential error case
+  user_id: string;
+  user_full_name?: string;
+  user_email?: string;
 }
 
 interface UserData {
@@ -33,7 +32,7 @@ interface UserData {
   full_name: string | null;
   email: string | null;
   created_at: string | null;
-  is_admin: boolean;
+  is_admin: boolean | null;
 }
 
 const Admin = () => {
@@ -52,31 +51,56 @@ const Admin = () => {
     setLoadingSignals(true);
     try {
       console.log("Fetching signals...");
-      const { data, error } = await supabase
+      
+      // First, get all signals
+      const { data: signalsData, error: signalsError } = await supabase
         .from('signals')
-        .select('*, profiles:user_id(full_name, email)')
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching signals:', error);
-        throw error;
+      if (signalsError) {
+        console.error('Error fetching signals:', signalsError);
+        throw signalsError;
       }
       
-      console.log("Signals data received:", data);
+      console.log("Signals data received:", signalsData);
       
-      // Add type checking to ensure compatibility with SignalData
-      const typedData: SignalData[] = data?.map(item => ({
-        id: item.id,
-        title: item.title,
-        category: item.category,
-        city: item.city,
-        created_at: item.created_at,
-        is_approved: item.is_approved,
-        is_resolved: item.is_resolved,
-        profiles: item.profiles
-      })) || [];
+      if (!signalsData || signalsData.length === 0) {
+        setSignals([]);
+        setLoadingSignals(false);
+        return;
+      }
       
-      setSignals(typedData);
+      // Then, get all profiles to join manually
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('*');
+        
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+      }
+      
+      console.log("Profiles data received:", profilesData);
+      
+      // Join the data manually
+      const enrichedSignals = signalsData.map(signal => {
+        const userProfile = profilesData?.find(profile => profile.id === signal.user_id);
+        
+        return {
+          id: signal.id,
+          title: signal.title,
+          category: signal.category,
+          city: signal.city,
+          created_at: signal.created_at,
+          is_approved: signal.is_approved,
+          is_resolved: signal.is_resolved,
+          user_id: signal.user_id,
+          user_full_name: userProfile?.full_name || 'Неизвестен',
+          user_email: userProfile?.email || 'Неизвестен имейл'
+        };
+      });
+      
+      setSignals(enrichedSignals);
     } catch (error: any) {
       console.error('Error fetching signals:', error);
       toast({
