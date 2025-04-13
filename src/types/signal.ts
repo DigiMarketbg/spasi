@@ -38,5 +38,5 @@ export interface Signal {
   profiles?: {
     full_name?: string;
     email?: string;
-  };
+  } | null | unknown; // Updated to accept unknown type to handle potential errors
 }

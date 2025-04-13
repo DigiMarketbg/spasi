@@ -3,13 +3,27 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { ExternalLink } from 'lucide-react';
+import { Signal } from '@/types/signal';
 
 interface SignalDetailsProps {
-  signal: any;
+  signal: Signal;
   formatDate: (dateString: string) => string;
 }
 
 const SignalDetails: React.FC<SignalDetailsProps> = ({ signal, formatDate }) => {
+  // Function to safely get the submitter name/email
+  const getSubmitterInfo = () => {
+    if (!signal.profiles) return 'Неизвестен';
+    
+    // Check if profiles is an object with the expected properties
+    if (typeof signal.profiles === 'object' && signal.profiles !== null) {
+      const profileData = signal.profiles as { full_name?: string; email?: string; };
+      return profileData.full_name || profileData.email || 'Неизвестен';
+    }
+    
+    return 'Неизвестен';
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2">
@@ -77,7 +91,7 @@ const SignalDetails: React.FC<SignalDetailsProps> = ({ signal, formatDate }) => 
       <div>
         <Label className="text-muted-foreground">Подал</Label>
         <p className="font-medium">
-          {signal.profiles?.full_name || signal.profiles?.email || 'Неизвестен'}
+          {getSubmitterInfo()}
         </p>
       </div>
       

@@ -20,7 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { signalSchema, SignalFormValues, Signal } from "@/types/signal";
 
-// Import the newly created components
+// Import the created components
 import SignalForm from '@/components/admin/SignalForm';
 import SignalDetails from '@/components/admin/SignalDetails';
 import SignalActions from '@/components/admin/SignalActions';
@@ -73,7 +73,31 @@ const SignalDetail = () => {
         .single();
 
       if (error) throw error;
-      setSignal(data);
+      
+      // Handle the data and ensure it conforms to the Signal type
+      const signalData: Signal = {
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        city: data.city,
+        phone: data.phone,
+        link: data.link,
+        image_url: data.image_url,
+        is_approved: data.is_approved,
+        is_resolved: data.is_resolved,
+        created_at: data.created_at,
+        user_id: data.user_id,
+        // Handle profiles data safely
+        profiles: typeof data.profiles === 'object' && data.profiles !== null 
+          ? { 
+              full_name: data.profiles.full_name || undefined, 
+              email: data.profiles.email || undefined 
+            } 
+          : null
+      };
+      
+      setSignal(signalData);
       
       // Set form default values
       form.reset({
@@ -183,15 +207,17 @@ const SignalDetail = () => {
       });
 
       // Update signal data and exit edit mode
-      setSignal(prev => prev ? { 
-        ...prev, 
-        title: values.title,
-        description: values.description,
-        category: values.category,
-        city: values.city,
-        phone: values.phone || null,
-        link: values.link || null
-      } : null);
+      if (signal) {
+        setSignal({
+          ...signal,
+          title: values.title,
+          description: values.description,
+          category: values.category,
+          city: values.city,
+          phone: values.phone || null,
+          link: values.link || null
+        });
+      }
       setIsEditing(false);
     } catch (error: any) {
       toast({
