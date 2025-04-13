@@ -62,8 +62,7 @@ export function NavBar({ items, className }: NavBarProps) {
               className={cn(
                 "relative cursor-pointer text-sm font-semibold px-4 py-2 rounded-full transition-colors flex-1 flex items-center justify-center",
                 "text-foreground/80 hover:text-primary",
-                isActive && "text-primary",
-                isActive && !isMobile && "bg-primary/5"
+                isActive && "text-primary"
               )}
             >
               <span className="hidden md:inline">{item.name}</span>
