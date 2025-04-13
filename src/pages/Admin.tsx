@@ -47,16 +47,22 @@ const Admin = () => {
   const [loadingSignals, setLoadingSignals] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(true);
 
-  // Fetch signals data
+  // Fetch signals data with better error handling
   const fetchSignals = async () => {
     setLoadingSignals(true);
     try {
+      console.log("Fetching signals...");
       const { data, error } = await supabase
         .from('signals')
-        .select('*, profiles(full_name, email)')
+        .select('*, profiles:user_id(full_name, email)')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching signals:', error);
+        throw error;
+      }
+      
+      console.log("Signals data received:", data);
       
       // Add type checking to ensure compatibility with SignalData
       const typedData: SignalData[] = data?.map(item => ({
@@ -75,9 +81,10 @@ const Admin = () => {
       console.error('Error fetching signals:', error);
       toast({
         title: "Грешка",
-        description: "Възникна проблем при зареждането на сигналите.",
+        description: "Възникна проблем при зареждането на сигналите: " + (error.message || error),
         variant: "destructive",
       });
+      setSignals([]);
     } finally {
       setLoadingSignals(false);
     }
@@ -101,6 +108,7 @@ const Admin = () => {
         description: "Възникна проблем при зареждането на потребителите.",
         variant: "destructive",
       });
+      setUsers([]);
     } finally {
       setLoadingUsers(false);
     }
