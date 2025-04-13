@@ -88,12 +88,11 @@ const SignalDetail = () => {
         is_resolved: data.is_resolved,
         created_at: data.created_at,
         user_id: data.user_id,
-        // Handle profiles data safely
-        profiles: typeof data.profiles === 'object' && data.profiles !== null 
-          ? { 
-              full_name: data.profiles.full_name || undefined, 
-              email: data.profiles.email || undefined 
-            } 
+        // Handle profiles data safely with null checks
+        profiles: data.profiles ? { 
+            full_name: data.profiles.full_name || undefined, 
+            email: data.profiles.email || undefined 
+          } 
           : null
       };
       
