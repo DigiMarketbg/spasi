@@ -15,15 +15,15 @@ interface SignalHeaderProps {
 }
 
 const SignalHeader: React.FC<SignalHeaderProps> = ({ signal, formatDate }) => {
-  // Translate category
   const translatedCategory = categoryTranslations[signal.category] || signal.category;
   
   return (
     <div className="flex justify-between items-start gap-4">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-semibold mb-2">{signal.title}</h1>
+      <div className="space-y-2"> {/* Added space-y-2 for vertical spacing */}
+        <h1 className="text-2xl md:text-3xl font-semibold">{signal.title}</h1>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>{formatDate(signal.created_at)}</span>
+          <Badge variant="outline" className="ml-2">{translatedCategory}</Badge>
         </div>
       </div>
       
