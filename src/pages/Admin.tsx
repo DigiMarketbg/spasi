@@ -14,6 +14,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import SignalsManagement from '@/components/admin/SignalsManagement';
 import UsersManagement from '@/components/admin/UsersManagement';
+import { Button } from '@/components/ui/button';
+import { Users } from 'lucide-react';
 
 const Admin = () => {
   const { isAdmin, loading } = useAuth();
@@ -104,7 +106,17 @@ const Admin = () => {
       <Navbar />
       
       <main className="flex-grow mt-20 container mx-auto px-4 py-10">
-        <h1 className="text-3xl md:text-4xl font-bold mb-8">Администраторски панел</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold">Администраторски панел</h1>
+          
+          <Button 
+            onClick={() => navigate('/admin/volunteers')}
+            className="flex items-center gap-2"
+          >
+            <Users className="h-4 w-4" />
+            Управление на доброволци
+          </Button>
+        </div>
         
         <Tabs defaultValue="signals">
           <TabsList className="mb-6">

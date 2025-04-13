@@ -78,6 +78,45 @@ export type Database = {
         }
         Relationships: []
       }
+      volunteers: {
+        Row: {
+          can_help_with: string[]
+          city: string
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          is_approved: boolean | null
+          motivation: string | null
+          phone: string | null
+          user_id: string
+        }
+        Insert: {
+          can_help_with: string[]
+          city: string
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          is_approved?: boolean | null
+          motivation?: string | null
+          phone?: string | null
+          user_id: string
+        }
+        Update: {
+          can_help_with?: string[]
+          city?: string
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          is_approved?: boolean | null
+          motivation?: string | null
+          phone?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
