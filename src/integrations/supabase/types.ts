@@ -44,6 +44,7 @@ export type Database = {
           is_approved: boolean
           is_resolved: boolean
           link: string | null
+          phone: string | null
           title: string
           user_id: string
         }
@@ -57,6 +58,7 @@ export type Database = {
           is_approved?: boolean
           is_resolved?: boolean
           link?: string | null
+          phone?: string | null
           title: string
           user_id: string
         }
@@ -70,6 +72,7 @@ export type Database = {
           is_approved?: boolean
           is_resolved?: boolean
           link?: string | null
+          phone?: string | null
           title?: string
           user_id?: string
         }

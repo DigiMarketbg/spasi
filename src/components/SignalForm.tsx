@@ -170,7 +170,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         city: data.city,
         link: data.link || null,
         image_url: imageUrl,
-        phone: data.phone || null,
+        phone: data.phone || null,  // Add the phone field here
         is_approved: false,
         is_resolved: false
       });
