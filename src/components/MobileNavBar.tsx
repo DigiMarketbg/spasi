@@ -25,7 +25,7 @@ const MobileNavBar = () => {
       path: '/signals',
     },
     {
-      name: 'Подай сигнал',
+      name: 'Сигнал', // Changed from 'Подай сигнал' to 'Сигнал'
       icon: Plus,
       path: '/submit-signal',
     },
@@ -67,3 +67,4 @@ const MobileNavBar = () => {
 };
 
 export default MobileNavBar;
+
