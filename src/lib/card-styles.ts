@@ -40,5 +40,5 @@ export const cardStyles = {
   title: "text-xl font-semibold mb-2 line-clamp-1",
   metadata: "flex items-center text-sm text-white/80 mb-3",
   description: "text-white/90 mb-4 line-clamp-2",
-  button: "w-full mt-auto flex items-center gap-2 group text-white border-white/50 hover:bg-white/20"
+  button: "w-full mt-auto flex items-center gap-2 group bg-white text-green-600 border-white hover:bg-green-50 transition-colors"
 };
