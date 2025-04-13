@@ -14,6 +14,7 @@ import SignalDetail from "./pages/SignalDetail";
 import NotFound from "./pages/NotFound";
 import Volunteers from "./pages/Volunteers";
 import AdminVolunteers from "./pages/AdminVolunteers";
+import Signals from "./pages/Signals"; // New import
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/signals/:id" element={<SignalDetail />} />
               <Route path="/admin/volunteers" element={<AdminVolunteers />} />
+              <Route path="/signals" element={<Signals />} /> {/* New route */}
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
