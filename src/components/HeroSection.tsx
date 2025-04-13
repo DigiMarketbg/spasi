@@ -47,10 +47,10 @@ const HeroSection = () => {
             
             <Button 
               variant="outline" 
-              className="border-none bg-soft-purple/10 hover:bg-soft-purple/20 py-3 px-6 rounded-md text-sm font-medium flex items-center gap-2 relative group"
+              className="border-2 border-soft-purple/50 bg-soft-purple/10 hover:bg-soft-purple/20 py-3 px-6 rounded-lg text-sm font-medium flex items-center gap-2 relative group"
             >
               <Bell className="h-4 w-4 text-primary opacity-70" />
-              <span>Известия</span>
+              <span>Абонирай се за известия</span>
             </Button>
           </div>
         </div>
