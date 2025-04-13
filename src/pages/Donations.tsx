@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, QrCode, BanknotesIcon, PaypalIcon } from 'lucide-react';
+import { Heart, QrCode, Banknote, CreditCard } from 'lucide-react';
 import ParticleBackground from '@/components/ParticleBackground';
 
 const Donations = () => {
@@ -51,10 +51,10 @@ const Donations = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Button className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600">
-                      <PaypalIcon className="h-5 w-5" /> PayPal
+                      <CreditCard className="h-5 w-5" /> PayPal
                     </Button>
                     <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-600">
-                      <BanknotesIcon className="h-5 w-5" /> Stripe
+                      <Banknote className="h-5 w-5" /> Stripe
                     </Button>
                   </div>
                 </div>
