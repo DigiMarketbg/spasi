@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X } from 'lucide-react';
+import { X, LogOut } from 'lucide-react'; // Add LogOut import here
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Logo from '../Logo';
@@ -43,7 +42,7 @@ const MobileMenu = ({ displayName, triggerButton, handleSignOut, isLoggedIn }: M
           
           <div className="mt-auto flex flex-col gap-4 py-4">
             <ThemeToggle variant="text" />
-            
+          
             {isLoggedIn ? (
               <>
                 <div className="px-4 py-2 text-foreground font-medium">
@@ -60,7 +59,7 @@ const MobileMenu = ({ displayName, triggerButton, handleSignOut, isLoggedIn }: M
                   className="justify-start"
                   onClick={handleSignOut}
                 >
-                  <LogOut className="h-5 w-5 mr-2" />
+                  <LogOut className="h-5 w-5 mr-2" /> {/* Corrected icon import */}
                   <span>Изход</span>
                 </Button>
               </>
