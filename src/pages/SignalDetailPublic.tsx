@@ -15,6 +15,8 @@ import { ArrowLeft } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import SignalHeader from '@/components/signal/SignalHeader';
 import SignalContent from '@/components/signal/SignalContent';
+import { format } from 'date-fns';
+import { bg } from 'date-fns/locale';
 
 const SignalDetailPublic = () => {
   const { id } = useParams<{ id: string }>();
@@ -54,12 +56,16 @@ const SignalDetailPublic = () => {
   }, [id, navigate, toast]);
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('bg-BG', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
+    try {
+      return format(new Date(dateString), 'd MMMM yyyy', { locale: bg });
+    } catch {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('bg-BG', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
   };
 
   const renderLoading = () => (
