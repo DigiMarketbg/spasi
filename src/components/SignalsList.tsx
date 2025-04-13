@@ -19,8 +19,8 @@ interface SignalsListProps {
 const SignalsList = ({ 
   allSignals = false, 
   searchQuery = '', 
-  categoryFilter = '', 
-  cityFilter = '' 
+  categoryFilter = 'all', 
+  cityFilter = 'all' 
 }: SignalsListProps) => {
   const { 
     data: signals, 
@@ -45,13 +45,13 @@ const SignalsList = ({
         query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,city.ilike.%${searchQuery}%`);
       }
       
-      // Apply category filter if present
-      if (categoryFilter) {
+      // Apply category filter if present and not "all"
+      if (categoryFilter && categoryFilter !== 'all') {
         query = query.eq('category', categoryFilter);
       }
       
-      // Apply city filter if present
-      if (cityFilter) {
+      // Apply city filter if present and not "all"
+      if (cityFilter && cityFilter !== 'all') {
         query = query.eq('city', cityFilter);
       }
       
