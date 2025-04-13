@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ParticleBackground from './ParticleBackground';
 import MovingElements from './MovingElements';
-import { useIsMobile } from '@/hooks/use-mobile'; // Import the mobile hook
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const HeroSection = () => {
   const isMobile = useIsMobile();
@@ -45,10 +45,12 @@ const HeroSection = () => {
               </Button>
             )}
             
-            <Button variant="outline" className="border-2 py-6 px-8 rounded-lg text-lg font-medium flex items-center gap-2 relative group overflow-hidden">
-              <span className="absolute inset-0 w-0 bg-primary/10 transition-all duration-300 ease-out group-hover:w-full"></span>
-              <Bell className="h-5 w-5 relative z-10" />
-              <span className="relative z-10">Абонирай се за известия</span>
+            <Button 
+              variant="outline" 
+              className="border-none bg-soft-purple/10 hover:bg-soft-purple/20 py-3 px-6 rounded-md text-sm font-medium flex items-center gap-2 relative group"
+            >
+              <Bell className="h-4 w-4 text-primary opacity-70" />
+              <span>Известия</span>
             </Button>
           </div>
         </div>
