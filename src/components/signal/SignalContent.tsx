@@ -1,12 +1,16 @@
 
 import React from 'react';
-import { ExternalLink, Phone } from 'lucide-react';
+import { ExternalLink, Phone, Calendar, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { detailCardStyles } from '@/lib/card-styles';
+import { Badge } from '@/components/ui/badge';
+import { categoryTranslations, detailCardStyles } from '@/lib/card-styles';
 
 interface SignalContentProps {
   signal: {
     title: string;
+    category: string;
+    created_at: string;
+    city: string;
     description: string;
     phone?: string;
     link?: string;
@@ -16,20 +20,38 @@ interface SignalContentProps {
 }
 
 const SignalContent: React.FC<SignalContentProps> = ({ signal, formatDate }) => {
+  // Translate category
+  const translatedCategory = categoryTranslations[signal.category] || signal.category;
+  
   return (
-    <div className="grid md:grid-cols-2 gap-6 animate-fade-in pt-4 sm:pt-6" style={{ animationDelay: '0.2s' }}>
+    <div className="grid md:grid-cols-2 gap-6 animate-fade-in pt-4 sm:pt-6" style={{ animationDelay: '0.2s' }}> {/* Increased top padding for better spacing especially on mobile */}
       <div className={detailCardStyles.section}>
-        <div className="space-y-4">
+        {/* Category badge moved to the top of the content section */}
+        <div className="mb-4">
+          <Badge variant="outline" className={detailCardStyles.badge}>
+            {translatedCategory}
+          </Badge>
+        </div>
+        
+        <div className="space-y-3">
+          <div className={detailCardStyles.metadata}>
+            <MapPin className="h-4 w-4" />
+            <span className="ml-1"><strong>Град:</strong> {signal.city}</span>
+          </div>
+          
           {signal.phone && (
             <div className={detailCardStyles.metadata}>
-              <Phone className="h-4 w-4 mr-1" />
-              <a 
-                href={`tel:${signal.phone}`} 
-                className="text-primary hover:underline transition-colors"
-                aria-label="Обади се"
-              >
-                {signal.phone}
-              </a>
+              <Phone className="h-4 w-4" />
+              <span className="ml-1">
+                <strong>Телефон:</strong>{' '}
+                <a 
+                  href={`tel:${signal.phone}`} 
+                  className="text-primary hover:underline transition-colors"
+                  aria-label="Обади се"
+                >
+                  {signal.phone}
+                </a>
+              </span>
             </div>
           )}
         </div>
