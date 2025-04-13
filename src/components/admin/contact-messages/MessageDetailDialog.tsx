@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { bg } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface MessageDetailDialogProps {
   message: any;
@@ -29,6 +40,8 @@ const MessageDetailDialog = ({
   onDelete,
   processingId,
 }: MessageDetailDialogProps) => {
+  const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
+  
   if (!message) return null;
 
   const formatDate = (dateString: string) => {
@@ -37,6 +50,11 @@ const MessageDetailDialog = ({
     } catch {
       return dateString;
     }
+  };
+
+  const handleDelete = () => {
+    onDelete(message.id);
+    setDeleteAlertOpen(false);
   };
 
   return (
@@ -98,16 +116,34 @@ const MessageDetailDialog = ({
                 Маркирай като прочетено
               </Button>
             )}
-            <Button 
-              variant="destructive"
-              onClick={() => onDelete(message.id)}
-              disabled={processingId === message.id}
-            >
-              {processingId === message.id ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : null}
-              Изтрий
-            </Button>
+            
+            <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="destructive"
+                  disabled={processingId === message.id}
+                >
+                  {processingId === message.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : null}
+                  Изтрий
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Изтриване на съобщение</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Сигурни ли сте, че искате да изтриете това съобщение? Това действие не може да бъде отменено.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Отказ</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                    Изтрий
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </DialogContent>

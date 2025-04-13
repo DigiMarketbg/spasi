@@ -1,7 +1,18 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Eye, Check, Trash2, Loader2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface MessageActionsProps {
   message: any;
@@ -18,6 +29,13 @@ const MessageActions = ({
   onDelete, 
   processingId 
 }: MessageActionsProps) => {
+  const [open, setOpen] = useState(false);
+
+  const handleDelete = () => {
+    onDelete(message.id);
+    setOpen(false);
+  };
+
   return (
     <div className="flex justify-end gap-2">
       <Button 
@@ -44,19 +62,36 @@ const MessageActions = ({
         </Button>
       )}
       
-      <Button
-        variant="outline"
-        size="sm"
-        className="text-red-600"
-        onClick={() => onDelete(message.id)}
-        disabled={processingId === message.id}
-      >
-        {processingId === message.id ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <Trash2 className="h-4 w-4" />
-        )}
-      </Button>
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-red-600"
+            disabled={processingId === message.id}
+          >
+            {processingId === message.id ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Trash2 className="h-4 w-4" />
+            )}
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Изтриване на съобщение</AlertDialogTitle>
+            <AlertDialogDescription>
+              Сигурни ли сте, че искате да изтриете това съобщение? Това действие не може да бъде отменено.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отказ</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+              Изтрий
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

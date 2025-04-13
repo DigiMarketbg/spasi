@@ -90,8 +90,10 @@ const ContactMessagesManagement = ({
       
       onRefresh();
       
+      // Close the detail dialog if the deleted message was being viewed
       if (isDetailOpen && selectedMessage?.id === id) {
         setIsDetailOpen(false);
+        setSelectedMessage(null);
       }
     } catch (error: any) {
       console.error('Error deleting message:', error);
