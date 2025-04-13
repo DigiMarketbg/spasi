@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ExternalLink, Phone, MapPin } from 'lucide-react';
+import { ExternalLink, Phone, Calendar, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { categoryTranslations, detailCardStyles } from '@/lib/card-styles';
@@ -24,34 +24,37 @@ const SignalContent: React.FC<SignalContentProps> = ({ signal, formatDate }) => 
   const translatedCategory = categoryTranslations[signal.category] || signal.category;
   
   return (
-    <div className="grid md:grid-cols-2 gap-6 animate-fade-in pt-4 sm:pt-6" style={{ animationDelay: '0.2s' }}>
+    <div className="grid md:grid-cols-2 gap-6 animate-fade-in pt-4 sm:pt-6" style={{ animationDelay: '0.2s' }}> {/* Increased top padding for better spacing especially on mobile */}
       <div className={detailCardStyles.section}>
-        {/* Combine category and metadata in a single, compact line */}
-        <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
-          <Badge variant="outline" className={`${detailCardStyles.badge} mr-2`}>
+        {/* Category badge moved to the top of the content section */}
+        <div className="mb-4">
+          <Badge variant="outline" className={detailCardStyles.badge}>
             {translatedCategory}
           </Badge>
-          <span className="flex items-center">
-            <MapPin className="h-4 w-4 mr-1" />
-            {signal.city}
-          </span>
         </div>
         
-        {signal.phone && (
+        <div className="space-y-3">
           <div className={detailCardStyles.metadata}>
-            <Phone className="h-4 w-4" />
-            <span className="ml-1">
-              <strong>Телефон:</strong>{' '}
-              <a 
-                href={`tel:${signal.phone}`} 
-                className="text-primary hover:underline transition-colors"
-                aria-label="Обади се"
-              >
-                {signal.phone}
-              </a>
-            </span>
+            <MapPin className="h-4 w-4" />
+            <span className="ml-1"><strong>Град:</strong> {signal.city}</span>
           </div>
-        )}
+          
+          {signal.phone && (
+            <div className={detailCardStyles.metadata}>
+              <Phone className="h-4 w-4" />
+              <span className="ml-1">
+                <strong>Телефон:</strong>{' '}
+                <a 
+                  href={`tel:${signal.phone}`} 
+                  className="text-primary hover:underline transition-colors"
+                  aria-label="Обади се"
+                >
+                  {signal.phone}
+                </a>
+              </span>
+            </div>
+          )}
+        </div>
         
         <div className="my-5 border-t border-border/30 pt-5">
           <p className={detailCardStyles.description}>{signal.description}</p>
