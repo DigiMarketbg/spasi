@@ -99,24 +99,26 @@ const AuthBackground = () => {
       {/* Bottom-left decorative element */}
       <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full bg-spasi-green/5 blur-3xl transform -translate-x-1/4 translate-y-1/4"></div>
       
-      <style jsx>{`
-        .circle-light {
-          position: absolute;
-          width: 300px;
-          height: 300px;
-          border-radius: 50%;
-          background: radial-gradient(
-            circle,
-            rgba(var(--color-primary), 0.15) 0%,
-            rgba(var(--color-primary), 0) 70%
-          );
-          top: 40%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          animation: pulse-light 10s ease-in-out infinite;
-          pointer-events: none;
-        }
-      `}</style>
+      <style>
+        {`
+          .circle-light {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(
+              circle,
+              rgba(var(--color-primary), 0.15) 0%,
+              rgba(var(--color-primary), 0) 70%
+            );
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse-light 10s ease-in-out infinite;
+            pointer-events: none;
+          }
+        `}
+      </style>
     </div>
   );
 };
