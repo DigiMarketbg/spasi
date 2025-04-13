@@ -33,7 +33,7 @@ const Navbar = () => {
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 py-4 px-4 md:px-6 lg:px-8 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 py-3 px-4 md:px-6 lg:px-8 transition-all duration-300 ${
         scrolled ? 'glass backdrop-blur-lg shadow-md' : 'bg-transparent'
       }`}
     >
@@ -45,7 +45,7 @@ const Navbar = () => {
             <NavLinks />
           </nav>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <ThemeToggle className="hidden md:flex" />
             
             {user ? (

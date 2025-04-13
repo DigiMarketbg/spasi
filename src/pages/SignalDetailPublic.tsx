@@ -116,7 +116,7 @@ const SignalDetailPublic = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-background/90">
       <Navbar />
       
-      <main className="flex-grow container mx-auto px-4 py-8 md:py-16 mt-4 md:mt-8">
+      <main className="flex-grow container mx-auto px-4 py-8 md:py-16 mt-16 md:mt-24">
         <Card className={detailCardStyles.container}>
           <CardHeader className={`${detailCardStyles.header} pb-6 sm:pb-8 border-b border-border/20`}>
             {loading ? (
@@ -126,7 +126,7 @@ const SignalDetailPublic = () => {
             ) : null}
           </CardHeader>
           
-          <CardContent className="p-0 pt-6 sm:pt-8"> {/* Increased top padding here for better separation */}
+          <CardContent className="p-0 pt-6 sm:pt-8">
             {loading ? (
               <div className="p-4 sm:p-6">
                 {renderLoading()}
