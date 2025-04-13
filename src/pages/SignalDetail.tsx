@@ -15,59 +15,23 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import {
-  ArrowLeft,
-  Edit,
-  Save,
-  X,
-  Check,
-  Trash2,
-  ExternalLink
-} from 'lucide-react';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { ArrowLeft } from 'lucide-react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { signalSchema, SignalFormValues, Signal } from "@/types/signal";
 
-const signalSchema = z.object({
-  title: z.string().min(3, {
-    message: "Заглавието трябва да бъде поне 3 символа.",
-  }),
-  description: z.string().min(10, {
-    message: "Описанието трябва да бъде поне 10 символа.",
-  }),
-  category: z.string().min(1, {
-    message: "Моля, изберете категория.",
-  }),
-  city: z.string().min(1, {
-    message: "Моля, въведете град.",
-  }),
-  phone: z.string().optional(),
-  link: z.string().url({
-    message: "Моля, въведете валиден URL адрес.",
-  }).optional().or(z.literal('')),
-});
-
-type SignalFormValues = z.infer<typeof signalSchema>;
+// Import the newly created components
+import SignalForm from '@/components/admin/SignalForm';
+import SignalDetails from '@/components/admin/SignalDetails';
+import SignalActions from '@/components/admin/SignalActions';
+import SignalStatusActions from '@/components/admin/SignalStatusActions';
 
 const SignalDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [signal, setSignal] = useState<any>(null);
+  const [signal, setSignal] = useState<Signal | null>(null);
   const [loadingSignal, setLoadingSignal] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -160,7 +124,7 @@ const SignalDetail = () => {
       });
 
       // Update signal data
-      setSignal({ ...signal, is_approved: !currentStatus });
+      setSignal(prev => prev ? { ...prev, is_approved: !currentStatus } : null);
     } catch (error: any) {
       toast({
         title: "Грешка",
@@ -186,7 +150,7 @@ const SignalDetail = () => {
       });
 
       // Update signal data
-      setSignal({ ...signal, is_resolved: !currentStatus });
+      setSignal(prev => prev ? { ...prev, is_resolved: !currentStatus } : null);
     } catch (error: any) {
       toast({
         title: "Грешка",
@@ -219,15 +183,15 @@ const SignalDetail = () => {
       });
 
       // Update signal data and exit edit mode
-      setSignal({ 
-        ...signal, 
+      setSignal(prev => prev ? { 
+        ...prev, 
         title: values.title,
         description: values.description,
         category: values.category,
         city: values.city,
         phone: values.phone || null,
         link: values.link || null
-      });
+      } : null);
       setIsEditing(false);
     } catch (error: any) {
       toast({
@@ -303,226 +267,33 @@ const SignalDetail = () => {
                   <CardTitle>{!isEditing && signal.title}</CardTitle>
                   <CardDescription>Сигнал #{id?.substring(0, 8)}</CardDescription>
                 </div>
-                <div className="flex gap-2">
-                  {isEditing ? (
-                    <Button variant="outline" onClick={() => setIsEditing(false)}>
-                      <X className="h-4 w-4 mr-2" />
-                      Отказ
-                    </Button>
-                  ) : (
-                    <Button onClick={() => setIsEditing(true)}>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Редактирай
-                    </Button>
-                  )}
-                  <Button variant="destructive" onClick={deleteSignal}>
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Изтрий
-                  </Button>
-                </div>
+                <SignalActions 
+                  isEditing={isEditing}
+                  onEdit={() => setIsEditing(true)}
+                  onCancel={() => setIsEditing(false)}
+                  onDelete={deleteSignal}
+                />
               </CardHeader>
               
               <CardContent>
                 {isEditing ? (
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                      <FormField
-                        control={form.control}
-                        name="title"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Заглавие</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FormField
-                          control={form.control}
-                          name="category"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Категория</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="city"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Град</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      
-                      <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Описание</FormLabel>
-                            <FormControl>
-                              <Textarea {...field} rows={6} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FormField
-                          control={form.control}
-                          name="phone"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Телефон (опционално)</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="link"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Линк (опционално)</FormLabel>
-                              <FormControl>
-                                <Input {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      
-                      <Button type="submit">
-                        <Save className="h-4 w-4 mr-2" />
-                        Запази промените
-                      </Button>
-                    </form>
-                  </Form>
+                  <SignalForm 
+                    form={form} 
+                    onSubmit={onSubmit} 
+                    onCancel={() => setIsEditing(false)}
+                  />
                 ) : (
-                  <div className="space-y-6">
-                    <div className="flex flex-wrap gap-2">
-                      <Badge>{signal.category}</Badge>
-                      <Badge variant={signal.is_approved ? "default" : "outline"}>
-                        {signal.is_approved ? 'Одобрен' : 'Неодобрен'}
-                      </Badge>
-                      <Badge variant={signal.is_resolved ? "success" : "destructive"}>
-                        {signal.is_resolved ? 'Разрешен' : 'Неразрешен'}
-                      </Badge>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <Label className="text-muted-foreground">Град</Label>
-                        <p className="font-medium">{signal.city}</p>
-                      </div>
-                      <div>
-                        <Label className="text-muted-foreground">Дата на създаване</Label>
-                        <p className="font-medium">{formatDate(signal.created_at)}</p>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <Label className="text-muted-foreground">Описание</Label>
-                      <p className="mt-1 whitespace-pre-line">{signal.description}</p>
-                    </div>
-                    
-                    {(signal.phone || signal.link) && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {signal.phone && (
-                          <div>
-                            <Label className="text-muted-foreground">Телефон</Label>
-                            <p className="font-medium">
-                              <a 
-                                href={`tel:${signal.phone}`} 
-                                className="text-primary hover:underline"
-                                aria-label="Обади се"
-                              >
-                                {signal.phone}
-                              </a>
-                            </p>
-                          </div>
-                        )}
-                        
-                        {signal.link && (
-                          <div>
-                            <Label className="text-muted-foreground">Линк</Label>
-                            <p className="font-medium">
-                              <a 
-                                href={signal.link} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-primary flex items-center gap-1 hover:underline"
-                              >
-                                {signal.link.substring(0, 30)}...
-                                <ExternalLink className="h-3.5 w-3.5" />
-                              </a>
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    
-                    <div>
-                      <Label className="text-muted-foreground">Подал</Label>
-                      <p className="font-medium">
-                        {signal.profiles?.full_name || signal.profiles?.email || 'Неизвестен'}
-                      </p>
-                    </div>
-                    
-                    {signal.image_url && (
-                      <div>
-                        <Label className="text-muted-foreground">Изображение</Label>
-                        <div className="mt-2">
-                          <img 
-                            src={signal.image_url} 
-                            alt={signal.title} 
-                            className="max-w-full h-auto max-h-[300px] rounded-md border"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <SignalDetails signal={signal} formatDate={formatDate} />
                 )}
               </CardContent>
               
-              <CardFooter className="flex gap-4 flex-wrap">
-                <Button 
-                  variant={signal.is_approved ? "destructive" : "default"}
-                  onClick={() => toggleSignalApproval(signal.is_approved)}
-                >
-                  {signal.is_approved ? <X className="h-4 w-4 mr-2" /> : <Check className="h-4 w-4 mr-2" />}
-                  {signal.is_approved ? 'Премахни одобрение' : 'Одобри сигнала'}
-                </Button>
-                
-                <Button 
-                  variant={signal.is_resolved ? "destructive" : "default"}
-                  onClick={() => toggleSignalResolution(signal.is_resolved)}
-                >
-                  {signal.is_resolved ? <X className="h-4 w-4 mr-2" /> : <Check className="h-4 w-4 mr-2" />}
-                  {signal.is_resolved ? 'Маркирай като неразрешен' : 'Маркирай като разрешен'}
-                </Button>
+              <CardFooter>
+                <SignalStatusActions
+                  isApproved={signal.is_approved}
+                  isResolved={signal.is_resolved}
+                  onToggleApproval={toggleSignalApproval}
+                  onToggleResolution={toggleSignalResolution}
+                />
               </CardFooter>
             </Card>
           </div>
