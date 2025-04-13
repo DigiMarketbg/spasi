@@ -2,8 +2,8 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
-import PartnerCarousel from '@/components/PartnerCarousel';
 import SignalsList from '@/components/SignalsList';
+import PartnerCarousel from '@/components/PartnerCarousel';
 import BlogSection from '@/components/BlogSection';
 import PartnerSection from '@/components/PartnerSection';
 import Footer from '@/components/Footer';
@@ -15,8 +15,8 @@ const Index = () => {
       
       <main className="flex-grow mt-16">
         <HeroSection />
-        <PartnerCarousel />
         <SignalsList />
+        <PartnerCarousel />
         <BlogSection />
         <PartnerSection />
       </main>
