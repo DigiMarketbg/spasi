@@ -29,7 +29,8 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
   const { theme } = useTheme();
   const isMobile = useIsMobile();
 
-  const handleViewSignal = () => {
+  const handleViewSignal = (e: React.MouseEvent) => {
+    e.preventDefault();
     navigate(`/signal/${signal.id}`);
   };
 
@@ -38,7 +39,7 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
 
   return (
     <div 
-      className={`${cardStyles.container(className)} transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1`}
+      className={cardStyles.container(className)}
       onClick={isMobile ? handleViewSignal : undefined}
     >
       <div className="flex flex-col h-full">
@@ -65,7 +66,11 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
           {signal.phone && (
             <div className={cardStyles.metadata}>
               <Phone className="h-3.5 w-3.5 mr-1" />
-              <a href={`tel:${signal.phone}`} className="hover:underline" onClick={(e) => e.stopPropagation()}>
+              <a 
+                href={`tel:${signal.phone}`} 
+                className="hover:underline" 
+                onClick={(e) => e.stopPropagation()}
+              >
                 {signal.phone}
               </a>
             </div>
@@ -82,7 +87,7 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
           className={cardStyles.button}
           onClick={handleViewSignal}
         >
-          <Eye className="h-4 w-4 group-hover:text-white transition-colors" />
+          <Eye className="h-4 w-4 group-hover:text-primary transition-colors" />
           <span>Виж повече</span>
         </Button>
       )}

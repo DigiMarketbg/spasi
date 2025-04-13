@@ -3,7 +3,7 @@ import React from 'react';
 import { ExternalLink, Phone, Calendar, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { categoryTranslations } from '@/lib/card-styles';
+import { categoryTranslations, detailCardStyles } from '@/lib/card-styles';
 
 interface SignalContentProps {
   signal: {
@@ -24,31 +24,31 @@ const SignalContent: React.FC<SignalContentProps> = ({ signal, formatDate }) => 
   const translatedCategory = categoryTranslations[signal.category] || signal.category;
   
   return (
-    <div className="grid md:grid-cols-2 gap-6">
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Badge className="bg-white/20 text-white border-white/50">
+    <div className="grid md:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+      <div className={detailCardStyles.section}>
+        <div className="flex items-center flex-wrap gap-2">
+          <Badge variant="outline" className={detailCardStyles.badge}>
             {translatedCategory}
           </Badge>
-          <div className="flex items-center text-muted-foreground text-sm">
+          <div className={detailCardStyles.metadata}>
             <Calendar className="h-3.5 w-3.5 mr-1" />
             {formatDate(signal.created_at)}
           </div>
         </div>
         
-        <div className="flex items-center gap-1 text-muted-foreground">
+        <div className={detailCardStyles.metadata}>
           <MapPin className="h-4 w-4" />
-          <span><strong>Град:</strong> {signal.city}</span>
+          <span className="ml-1"><strong>Град:</strong> {signal.city}</span>
         </div>
         
         {signal.phone && (
-          <div className="flex items-center gap-1 text-muted-foreground">
+          <div className={detailCardStyles.metadata}>
             <Phone className="h-4 w-4" />
-            <span>
+            <span className="ml-1">
               <strong>Телефон:</strong>{' '}
               <a 
                 href={`tel:${signal.phone}`} 
-                className="text-primary hover:underline"
+                className="text-primary hover:underline transition-colors"
                 aria-label="Обади се"
               >
                 {signal.phone}
@@ -57,31 +57,32 @@ const SignalContent: React.FC<SignalContentProps> = ({ signal, formatDate }) => 
           </div>
         )}
         
-        <p className="whitespace-pre-line">{signal.description}</p>
+        <p className={detailCardStyles.description}>{signal.description}</p>
         
         {signal.link && (
-          <div className="mt-4">
+          <div className="mt-6">
             <Button 
               variant="outline" 
               onClick={() => window.open(signal.link, '_blank')}
-              className="flex items-center gap-2"
+              className={detailCardStyles.button}
             >
               <ExternalLink className="h-4 w-4" />
-              Виж поста във Facebook
+              <span>Виж поста във Facebook</span>
             </Button>
           </div>
         )}
       </div>
       
-      {signal.image_url && (
-        <div>
+      {signal.image_url ? (
+        <div className="order-first md:order-last mb-6 md:mb-0">
           <img 
             src={signal.image_url} 
             alt={signal.title} 
-            className="rounded-lg max-h-[400px] w-full object-cover"
+            className={detailCardStyles.image}
+            loading="eager"
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

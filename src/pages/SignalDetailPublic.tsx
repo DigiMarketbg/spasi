@@ -18,6 +18,7 @@ import SignalContent from '@/components/signal/SignalContent';
 import { format } from 'date-fns';
 import { bg } from 'date-fns/locale';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { detailCardStyles } from '@/lib/card-styles';
 
 const SignalDetailPublic = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +28,15 @@ const SignalDetailPublic = () => {
   
   const [signal, setSignal] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [shareVisible, setShareVisible] = useState(false);
+
+  useEffect(() => {
+    // Show share button with animation after a delay on mobile
+    if (isMobile && signal) {
+      const timer = setTimeout(() => setShareVisible(true), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isMobile, signal]);
 
   useEffect(() => {
     const fetchSignalDetails = async () => {
@@ -38,9 +48,11 @@ const SignalDetailPublic = () => {
           .select('*')
           .eq('id', id)
           .eq('is_approved', true)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
+        if (!data) throw new Error('Сигналът не е намерен или не е одобрен.');
+        
         setSignal(data);
       } catch (error: any) {
         toast({
@@ -87,14 +99,13 @@ const SignalDetailPublic = () => {
   };
 
   const renderLoading = () => (
-    <div className="space-y-4">
+    <div className="space-y-6 animate-pulse">
       <Skeleton className="h-8 w-3/4" />
-      <Skeleton className="h-4 w-1/4" />
+      <Skeleton className="h-4 w-1/3" />
       <div className="grid md:grid-cols-2 gap-6 mt-6">
         <div className="space-y-4">
           <Skeleton className="h-4 w-1/2" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-10 w-1/3" />
+          <Skeleton className="h-20 w-full" />
         </div>
         <Skeleton className="h-[300px] w-full rounded-lg" />
       </div>
@@ -102,36 +113,35 @@ const SignalDetailPublic = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-background/90">
       <Navbar />
       
       <main className="flex-grow container mx-auto px-4 py-8 md:py-16 mt-4 md:mt-8">
-        <div className="flex items-center justify-between mb-6 md:mb-8">
+        <div className="flex items-center justify-between mb-6 md:mb-8 animate-fade-in">
           <Button 
-            variant="ghost" 
+            variant="outline" 
             onClick={() => navigate('/signals')} 
-            className="flex items-center gap-2"
+            className={`flex items-center gap-2 ${detailCardStyles.button}`}
             size={isMobile ? "sm" : "default"}
           >
             <ArrowLeft className="h-4 w-4" />
             <span className={isMobile ? "text-sm" : ""}>Назад</span>
           </Button>
 
-          {signal && isMobile && (
+          {signal && !isMobile && (
             <Button 
               variant="outline" 
-              size="sm"
               onClick={handleShare} 
-              className="flex items-center gap-2"
+              className={detailCardStyles.button}
             >
               <Share2 className="h-4 w-4" />
-              <span className="text-sm">Сподели</span>
+              <span>Сподели</span>
             </Button>
           )}
         </div>
 
-        <Card className="glass animate-fade-in">
-          <CardHeader>
+        <Card className={detailCardStyles.container}>
+          <CardHeader className={detailCardStyles.header}>
             {loading ? (
               <Skeleton className="h-16 w-full" />
             ) : signal ? (
@@ -139,14 +149,29 @@ const SignalDetailPublic = () => {
             ) : null}
           </CardHeader>
           
-          <CardContent>
+          <CardContent className="p-0">
             {loading ? (
-              renderLoading()
+              <div className="p-4 sm:p-6">
+                {renderLoading()}
+              </div>
             ) : signal ? (
-              <SignalContent signal={signal} formatDate={formatDate} />
+              <div className={detailCardStyles.content}>
+                <SignalContent signal={signal} formatDate={formatDate} />
+              </div>
             ) : null}
           </CardContent>
         </Card>
+        
+        {/* Mobile floating share button */}
+        {signal && isMobile && shareVisible && (
+          <button 
+            onClick={handleShare}
+            className={detailCardStyles.shareButton}
+            aria-label="Сподели"
+          >
+            <Share2 className="h-5 w-5" />
+          </button>
+        )}
       </main>
       
       <Footer />
