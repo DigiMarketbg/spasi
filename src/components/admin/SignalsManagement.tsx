@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -19,8 +19,24 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, X, AlertTriangle, Eye } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Check, X, AlertTriangle, Eye, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 interface SignalData {
   id: string;
@@ -42,9 +58,44 @@ interface SignalsManagementProps {
   onRefresh: () => void;
 }
 
+// Categories array for filtering
+const CATEGORIES = [
+  "Всички категории",
+  "Бедствие",
+  "Кръводаряване",
+  "Опасност",
+  "Кражба",
+  "Изгубени",
+  "Доброволци",
+  "Друго"
+];
+
+// Cities array for filtering
+const CITIES = [
+  "Всички градове",
+  "София",
+  "Пловдив",
+  "Варна",
+  "Бургас",
+  "Русе",
+  "Стара Загора",
+  "Плевен",
+  "Друг"
+];
+
 const SignalsManagement = ({ signals, loadingSignals, onRefresh }: SignalsManagementProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("Всички категории");
+  const [cityFilter, setCityFilter] = useState("Всички градове");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   // Toggle signal approval
   const toggleSignalApproval = async (id: string, currentStatus: boolean) => {
@@ -109,6 +160,57 @@ const SignalsManagement = ({ signals, loadingSignals, onRefresh }: SignalsManage
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   };
 
+  // Filter signals based on search, category, city, and status filters
+  const filteredSignals = signals.filter(signal => {
+    // Search term filter (title, category, city)
+    const matchesSearch = !searchTerm 
+      || signal.title.toLowerCase().includes(searchTerm.toLowerCase())
+      || signal.category.toLowerCase().includes(searchTerm.toLowerCase())
+      || signal.city.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Category filter
+    const matchesCategory = categoryFilter === "Всички категории" || signal.category === categoryFilter;
+    
+    // City filter
+    const matchesCity = cityFilter === "Всички градове" || signal.city === cityFilter;
+    
+    // Status filter
+    let matchesStatus = true;
+    if (statusFilter === "approved") {
+      matchesStatus = signal.is_approved;
+    } else if (statusFilter === "unapproved") {
+      matchesStatus = !signal.is_approved;
+    } else if (statusFilter === "resolved") {
+      matchesStatus = signal.is_resolved;
+    } else if (statusFilter === "unresolved") {
+      matchesStatus = !signal.is_resolved;
+    }
+    
+    return matchesSearch && matchesCategory && matchesCity && matchesStatus;
+  });
+
+  // Get current signals for pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentSignals = filteredSignals.slice(indexOfFirstItem, indexOfLastItem);
+  
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredSignals.length / itemsPerPage);
+
+  // Handle page change
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  
+  // Generate page numbers array
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, categoryFilter, cityFilter, statusFilter]);
+
   return (
     <Card>
       <CardHeader>
@@ -118,12 +220,98 @@ const SignalsManagement = ({ signals, loadingSignals, onRefresh }: SignalsManage
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Filters */}
+        <div className="mb-6 space-y-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Търси по заглавие, категория или град..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <Select 
+                value={categoryFilter} 
+                onValueChange={setCategoryFilter}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Категория" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORIES.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Select 
+                value={cityFilter} 
+                onValueChange={setCityFilter}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Град" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CITIES.map((city) => (
+                    <SelectItem key={city} value={city}>
+                      {city}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Select 
+                value={statusFilter} 
+                onValueChange={setStatusFilter}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Статус" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Всички</SelectItem>
+                  <SelectItem value="approved">Одобрени</SelectItem>
+                  <SelectItem value="unapproved">Неодобрени</SelectItem>
+                  <SelectItem value="resolved">Разрешени</SelectItem>
+                  <SelectItem value="unresolved">Неразрешени</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Показване на {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredSignals.length)} от {filteredSignals.length} сигнала
+            </p>
+            
+            <Select 
+              value={itemsPerPage.toString()} 
+              onValueChange={(value) => setItemsPerPage(parseInt(value))}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Брой на страница" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5 на страница</SelectItem>
+                <SelectItem value="10">10 на страница</SelectItem>
+                <SelectItem value="25">25 на страница</SelectItem>
+                <SelectItem value="50">50 на страница</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         {loadingSignals ? (
           <div className="text-center py-8">Зареждане на сигналите...</div>
-        ) : signals.length === 0 ? (
+        ) : filteredSignals.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <AlertTriangle className="mx-auto h-12 w-12 mb-2" />
-            <p>Няма сигнали в системата</p>
+            <p>Няма намерени сигнали</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -140,7 +328,7 @@ const SignalsManagement = ({ signals, loadingSignals, onRefresh }: SignalsManage
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {signals.map((signal) => (
+                {currentSignals.map((signal) => (
                   <TableRow key={signal.id}>
                     <TableCell className="font-medium">{signal.title}</TableCell>
                     <TableCell>{signal.category}</TableCell>
@@ -189,6 +377,38 @@ const SignalsManagement = ({ signals, loadingSignals, onRefresh }: SignalsManage
                 ))}
               </TableBody>
             </Table>
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination className="mt-6">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      onClick={() => paginate(Math.max(1, currentPage - 1))}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                  
+                  {pageNumbers.map(number => (
+                    <PaginationItem key={number}>
+                      <PaginationLink 
+                        isActive={currentPage === number}
+                        onClick={() => paginate(number)}
+                      >
+                        {number}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </div>
         )}
       </CardContent>
