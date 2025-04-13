@@ -28,8 +28,8 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
       const particle = document.createElement('div');
       particle.classList.add('particle');
       
-      // Random size between 2-6px
-      const size = Math.random() * 4 + 2;
+      // Random size between 2-8px
+      const size = Math.random() * 6 + 2;
       particle.style.width = `${size}px`;
       particle.style.height = `${size}px`;
       
@@ -40,8 +40,8 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
       particle.style.top = `${y}px`;
       
       // Random movement distance
-      const xEnd = (Math.random() - 0.5) * 100;
-      const yEnd = (Math.random() - 0.5) * 100;
+      const xEnd = (Math.random() - 0.5) * 150;
+      const yEnd = (Math.random() - 0.5) * 150;
       particle.style.setProperty('--x-end', `${xEnd}px`);
       particle.style.setProperty('--y-end', `${yEnd}px`);
       
@@ -50,8 +50,15 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
       particle.style.animationDelay = `${delay}s`;
       
       // Random opacity
-      const opacity = Math.random() * 0.3 + 0.1;
-      particle.style.backgroundColor = `rgba(255, 255, 255, ${opacity})`;
+      const opacity = Math.random() * 0.4 + 0.1;
+      
+      // Choose color - mix of reds and primary colors with low opacity
+      const isRed = Math.random() > 0.7;
+      if (isRed) {
+        particle.style.backgroundColor = `rgba(229, 57, 53, ${opacity})`; // spasi-red with opacity
+      } else {
+        particle.style.backgroundColor = `rgba(100, 100, 100, ${opacity})`; // gray with opacity
+      }
       
       container.appendChild(particle);
       particle.classList.add('animate-particle-move');
