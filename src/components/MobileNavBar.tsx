@@ -1,15 +1,19 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, List, Plus, Info, User } from 'lucide-react';
+import { Home, List, Plus, Info, User, Palette } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from './AuthProvider';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Logo from './Logo';
+import { useTheme } from './ThemeProvider';
+import { Button } from '@/components/ui/button';
 
 const MobileNavBar = () => {
   const location = useLocation();
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const { theme, toggleTheme } = useTheme();
 
   if (!isMobile) return null;
 
@@ -25,7 +29,7 @@ const MobileNavBar = () => {
       path: '/signals',
     },
     {
-      name: 'Сигнал', // Changed from 'Подай сигнал' to 'Сигнал'
+      name: 'Сигнал',
       icon: Plus,
       path: '/submit-signal',
     },
@@ -43,6 +47,23 @@ const MobileNavBar = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 md:hidden">
+      {/* Top mobile navbar with logo and theme toggle */}
+      <div className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-md border-b border-border z-50 md:hidden">
+        <div className="flex justify-between items-center h-16 px-4">
+          <div className="w-10"></div> {/* Empty div for balance */}
+          <Logo className="scale-75" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="w-10 h-10 rounded-full" 
+            onClick={toggleTheme}
+          >
+            <Palette className="h-5 w-5 text-foreground" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Bottom navigation */}
       <div className="flex justify-around items-center h-16">
         {navItems.map((item) => (
           <Link
@@ -67,4 +88,3 @@ const MobileNavBar = () => {
 };
 
 export default MobileNavBar;
-

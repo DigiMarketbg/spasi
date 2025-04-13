@@ -19,7 +19,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className={`py-10 px-4 md:px-6 lg:px-8 border-t ${isMobile ? 'pb-24' : ''}`}>
+    <footer className={`py-10 px-4 md:px-6 lg:px-8 border-t ${isMobile ? 'pb-32' : ''}`}>
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <Logo className="mb-2 md:mb-0" />
@@ -36,18 +36,20 @@ const Footer = () => {
             ))}
           </div>
           
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="rounded-full" 
-            onClick={toggleTheme}
-          >
-            {theme === 'dark' ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
-          </Button>
+          {!isMobile && (
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-full" 
+              onClick={toggleTheme}
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+          )}
         </div>
         
         <div className="text-center text-sm text-muted-foreground mt-8">

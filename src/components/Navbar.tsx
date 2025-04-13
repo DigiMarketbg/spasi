@@ -9,11 +9,13 @@ import NavLinks from './navbar/NavLinks';
 import ThemeToggle from './navbar/ThemeToggle';
 import UserMenu from './navbar/UserMenu';
 import MobileMenu from './navbar/MobileMenu';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Navbar = () => {
   const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -30,6 +32,9 @@ const Navbar = () => {
   };
 
   const displayName = profile?.full_name || user?.email || 'Потребител';
+
+  // Hide the navbar completely on mobile screens
+  if (isMobile) return null;
 
   return (
     <header 
@@ -80,18 +85,6 @@ const Navbar = () => {
                 </Button>
               </>
             )}
-            
-            <MobileMenu 
-              displayName={displayName}
-              handleSignOut={handleSignOut}
-              isLoggedIn={!!user}
-              isAdmin={isAdmin}
-              triggerButton={
-                <Button variant="outline" size="icon" className="md:hidden">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              }
-            />
           </div>
         </div>
       </div>
