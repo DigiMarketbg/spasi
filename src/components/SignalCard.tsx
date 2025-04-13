@@ -30,10 +30,8 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
       )}
     >
       <Badge 
-        className={cn(
-          "mb-4",
-          signal.categoryColor ? `bg-[${signal.categoryColor}]` : "bg-spasi-red"
-        )}
+        style={{ backgroundColor: signal.categoryColor }}
+        className="mb-4"
       >
         {signal.category}
       </Badge>
