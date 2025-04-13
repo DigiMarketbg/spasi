@@ -6,30 +6,14 @@ import { useAuth } from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Check, X, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import SignalsManagement from '@/components/admin/SignalsManagement';
+import UsersManagement from '@/components/admin/UsersManagement';
 
 const Admin = () => {
   const { isAdmin, loading } = useAuth();
@@ -103,98 +87,6 @@ const Admin = () => {
     }
   }, [isAdmin]);
 
-  // Toggle signal approval
-  const toggleSignalApproval = async (id: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('signals')
-        .update({ is_approved: !currentStatus })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Успешно",
-        description: !currentStatus ? "Сигналът е одобрен." : "Одобрението на сигнала е премахнато.",
-      });
-
-      // Update local state
-      setSignals(signals.map(signal => 
-        signal.id === id ? { ...signal, is_approved: !currentStatus } : signal
-      ));
-    } catch (error: any) {
-      toast({
-        title: "Грешка",
-        description: error.message || "Възникна проблем при обновяването на сигнала.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Toggle signal resolution
-  const toggleSignalResolution = async (id: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('signals')
-        .update({ is_resolved: !currentStatus })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Успешно",
-        description: !currentStatus ? "Сигналът е маркиран като разрешен." : "Сигналът е маркиран като неразрешен.",
-      });
-
-      // Update local state
-      setSignals(signals.map(signal => 
-        signal.id === id ? { ...signal, is_resolved: !currentStatus } : signal
-      ));
-    } catch (error: any) {
-      toast({
-        title: "Грешка",
-        description: error.message || "Възникна проблем при обновяването на сигнала.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Toggle user admin status
-  const toggleUserAdminStatus = async (id: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_admin: !currentStatus })
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Успешно",
-        description: !currentStatus 
-          ? "Потребителят е направен администратор." 
-          : "Администраторските права на потребителя са премахнати.",
-      });
-
-      // Update local state
-      setUsers(users.map(user => 
-        user.id === id ? { ...user, is_admin: !currentStatus } : user
-      ));
-    } catch (error: any) {
-      toast({
-        title: "Грешка",
-        description: error.message || "Възникна проблем при обновяването на потребителя.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -221,139 +113,19 @@ const Admin = () => {
           </TabsList>
           
           <TabsContent value="signals">
-            <Card>
-              <CardHeader>
-                <CardTitle>Управление на сигнали</CardTitle>
-                <CardDescription>
-                  Преглеждайте и управлявайте всички сигнали в системата
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {loadingSignals ? (
-                  <div className="text-center py-8">Зареждане на сигналите...</div>
-                ) : signals.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <AlertTriangle className="mx-auto h-12 w-12 mb-2" />
-                    <p>Няма сигнали в системата</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Заглавие</TableHead>
-                          <TableHead>Категория</TableHead>
-                          <TableHead>Град</TableHead>
-                          <TableHead>Подал</TableHead>
-                          <TableHead>Дата</TableHead>
-                          <TableHead>Статус</TableHead>
-                          <TableHead>Действия</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {signals.map((signal) => (
-                          <TableRow key={signal.id}>
-                            <TableCell className="font-medium">{signal.title}</TableCell>
-                            <TableCell>{signal.category}</TableCell>
-                            <TableCell>{signal.city}</TableCell>
-                            <TableCell>{signal.profiles?.full_name || signal.profiles?.email || 'Неизвестен'}</TableCell>
-                            <TableCell>{formatDate(signal.created_at)}</TableCell>
-                            <TableCell>
-                              <div className="flex flex-col gap-1">
-                                <Badge variant={signal.is_approved ? "default" : "outline"}>
-                                  {signal.is_approved ? 'Одобрен' : 'Неодобрен'}
-                                </Badge>
-                                <Badge variant={signal.is_resolved ? "success" : "destructive"}>
-                                  {signal.is_resolved ? 'Разрешен' : 'Неразрешен'}
-                                </Badge>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <Button 
-                                  size="sm" 
-                                  variant={signal.is_approved ? "destructive" : "default"}
-                                  onClick={() => toggleSignalApproval(signal.id, signal.is_approved)}
-                                >
-                                  {signal.is_approved ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                                  {signal.is_approved ? 'Премахни одобрение' : 'Одобри'}
-                                </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant={signal.is_resolved ? "destructive" : "default"}
-                                  onClick={() => toggleSignalResolution(signal.id, signal.is_resolved)}
-                                >
-                                  {signal.is_resolved ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                                  {signal.is_resolved ? 'Маркирай като неразрешен' : 'Маркирай като разрешен'}
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <SignalsManagement 
+              signals={signals} 
+              loadingSignals={loadingSignals}
+              onRefresh={fetchSignals}
+            />
           </TabsContent>
           
           <TabsContent value="users">
-            <Card>
-              <CardHeader>
-                <CardTitle>Управление на потребители</CardTitle>
-                <CardDescription>
-                  Преглеждайте и управлявайте всички потребители в системата
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {loadingUsers ? (
-                  <div className="text-center py-8">Зареждане на потребителите...</div>
-                ) : users.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <AlertTriangle className="mx-auto h-12 w-12 mb-2" />
-                    <p>Няма потребители в системата</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Име</TableHead>
-                          <TableHead>Имейл</TableHead>
-                          <TableHead>Регистриран на</TableHead>
-                          <TableHead>Статус</TableHead>
-                          <TableHead>Действия</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {users.map((user) => (
-                          <TableRow key={user.id}>
-                            <TableCell className="font-medium">{user.full_name || 'Няма име'}</TableCell>
-                            <TableCell>{user.email || 'Няма имейл'}</TableCell>
-                            <TableCell>{user.created_at ? formatDate(user.created_at) : 'Неизвестно'}</TableCell>
-                            <TableCell>
-                              <Badge variant={user.is_admin ? "default" : "outline"}>
-                                {user.is_admin ? 'Администратор' : 'Потребител'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <Button 
-                                size="sm" 
-                                variant={user.is_admin ? "destructive" : "default"}
-                                onClick={() => toggleUserAdminStatus(user.id, user.is_admin)}
-                              >
-                                {user.is_admin ? 'Премахни админ права' : 'Направи администратор'}
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <UsersManagement 
+              users={users} 
+              loadingUsers={loadingUsers}
+              onRefresh={fetchUsers}
+            />
           </TabsContent>
         </Tabs>
       </main>
