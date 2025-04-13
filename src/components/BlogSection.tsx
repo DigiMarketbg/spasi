@@ -58,10 +58,10 @@ const BlogSection = () => {
   const scroll = (direction: 'left' | 'right') => {
     if (!carouselRef.current) return;
     
-    const { scroll­Left, clientWidth } = carouselRef.current;
+    const { scrollLeft, clientWidth } = carouselRef.current;
     const scrollTo = direction === 'left' 
-      ? scroll­Left - clientWidth 
-      : scroll­Left + clientWidth;
+      ? scrollLeft - clientWidth 
+      : scrollLeft + clientWidth;
     
     carouselRef.current.scrollTo({
       left: scrollTo,
