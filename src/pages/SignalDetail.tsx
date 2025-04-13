@@ -76,14 +76,17 @@ const SignalDetail = () => {
       
       // Add null check before accessing profiles data
       let profileData = null;
-      const profiles = data?.profiles;
       
-      if (profiles && typeof profiles === 'object') {
-        // Make sure profiles is not an error object
-        if (!('code' in profiles) && !('details' in profiles) && 
-            !('hint' in profiles) && !('message' in profiles)) {
+      // First check if data.profiles exists
+      if (data.profiles) {
+        // Make sure profiles is not an error object and is a valid object
+        if (typeof data.profiles === 'object' && 
+            !('code' in data.profiles) && 
+            !('details' in data.profiles) && 
+            !('hint' in data.profiles) && 
+            !('message' in data.profiles)) {
           // Use type assertion to avoid TypeScript errors
-          const typedProfiles = profiles as {full_name?: string, email?: string};
+          const typedProfiles = data.profiles as {full_name?: string, email?: string};
           profileData = {
             full_name: typedProfiles.full_name,
             email: typedProfiles.email
