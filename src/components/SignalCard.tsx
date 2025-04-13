@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { cardStyles, categoryTranslations } from '@/lib/card-styles';
+import { useTheme } from '@/components/ThemeProvider';
 
 export interface SignalProps {
   id: string;
@@ -23,6 +24,7 @@ interface SignalCardProps {
 
 const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const handleViewSignal = () => {
     navigate(`/signal/${signal.id}`);
