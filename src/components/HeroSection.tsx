@@ -5,8 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ParticleBackground from './ParticleBackground';
 import MovingElements from './MovingElements';
+import { useIsMobile } from '@/hooks/use-mobile'; // Import the mobile hook
 
 const HeroSection = () => {
+  const isMobile = useIsMobile();
+
   return (
     <section className="relative py-20 px-4 md:px-6 lg:px-8 overflow-hidden min-h-[80vh] flex items-center">
       <ParticleBackground count={80} />
@@ -34,11 +37,13 @@ const HeroSection = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{animationDelay: '0.4s'}}>
-            <Button className="bg-spasi-red hover:bg-spasi-red/90 text-white py-6 px-8 rounded-lg text-lg font-medium flex items-center gap-2 relative group overflow-hidden">
-              <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
-              <AlertTriangle className="h-5 w-5 relative z-10" />
-              <span className="relative z-10">Подай сигнал</span>
-            </Button>
+            {!isMobile && (
+              <Button className="bg-spasi-red hover:bg-spasi-red/90 text-white py-6 px-8 rounded-lg text-lg font-medium flex items-center gap-2 relative group overflow-hidden">
+                <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
+                <AlertTriangle className="h-5 w-5 relative z-10" />
+                <span className="relative z-10">Подай сигнал</span>
+              </Button>
+            )}
             
             <Button variant="outline" className="border-2 py-6 px-8 rounded-lg text-lg font-medium flex items-center gap-2 relative group overflow-hidden">
               <span className="absolute inset-0 w-0 bg-primary/10 transition-all duration-300 ease-out group-hover:w-full"></span>
@@ -53,3 +58,4 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
