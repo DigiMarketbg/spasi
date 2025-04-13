@@ -63,13 +63,14 @@ export function NavBar({ items, className }: NavBarProps) {
                 "relative cursor-pointer text-sm font-semibold px-4 py-2 rounded-full transition-colors flex-1 flex items-center justify-center",
                 "text-foreground/80 hover:text-primary",
                 isActive && "text-primary",
+                isActive && !isMobile && "bg-primary/5"
               )}
             >
               <span className="hidden md:inline">{item.name}</span>
               <span className="md:hidden">
                 <Icon size={18} strokeWidth={2.5} />
               </span>
-              {isActive && (
+              {isActive && isMobile && (
                 <motion.div
                   layoutId="lamp"
                   className="absolute inset-0 w-full bg-primary/5 rounded-full -z-10"
