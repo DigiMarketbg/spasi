@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Home, List, Plus, Info, User, Palette } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from './AuthProvider';
@@ -8,7 +8,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import Logo from './Logo';
 import { useTheme } from './ThemeProvider';
 import { Button } from '@/components/ui/button';
-import { NavBar } from '@/components/ui/tubelight-navbar';
 
 const MobileNavBar = () => {
   const location = useLocation();
@@ -22,32 +21,32 @@ const MobileNavBar = () => {
     {
       name: 'Начало',
       icon: Home,
-      url: '/',
+      path: '/',
     },
     {
       name: 'Сигнали',
       icon: List,
-      url: '/signals',
+      path: '/signals',
     },
     {
       name: 'Сигнал',
       icon: Plus,
-      url: '/submit-signal',
+      path: '/submit-signal',
     },
     {
       name: 'Инфо',
       icon: Info, 
-      url: '/blog',
+      path: '/blog',
     },
     {
       name: user ? 'Профил' : 'Вход',
       icon: User,
-      url: user ? '/admin' : '/auth',
+      path: user ? '/admin' : '/auth',
     }
   ];
 
   return (
-    <>
+    <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50 md:hidden">
       {/* Top mobile navbar with logo and theme toggle */}
       <div className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-md border-b border-border z-50 md:hidden">
         <div className="flex justify-between items-center h-16 px-4">
@@ -64,9 +63,27 @@ const MobileNavBar = () => {
         </div>
       </div>
 
-      {/* Bottom navigation - now using our tubelight navbar */}
-      <NavBar items={navItems} className="md:hidden" />
-    </>
+      {/* Bottom navigation */}
+      <div className="flex justify-around items-center h-16">
+        {navItems.map((item) => (
+          <Link
+            key={item.name}
+            to={item.path}
+            className={cn(
+              "flex flex-col items-center justify-center w-full h-full px-1",
+              location.pathname === item.path
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <item.icon className="h-5 w-5 mb-1" />
+            <span className="text-xs">{item.name}</span>
+          </Link>
+        ))}
+      </div>
+      {/* Add safe area padding for iOS devices */}
+      <div className="h-safe-area-bottom bg-background" />
+    </div>
   );
 };
 

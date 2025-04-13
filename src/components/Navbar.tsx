@@ -1,21 +1,21 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, Home, List, Info, User, Plus, Palette } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Logo from './Logo';
 import { useAuth } from './AuthProvider';
-import { useTheme } from './ThemeProvider';
+import NavLinks from './navbar/NavLinks';
+import ThemeToggle from './navbar/ThemeToggle';
 import UserMenu from './navbar/UserMenu';
+import MobileMenu from './navbar/MobileMenu';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { NavBar } from '@/components/ui/tubelight-navbar';
 
 const Navbar = () => {
   const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
-  const { theme, toggleTheme } = useTheme();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -36,42 +36,6 @@ const Navbar = () => {
   // Hide the navbar completely on mobile screens
   if (isMobile) return null;
 
-  const navItems = [
-    {
-      name: 'Начало',
-      icon: Home,
-      url: '/',
-    },
-    {
-      name: 'Сигнали',
-      icon: List,
-      url: '/signals',
-    },
-    {
-      name: 'Блог',
-      icon: Info,
-      url: '/blog',
-    },
-    {
-      name: 'Доброволци',
-      icon: User,
-      url: '/volunteers',
-    },
-    {
-      name: 'Сигнал',
-      icon: Plus,
-      url: '/submit-signal',
-    }
-  ];
-
-  if (isAdmin) {
-    navItems.push({
-      name: 'Админ',
-      icon: User,
-      url: '/admin',
-    });
-  }
-
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 py-3 px-4 md:px-6 lg:px-8 transition-all duration-300 ${
@@ -82,17 +46,12 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           <Logo />
           
-          <NavBar items={navItems} className="hidden md:block" />
+          <nav className="hidden md:flex items-center gap-6">
+            <NavLinks />
+          </nav>
           
           <div className="flex items-center gap-3">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full"
-              onClick={toggleTheme}
-            >
-              <Palette className="h-5 w-5" />
-            </Button>
+            <ThemeToggle className="hidden md:flex" />
             
             {user ? (
               <>

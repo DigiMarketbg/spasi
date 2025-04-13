@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { AuthProvider } from "./components/AuthProvider";
 import MobileNavBar from "./components/MobileNavBar";
-import Navbar from "./components/Navbar";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import SubmitSignal from "./pages/SubmitSignal";
@@ -34,8 +33,6 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Navbar />
-            <MobileNavBar />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
@@ -53,6 +50,7 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <MobileNavBar />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
