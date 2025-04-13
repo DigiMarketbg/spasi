@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -117,7 +118,7 @@ const SignalDetailPublic = () => {
       
       <main className="flex-grow container mx-auto px-4 py-8 md:py-16 mt-4 md:mt-8">
         <Card className={detailCardStyles.container}>
-          <CardHeader className={detailCardStyles.header}>
+          <CardHeader className={`${detailCardStyles.header} pb-6`}>
             {loading ? (
               <Skeleton className="h-16 w-full" />
             ) : signal ? (
@@ -125,7 +126,7 @@ const SignalDetailPublic = () => {
             ) : null}
           </CardHeader>
           
-          <CardContent className="p-0">
+          <CardContent className="p-0 pt-4 md:pt-6"> {/* Added top padding here for space between header and content */}
             {loading ? (
               <div className="p-4 sm:p-6">
                 {renderLoading()}
