@@ -1,11 +1,12 @@
 
 import React from 'react';
-import { Eye, MapPin } from 'lucide-react';
+import { Eye, MapPin, Calendar, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { cardStyles, categoryTranslations } from '@/lib/card-styles';
 import { useTheme } from '@/components/ThemeProvider';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export interface SignalProps {
   id: string;
@@ -15,6 +16,7 @@ export interface SignalProps {
   description: string;
   createdAt: string;
   categoryColor?: string;
+  phone?: string;
 }
 
 interface SignalCardProps {
@@ -25,6 +27,7 @@ interface SignalCardProps {
 const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const isMobile = useIsMobile();
 
   const handleViewSignal = () => {
     navigate(`/signal/${signal.id}`);
@@ -34,8 +37,11 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
   const translatedCategory = categoryTranslations[signal.category] || signal.category;
 
   return (
-    <div className={cardStyles.container(className)}>
-      <div>
+    <div 
+      className={`${cardStyles.container(className)} transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1`}
+      onClick={isMobile ? handleViewSignal : undefined}
+    >
+      <div className="flex flex-col h-full">
         <Badge 
           variant="outline"
           className={cardStyles.badge}
@@ -45,25 +51,41 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
         
         <h3 className={cardStyles.title}>{signal.title}</h3>
         
-        <div className={cardStyles.metadata}>
-          <MapPin className="h-3.5 w-3.5 mr-1" />
-          <span>{signal.city}</span>
-          <span className="mx-2">•</span>
-          <span>{signal.createdAt}</span>
+        <div className="space-y-2 mb-3">
+          <div className={cardStyles.metadata}>
+            <Calendar className="h-3.5 w-3.5 mr-1" />
+            <span>{signal.createdAt}</span>
+          </div>
+          
+          <div className={cardStyles.metadata}>
+            <MapPin className="h-3.5 w-3.5 mr-1" />
+            <span>{signal.city}</span>
+          </div>
+          
+          {signal.phone && (
+            <div className={cardStyles.metadata}>
+              <Phone className="h-3.5 w-3.5 mr-1" />
+              <a href={`tel:${signal.phone}`} className="hover:underline" onClick={(e) => e.stopPropagation()}>
+                {signal.phone}
+              </a>
+            </div>
+          )}
         </div>
         
         <p className={cardStyles.description}>{signal.description}</p>
       </div>
       
-      <Button 
-        variant="outline" 
-        size="sm" 
-        className={cardStyles.button}
-        onClick={handleViewSignal}
-      >
-        <Eye className="h-4 w-4 group-hover:text-white transition-colors" />
-        <span>Виж повече</span>
-      </Button>
+      {!isMobile && (
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className={cardStyles.button}
+          onClick={handleViewSignal}
+        >
+          <Eye className="h-4 w-4 group-hover:text-white transition-colors" />
+          <span>Виж повече</span>
+        </Button>
+      )}
     </div>
   );
 };

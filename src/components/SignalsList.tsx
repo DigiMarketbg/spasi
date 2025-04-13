@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { bg } from 'date-fns/locale';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface SignalsListProps {
   allSignals?: boolean;
@@ -22,6 +23,8 @@ const SignalsList = ({
   categoryFilter = 'all', 
   cityFilter = 'all' 
 }: SignalsListProps) => {
+  const isMobile = useIsMobile();
+  
   const { 
     data: signals, 
     isLoading, 
@@ -65,6 +68,7 @@ const SignalsList = ({
         city: signal.city,
         category: signal.category,
         description: signal.description,
+        phone: signal.phone,
         createdAt: format(new Date(signal.created_at), 'd MMMM yyyy', { locale: bg }),
         categoryColor: getCategoryColor(signal.category)
       } as SignalProps)) || [];
@@ -86,7 +90,7 @@ const SignalsList = ({
   };
 
   if (isLoading) return (
-    <div className="py-20 text-center">
+    <div className="py-10 md:py-20 text-center">
       <div className="animate-pulse flex flex-col items-center">
         <div className="h-10 w-10 rounded-full bg-muted mb-4"></div>
         <div className="h-4 w-48 bg-muted rounded mb-2"></div>
@@ -96,29 +100,29 @@ const SignalsList = ({
   );
 
   if (error) return (
-    <div className="py-20 text-center text-destructive">
+    <div className="py-10 md:py-20 text-center text-destructive">
       <p>Грешка при зареждане на сигнали</p>
     </div>
   );
 
   if (signals?.length === 0) return (
-    <div className="py-20 text-center">
+    <div className="py-10 md:py-20 text-center">
       <p className="text-xl mb-4">Няма сигнали по зададените критерии.</p>
       <p className="text-muted-foreground">Моля, опитайте с различни критерии за търсене.</p>
     </div>
   );
 
   return (
-    <section className={`${allSignals ? '' : 'py-16 px-4 md:px-6 lg:px-8'}`} id="signals">
+    <section className={`${allSignals ? '' : 'py-8 md:py-16 px-4 md:px-6 lg:px-8'}`} id="signals">
       <div className="container mx-auto">
         {!allSignals && (
           <>
-            <h2 className="text-3xl font-bold mb-2 text-center">Последни сигнали</h2>
-            <p className="text-center text-muted-foreground mb-12">Най-новите сигнали от нашата платформа</p>
+            <h2 className="text-2xl md:text-3xl font-bold mb-2 text-center">Последни сигнали</h2>
+            <p className="text-center text-muted-foreground mb-8 md:mb-12">Най-новите сигнали от нашата платформа</p>
           </>
         )}
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {signals?.map((signal, index) => (
             <div 
               key={signal.id} 
@@ -131,10 +135,10 @@ const SignalsList = ({
         </div>
         
         {!allSignals && (
-          <div className="flex justify-center mt-12">
+          <div className="flex justify-center mt-8 md:mt-12">
             <Button 
               variant="outline" 
-              className="border-2 px-8 py-6 rounded-lg text-lg font-medium group"
+              className="border-2 px-6 py-5 md:px-8 md:py-6 rounded-lg text-base md:text-lg font-medium group"
               asChild
             >
               <Link to="/signals">
