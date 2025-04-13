@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,7 +10,7 @@ import {
   CardHeader, 
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Share2 } from 'lucide-react';
+import { Share2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import SignalHeader from '@/components/signal/SignalHeader';
 import SignalContent from '@/components/signal/SignalContent';
@@ -117,29 +116,6 @@ const SignalDetailPublic = () => {
       <Navbar />
       
       <main className="flex-grow container mx-auto px-4 py-8 md:py-16 mt-4 md:mt-8">
-        <div className="flex items-center justify-between mb-6 md:mb-8 animate-fade-in">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/signals')} 
-            className={`flex items-center gap-2 ${detailCardStyles.button}`}
-            size={isMobile ? "sm" : "default"}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className={isMobile ? "text-sm" : ""}>Назад</span>
-          </Button>
-
-          {signal && !isMobile && (
-            <Button 
-              variant="outline" 
-              onClick={handleShare} 
-              className={detailCardStyles.button}
-            >
-              <Share2 className="h-4 w-4" />
-              <span>Сподели</span>
-            </Button>
-          )}
-        </div>
-
         <Card className={detailCardStyles.container}>
           <CardHeader className={detailCardStyles.header}>
             {loading ? (
