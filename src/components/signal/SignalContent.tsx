@@ -24,7 +24,7 @@ const SignalContent: React.FC<SignalContentProps> = ({ signal, formatDate }) => 
   const translatedCategory = categoryTranslations[signal.category] || signal.category;
   
   return (
-    <div className="grid md:grid-cols-2 gap-6 animate-fade-in pt-2" style={{ animationDelay: '0.2s' }}> {/* Added pt-2 for top padding */}
+    <div className="grid md:grid-cols-2 gap-6 animate-fade-in pt-4 sm:pt-6" style={{ animationDelay: '0.2s' }}> {/* Increased top padding for better spacing especially on mobile */}
       <div className={detailCardStyles.section}>
         {/* Category badge moved to the top of the content section */}
         <div className="mb-4">

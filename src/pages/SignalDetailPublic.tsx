@@ -118,7 +118,7 @@ const SignalDetailPublic = () => {
       
       <main className="flex-grow container mx-auto px-4 py-8 md:py-16 mt-4 md:mt-8">
         <Card className={detailCardStyles.container}>
-          <CardHeader className={`${detailCardStyles.header} pb-6`}>
+          <CardHeader className={`${detailCardStyles.header} pb-6 sm:pb-8 border-b border-border/20`}>
             {loading ? (
               <Skeleton className="h-16 w-full" />
             ) : signal ? (
@@ -126,7 +126,7 @@ const SignalDetailPublic = () => {
             ) : null}
           </CardHeader>
           
-          <CardContent className="p-0 pt-4 md:pt-6"> {/* Added top padding here for space between header and content */}
+          <CardContent className="p-0 pt-6 sm:pt-8"> {/* Increased top padding here for better separation */}
             {loading ? (
               <div className="p-4 sm:p-6">
                 {renderLoading()}
