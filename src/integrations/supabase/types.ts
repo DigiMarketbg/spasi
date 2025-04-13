@@ -33,6 +33,38 @@ export type Database = {
         }
         Relationships: []
       }
+      reports: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string
+          reported_by: string
+          signal_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason: string
+          reported_by: string
+          signal_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string
+          reported_by?: string
+          signal_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "signals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       signals: {
         Row: {
           category: string

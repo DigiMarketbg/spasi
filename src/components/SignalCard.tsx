@@ -4,9 +4,10 @@ import { cn } from '@/lib/utils';
 import { Eye, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
 
 export interface SignalProps {
-  id: string; // Changed from number to string to match UUID from Supabase
+  id: string;
   title: string;
   city: string;
   category: string;
@@ -21,6 +22,8 @@ interface SignalCardProps {
 }
 
 const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
+  const navigate = useNavigate();
+
   return (
     <div 
       className={cn(
@@ -47,9 +50,14 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
       
       <p className="text-muted-foreground mb-4 line-clamp-2">{signal.description}</p>
       
-      <Button variant="outline" size="sm" className="w-full mt-auto flex items-center gap-2 group">
+      <Button 
+        variant="outline" 
+        size="sm" 
+        className="w-full mt-auto flex items-center gap-2 group"
+        onClick={() => navigate(`/signal/${signal.id}`)}
+      >
         <Eye className="h-4 w-4 group-hover:text-primary transition-colors" />
-        <span>Виж</span>
+        <span>Виж повече</span>
       </Button>
     </div>
   );
