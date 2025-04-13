@@ -11,8 +11,8 @@ import { Button } from '@/components/ui/button';
 
 const Signals = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [cityFilter, setCityFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [cityFilter, setCityFilter] = useState('all');
 
   return (
     <div className="min-h-screen flex flex-col dark:bg-background">
@@ -44,7 +44,7 @@ const Signals = () => {
                   <SelectValue placeholder="Избери категория" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Всички категории</SelectItem>
+                  <SelectItem value="all">Всички категории</SelectItem>
                   <SelectItem value="Екология">Екология</SelectItem>
                   <SelectItem value="Инфраструктура">Инфраструктура</SelectItem>
                   <SelectItem value="Бедствие">Бедствие</SelectItem>
@@ -57,7 +57,7 @@ const Signals = () => {
                   <SelectValue placeholder="Избери град" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Всички градове</SelectItem>
+                  <SelectItem value="all">Всички градове</SelectItem>
                   <SelectItem value="София">София</SelectItem>
                   <SelectItem value="Пловдив">Пловдив</SelectItem>
                   <SelectItem value="Варна">Варна</SelectItem>
@@ -75,8 +75,8 @@ const Signals = () => {
                 variant="outline" 
                 onClick={() => {
                   setSearchQuery('');
-                  setCategoryFilter('');
-                  setCityFilter('');
+                  setCategoryFilter('all');
+                  setCityFilter('all');
                 }}
                 className="text-sm"
               >
