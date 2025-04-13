@@ -16,6 +16,16 @@ export interface SignalProps {
   categoryColor?: string;
 }
 
+// Bulgarian translations for categories
+const categoryTranslations: { [key: string]: string } = {
+  'blood': 'Кръводаряване',
+  'missing': 'Изчезнал човек',
+  'stolen': 'Откраднат автомобил',
+  'danger': 'Опасен участък',
+  'help': 'Хора в беда',
+  'other': 'Друго'
+};
+
 interface SignalCardProps {
   signal: SignalProps;
   className?: string;
@@ -27,6 +37,9 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
   const handleViewSignal = () => {
     navigate(`/signal/${signal.id}`);
   };
+
+  // Translate category or use original if not found
+  const translatedCategory = categoryTranslations[signal.category] || signal.category;
 
   return (
     <div 
@@ -41,7 +54,7 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
           style={{ backgroundColor: signal.categoryColor }}
           className="mb-4"
         >
-          {signal.category}
+          {translatedCategory}
         </Badge>
         
         <h3 className="text-xl font-semibold mb-2 line-clamp-1">{signal.title}</h3>
