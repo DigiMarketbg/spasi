@@ -104,7 +104,10 @@ const Navbar = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 
-                <Button className="hidden md:flex bg-spasi-red hover:bg-spasi-red/90">
+                <Button 
+                  className="hidden md:flex bg-spasi-red hover:bg-spasi-red/90"
+                  onClick={() => navigate('/submit-signal')}
+                >
                   Подай сигнал
                 </Button>
               </>
@@ -175,7 +178,10 @@ const Navbar = () => {
                         <div className="px-4 py-2 text-foreground font-medium">
                           {displayName}
                         </div>
-                        <Button className="bg-spasi-red hover:bg-spasi-red/90">
+                        <Button 
+                          className="bg-spasi-red hover:bg-spasi-red/90"
+                          onClick={() => navigate('/submit-signal')}
+                        >
                           Подай сигнал
                         </Button>
                         <Button 

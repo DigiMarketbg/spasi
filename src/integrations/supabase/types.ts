@@ -33,6 +33,48 @@ export type Database = {
         }
         Relationships: []
       }
+      signals: {
+        Row: {
+          category: string
+          city: string
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          is_approved: boolean
+          is_resolved: boolean
+          link: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          city: string
+          created_at?: string
+          description: string
+          id?: string
+          image_url?: string | null
+          is_approved?: boolean
+          is_resolved?: boolean
+          link?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          city?: string
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          is_approved?: boolean
+          is_resolved?: boolean
+          link?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
