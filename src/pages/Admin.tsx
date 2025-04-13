@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -8,7 +7,9 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SignalsManagement from '@/components/admin/SignalsManagement';
 import UsersManagement from '@/components/admin/UsersManagement';
-import { BookOpen, Users, Bell } from 'lucide-react';
+import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagement';
+import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
+import { BookOpen, Users, Bell, MessageCircle, Building } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -35,6 +36,29 @@ interface UserData {
   is_admin: boolean | null;
 }
 
+interface PartnerRequestData {
+  id: string;
+  company_name: string;
+  contact_person: string;
+  email: string;
+  phone: string | null;
+  message: string | null;
+  logo_url: string | null;
+  created_at: string;
+  is_approved: boolean;
+}
+
+interface ContactMessageData {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  subject: string | null;
+  message: string;
+  created_at: string;
+  is_read: boolean;
+}
+
 const Admin = () => {
   const { user, profile, isAdmin } = useAuth();
   const navigate = useNavigate();
@@ -43,8 +67,12 @@ const Admin = () => {
   // State for signals and users
   const [signals, setSignals] = useState<SignalData[]>([]);
   const [users, setUsers] = useState<UserData[]>([]);
+  const [partnerRequests, setPartnerRequests] = useState<PartnerRequestData[]>([]);
+  const [contactMessages, setContactMessages] = useState<ContactMessageData[]>([]);
   const [loadingSignals, setLoadingSignals] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [loadingPartnerRequests, setLoadingPartnerRequests] = useState(true);
+  const [loadingContactMessages, setLoadingContactMessages] = useState(true);
 
   // Fetch signals data with better error handling
   const fetchSignals = async () => {
@@ -138,11 +166,61 @@ const Admin = () => {
     }
   };
 
+  // Fetch partner requests
+  const fetchPartnerRequests = async () => {
+    setLoadingPartnerRequests(true);
+    try {
+      const { data, error } = await supabase
+        .from('partners_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPartnerRequests(data || []);
+    } catch (error: any) {
+      console.error('Error fetching partner requests:', error);
+      toast({
+        title: "Грешка",
+        description: "Възникна проблем при зареждането на партньорските заявки.",
+        variant: "destructive",
+      });
+      setPartnerRequests([]);
+    } finally {
+      setLoadingPartnerRequests(false);
+    }
+  };
+
+  // Fetch contact messages
+  const fetchContactMessages = async () => {
+    setLoadingContactMessages(true);
+    try {
+      const { data, error } = await supabase
+        .from('contact_messages')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setContactMessages(data || []);
+    } catch (error: any) {
+      console.error('Error fetching contact messages:', error);
+      toast({
+        title: "Грешка",
+        description: "Възникна проблем при зареждането на съобщенията.",
+        variant: "destructive",
+      });
+      setContactMessages([]);
+    } finally {
+      setLoadingContactMessages(false);
+    }
+  };
+
   // Fetch data on component mount
   useEffect(() => {
     if (user && isAdmin) {
       fetchSignals();
       fetchUsers();
+      fetchPartnerRequests();
+      fetchContactMessages();
     }
   }, [user, isAdmin]);
 
@@ -163,6 +241,11 @@ const Admin = () => {
     );
   }
 
+  // Count unread messages
+  const unreadCount = contactMessages.filter(msg => !msg.is_read).length;
+  // Count pending partner requests
+  const pendingRequestsCount = partnerRequests.filter(req => !req.is_approved).length;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -171,7 +254,7 @@ const Admin = () => {
         <div className="container mx-auto">
           <h1 className="text-3xl font-bold mb-8">Административен панел</h1>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card className="hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/admin/blog')}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xl font-medium">Блог статии</CardTitle>
@@ -207,12 +290,45 @@ const Admin = () => {
                 </CardDescription>
               </CardContent>
             </Card>
+            
+            <Card className="hover:shadow-lg transition-all cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-xl font-medium">
+                  Съобщения
+                  {unreadCount > 0 && (
+                    <Badge className="ml-2 bg-blue-500" variant="default">{unreadCount}</Badge>
+                  )}
+                </CardTitle>
+                <MessageCircle className="h-6 w-6 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Преглед на съобщения от контактната форма.
+                </CardDescription>
+              </CardContent>
+            </Card>
           </div>
           
           <Tabs defaultValue="signals">
-            <TabsList>
+            <TabsList className="mb-4">
               <TabsTrigger value="signals">Сигнали</TabsTrigger>
               <TabsTrigger value="users">Потребители</TabsTrigger>
+              <TabsTrigger value="partners">
+                Партньори
+                {pendingRequestsCount > 0 && (
+                  <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-500 rounded-full">
+                    {pendingRequestsCount}
+                  </span>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="messages">
+                Съобщения
+                {unreadCount > 0 && (
+                  <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-500 rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="signals" className="mt-6">
@@ -246,6 +362,42 @@ const Admin = () => {
                     users={users} 
                     loadingUsers={loadingUsers} 
                     onRefresh={fetchUsers} 
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="partners" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Заявки за партньорство</CardTitle>
+                  <CardDescription>
+                    Преглед и управление на заявките за партньорство.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <PartnerRequestsManagement 
+                    requests={partnerRequests} 
+                    loadingRequests={loadingPartnerRequests} 
+                    onRefresh={fetchPartnerRequests} 
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="messages" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Съобщения от контактната форма</CardTitle>
+                  <CardDescription>
+                    Преглед и управление на съобщенията от контактната форма.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ContactMessagesManagement 
+                    messages={contactMessages} 
+                    loadingMessages={loadingContactMessages} 
+                    onRefresh={fetchContactMessages} 
                   />
                 </CardContent>
               </Card>
