@@ -453,7 +453,15 @@ const SignalDetail = () => {
                         {signal.phone && (
                           <div>
                             <Label className="text-muted-foreground">Телефон</Label>
-                            <p className="font-medium">{signal.phone}</p>
+                            <p className="font-medium">
+                              <a 
+                                href={`tel:${signal.phone}`} 
+                                className="text-primary hover:underline"
+                                aria-label="Обади се"
+                              >
+                                {signal.phone}
+                              </a>
+                            </p>
                           </div>
                         )}
                         

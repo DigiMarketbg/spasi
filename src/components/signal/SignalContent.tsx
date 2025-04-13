@@ -44,7 +44,16 @@ const SignalContent: React.FC<SignalContentProps> = ({ signal, formatDate }) => 
         {signal.phone && (
           <div className="flex items-center gap-1 text-muted-foreground">
             <Phone className="h-4 w-4" />
-            <span><strong>Телефон:</strong> {signal.phone}</span>
+            <span>
+              <strong>Телефон:</strong>{' '}
+              <a 
+                href={`tel:${signal.phone}`} 
+                className="text-primary hover:underline"
+                aria-label="Обади се"
+              >
+                {signal.phone}
+              </a>
+            </span>
           </div>
         )}
         
