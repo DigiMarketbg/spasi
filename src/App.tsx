@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,8 +14,11 @@ import SignalDetail from "./pages/SignalDetail";
 import NotFound from "./pages/NotFound";
 import Volunteers from "./pages/Volunteers";
 import AdminVolunteers from "./pages/AdminVolunteers";
-import Signals from "./pages/Signals"; // New import
+import Signals from "./pages/Signals";
 import SignalDetailPublic from "./pages/SignalDetailPublic";
+import Blog from "./pages/Blog";
+import BlogPostDetail from "./pages/BlogPostDetail";
+import AdminBlog from "./pages/AdminBlog";
 
 const queryClient = new QueryClient();
 
@@ -34,9 +38,11 @@ const App = () => (
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/signals/:id" element={<SignalDetail />} />
               <Route path="/admin/volunteers" element={<AdminVolunteers />} />
-              <Route path="/signals" element={<Signals />} /> {/* New route */}
+              <Route path="/admin/blog" element={<AdminBlog />} />
+              <Route path="/signals" element={<Signals />} />
               <Route path="/signal/:id" element={<SignalDetailPublic />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:id" element={<BlogPostDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

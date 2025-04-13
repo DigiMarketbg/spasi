@@ -1,145 +1,118 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SignalsManagement from '@/components/admin/SignalsManagement';
 import UsersManagement from '@/components/admin/UsersManagement';
+import { BookOpen, Users, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Users } from 'lucide-react';
 
 const Admin = () => {
-  const { isAdmin, loading } = useAuth();
+  const { user, profile, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [signals, setSignals] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
-  const [loadingSignals, setLoadingSignals] = useState(false);
-  const [loadingUsers, setLoadingUsers] = useState(false);
 
-  // Check if user is admin
-  useEffect(() => {
-    if (!loading && !isAdmin) {
-      toast({
-        title: "Достъп забранен",
-        description: "Нямате право да достъпвате тази страница.",
-        variant: "destructive",
-      });
-      navigate('/');
-    }
-  }, [isAdmin, loading, navigate, toast]);
-
-  // Fetch signals
-  const fetchSignals = async () => {
-    setLoadingSignals(true);
-    try {
-      const { data, error } = await supabase
-        .from('signals')
-        .select('*, profiles:user_id(full_name, email)')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setSignals(data || []);
-    } catch (error: any) {
-      toast({
-        title: "Грешка",
-        description: error.message || "Възникна проблем при зареждането на сигналите.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoadingSignals(false);
-    }
-  };
-
-  // Fetch users
-  const fetchUsers = async () => {
-    setLoadingUsers(true);
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setUsers(data || []);
-    } catch (error: any) {
-      toast({
-        title: "Грешка",
-        description: error.message || "Възникна проблем при зареждането на потребителите.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoadingUsers(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isAdmin) {
-      fetchSignals();
-      fetchUsers();
-    }
-  }, [isAdmin]);
-
-  if (loading) {
+  // If not logged in or not admin
+  if (!user || !isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse">Зареждане...</div>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Достъпът отказан</h1>
+            <p className="mb-6">Трябва да сте администратор, за да видите тази страница.</p>
+            <Button onClick={() => navigate('/')}>Към началната страница</Button>
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
 
-  if (!isAdmin) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-grow mt-20 container mx-auto px-4 py-10">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold">Администраторски панел</h1>
+      <main className="flex-grow mt-16 px-4 py-12">
+        <div className="container mx-auto">
+          <h1 className="text-3xl font-bold mb-8">Административен панел</h1>
           
-          <Button 
-            onClick={() => navigate('/admin/volunteers')}
-            className="flex items-center gap-2"
-          >
-            <Users className="h-4 w-4" />
-            Управление на доброволци
-          </Button>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card className="hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/admin/blog')}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-xl font-medium">Блог статии</CardTitle>
+                <BookOpen className="h-6 w-6 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Управление на блог статии, публикуване и редактиране на съдържание.
+                </CardDescription>
+              </CardContent>
+            </Card>
+            
+            <Card className="hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/admin/volunteers')}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-xl font-medium">Доброволци</CardTitle>
+                <Users className="h-6 w-6 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Преглед и одобрение на заявки от доброволци.
+                </CardDescription>
+              </CardContent>
+            </Card>
+            
+            <Card className="hover:shadow-lg transition-all">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-xl font-medium">Сигнали</CardTitle>
+                <Bell className="h-6 w-6 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Преглед и управление на всички подадени сигнали.
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <Tabs defaultValue="signals">
+            <TabsList>
+              <TabsTrigger value="signals">Сигнали</TabsTrigger>
+              <TabsTrigger value="users">Потребители</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="signals" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Управление на сигнали</CardTitle>
+                  <CardDescription>
+                    Преглед на всички сигнали в системата, одобрение и отбелязване като решени.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SignalsManagement />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="users" className="mt-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Управление на потребители</CardTitle>
+                  <CardDescription>
+                    Преглед и управление на всички регистрирани потребители.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <UsersManagement />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
-        
-        <Tabs defaultValue="signals">
-          <TabsList className="mb-6">
-            <TabsTrigger value="signals">Сигнали</TabsTrigger>
-            <TabsTrigger value="users">Потребители</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="signals">
-            <SignalsManagement 
-              signals={signals} 
-              loadingSignals={loadingSignals}
-              onRefresh={fetchSignals}
-            />
-          </TabsContent>
-          
-          <TabsContent value="users">
-            <UsersManagement 
-              users={users} 
-              loadingUsers={loadingUsers}
-              onRefresh={fetchUsers}
-            />
-          </TabsContent>
-        </Tabs>
       </main>
       
       <Footer />

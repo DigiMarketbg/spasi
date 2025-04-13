@@ -1,51 +1,67 @@
 
-import React, { useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { formatDistanceToNow } from 'date-fns';
+import { bg } from 'date-fns/locale';
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
-// Sample blog posts
-const blogPosts = [
-  {
-    id: 1,
-    title: 'Как да се подготвим за природни бедствия',
-    excerpt: 'Важни стъпки, които всеки трябва да предприеме за подготовка при извънредни ситуации.',
-    image: '/lovable-uploads/51ca99de-ee36-4025-b765-57c98ece14ec.png',
-    date: '10 април 2025'
-  },
-  {
-    id: 2,
-    title: 'Доброволчеството в България - как да се включите',
-    excerpt: 'Възможности за доброволчество и организации, които търсят помощ от доброволци.',
-    image: '/lovable-uploads/51ca99de-ee36-4025-b765-57c98ece14ec.png',
-    date: '5 април 2025'
-  },
-  {
-    id: 3,
-    title: 'Кръводаряването спасява животи - всичко, което трябва да знаете',
-    excerpt: 'Процесът на кръводаряване, изисквания и защо е толкова важно.',
-    image: '/lovable-uploads/51ca99de-ee36-4025-b765-57c98ece14ec.png',
-    date: '1 април 2025'
-  },
-  {
-    id: 4,
-    title: 'Първа помощ - основни умения, които могат да спасят живот',
-    excerpt: 'Научете основните техники за първа помощ и как да реагирате при спешни случаи.',
-    image: '/lovable-uploads/51ca99de-ee36-4025-b765-57c98ece14ec.png',
-    date: '25 март 2025'
-  }
-];
+interface BlogPost {
+  id: string;
+  title: string;
+  short_description: string;
+  image_url: string | null;
+  created_at: string;
+}
 
 const BlogSection = () => {
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const carouselRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('blog_posts')
+          .select('id, title, short_description, image_url, created_at')
+          .eq('is_published', true)
+          .order('created_at', { ascending: false })
+          .limit(4);
+
+        if (error) throw error;
+        setBlogPosts(data || []);
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogPosts();
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), { 
+        addSuffix: true,
+        locale: bg
+      });
+    } catch (error) {
+      return dateString;
+    }
+  };
 
   const scroll = (direction: 'left' | 'right') => {
     if (!carouselRef.current) return;
     
-    const { scrollLeft, clientWidth } = carouselRef.current;
+    const { scroll­Left, clientWidth } = carouselRef.current;
     const scrollTo = direction === 'left' 
-      ? scrollLeft - clientWidth 
-      : scrollLeft + clientWidth;
+      ? scroll­Left - clientWidth 
+      : scroll­Left + clientWidth;
     
     carouselRef.current.scrollTo({
       left: scrollTo,
@@ -86,34 +102,68 @@ const BlogSection = () => {
           ref={carouselRef} 
           className="flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-none"
         >
-          {blogPosts.map((post) => (
-            <div 
-              key={post.id} 
-              className="min-w-[300px] md:min-w-[400px] glass rounded-xl overflow-hidden flex-shrink-0 snap-start"
-            >
-              <div className="h-48 bg-muted relative">
-                <div 
-                  className="absolute inset-0 bg-center bg-cover" 
-                  style={{ backgroundImage: `url(${post.image})` }}
-                />
+          {loading ? (
+            Array(4).fill(0).map((_, idx) => (
+              <div 
+                key={idx} 
+                className="min-w-[300px] md:min-w-[400px] glass rounded-xl overflow-hidden flex-shrink-0 snap-start"
+              >
+                <Skeleton className="h-48 w-full" />
+                <div className="p-5">
+                  <Skeleton className="h-4 w-24 mb-2" />
+                  <Skeleton className="h-6 w-full mb-3" />
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-3/4 mb-4" />
+                  <Skeleton className="h-8 w-24" />
+                </div>
               </div>
-              
-              <div className="p-5">
-                <div className="text-sm text-muted-foreground mb-2">{post.date}</div>
-                <h3 className="text-xl font-semibold mb-3 line-clamp-2">{post.title}</h3>
-                <p className="text-muted-foreground mb-4 line-clamp-2">{post.excerpt}</p>
+            ))
+          ) : blogPosts.length > 0 ? (
+            blogPosts.map((post) => (
+              <div 
+                key={post.id} 
+                className="min-w-[300px] md:min-w-[400px] glass rounded-xl overflow-hidden flex-shrink-0 snap-start"
+              >
+                <div className="h-48 bg-muted relative">
+                  <div 
+                    className="absolute inset-0 bg-center bg-cover" 
+                    style={{ backgroundImage: post.image_url ? `url(${post.image_url})` : 'url(/lovable-uploads/51ca99de-ee36-4025-b765-57c98ece14ec.png)' }}
+                  />
+                </div>
                 
-                <Button 
-                  variant="link" 
-                  className="p-0 h-auto text-primary font-medium group"
-                >
-                  <span>Прочети</span>
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <div className="p-5">
+                  <div className="text-sm text-muted-foreground mb-2">{formatDate(post.created_at)}</div>
+                  <h3 className="text-xl font-semibold mb-3 line-clamp-2">{post.title}</h3>
+                  <p className="text-muted-foreground mb-4 line-clamp-2">{post.short_description}</p>
+                  
+                  <Link to={`/blog/${post.id}`}>
+                    <Button 
+                      variant="link" 
+                      className="p-0 h-auto text-primary font-medium group"
+                    >
+                      <span>Прочети</span>
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="w-full text-center py-10">
+              <p className="text-muted-foreground">Все още няма публикувани блог статии.</p>
             </div>
-          ))}
+          )}
         </div>
+        
+        {blogPosts.length > 0 && (
+          <div className="flex justify-center mt-8">
+            <Link to="/blog">
+              <Button variant="outline">
+                Всички блог статии
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -16,11 +16,11 @@ const NavLinks = ({ className }: NavLinkProps) => {
       <Link to="/" className="text-foreground hover:text-foreground/80 transition-colors">
         Начало
       </Link>
-      <Link to="/#about" className="text-foreground hover:text-foreground/80 transition-colors">
-        За нас
-      </Link>
-      <Link to="/#signals" className="text-foreground hover:text-foreground/80 transition-colors">
+      <Link to="/signals" className="text-foreground hover:text-foreground/80 transition-colors">
         Сигнали
+      </Link>
+      <Link to="/blog" className="text-foreground hover:text-foreground/80 transition-colors">
+        Блог
       </Link>
       <Link to="/volunteers" className="text-foreground hover:text-foreground/80 transition-colors">
         Доброволци
