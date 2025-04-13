@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, User as UserIcon } from 'lucide-react';
+import { LogOut, User as UserIcon, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -16,9 +16,12 @@ import { useAuth } from '../AuthProvider';
 interface UserMenuProps {
   displayName: string;
   onSignOut: () => Promise<void>;
+  isAdmin?: boolean;
 }
 
-const UserMenu = ({ displayName, onSignOut }: UserMenuProps) => {
+const UserMenu = ({ displayName, onSignOut, isAdmin = false }: UserMenuProps) => {
+  const navigate = useNavigate();
+  
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -29,6 +32,17 @@ const UserMenu = ({ displayName, onSignOut }: UserMenuProps) => {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>{displayName}</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        
+        {isAdmin && (
+          <>
+            <DropdownMenuItem onClick={() => navigate('/admin')}>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Админ панел</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        
         <DropdownMenuItem onClick={onSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Изход</span>

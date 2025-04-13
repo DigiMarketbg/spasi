@@ -11,7 +11,7 @@ import UserMenu from './navbar/UserMenu';
 import MobileMenu from './navbar/MobileMenu';
 
 const Navbar = () => {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   
@@ -53,6 +53,7 @@ const Navbar = () => {
                 <UserMenu 
                   displayName={displayName} 
                   onSignOut={handleSignOut} 
+                  isAdmin={isAdmin}
                 />
                 
                 <Button 
@@ -84,6 +85,7 @@ const Navbar = () => {
               displayName={displayName}
               handleSignOut={handleSignOut}
               isLoggedIn={!!user}
+              isAdmin={isAdmin}
               triggerButton={
                 <Button variant="outline" size="icon" className="md:hidden">
                   <Menu className="h-5 w-5" />
