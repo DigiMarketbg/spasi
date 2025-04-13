@@ -40,7 +40,6 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
   return (
     <div 
       className={cardStyles.container(className)}
-      onClick={isMobile ? handleViewSignal : undefined}
     >
       <div className="flex flex-col h-full">
         <Badge 
@@ -78,9 +77,7 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
         </div>
         
         <p className={cardStyles.description}>{signal.description}</p>
-      </div>
-      
-      {!isMobile && (
+        
         <Button 
           variant="outline" 
           size="sm" 
@@ -90,7 +87,7 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
           <Eye className="h-4 w-4 group-hover:text-primary transition-colors" />
           <span>Виж повече</span>
         </Button>
-      )}
+      </div>
     </div>
   );
 };
