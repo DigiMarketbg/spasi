@@ -4,9 +4,11 @@ import Logo from './Logo';
 import { useTheme } from './ThemeProvider';
 import { Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Footer = () => {
   const { theme, toggleTheme } = useTheme();
+  const isMobile = useIsMobile();
   
   const footerLinks = [
     { name: 'Подай сигнал', href: '#' },
@@ -17,7 +19,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="py-10 px-4 md:px-6 lg:px-8 border-t">
+    <footer className={`py-10 px-4 md:px-6 lg:px-8 border-t ${isMobile ? 'pb-24' : ''}`}>
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <Logo className="mb-2 md:mb-0" />

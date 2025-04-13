@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { AuthProvider } from "./components/AuthProvider";
+import MobileNavBar from "./components/MobileNavBar";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import SubmitSignal from "./pages/SubmitSignal";
@@ -44,9 +45,10 @@ const App = () => (
               <Route path="/signal/:id" element={<SignalDetailPublic />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:id" element={<BlogPostDetail />} />
-              <Route path="/donations" element={<Donations />} /> {/* New Route */}
+              <Route path="/donations" element={<Donations />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <MobileNavBar />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

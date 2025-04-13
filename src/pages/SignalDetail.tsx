@@ -82,9 +82,11 @@ const SignalDetail = () => {
         // Make sure profiles is not an error object
         if (!('code' in profiles) && !('details' in profiles) && 
             !('hint' in profiles) && !('message' in profiles)) {
+          // Use type assertion to avoid TypeScript errors
+          const typedProfiles = profiles as {full_name?: string, email?: string};
           profileData = {
-            full_name: 'full_name' in profiles ? profiles.full_name : undefined,
-            email: 'email' in profiles ? profiles.email : undefined
+            full_name: typedProfiles.full_name,
+            email: typedProfiles.email
           };
         }
       }
