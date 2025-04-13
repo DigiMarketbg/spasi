@@ -55,8 +55,8 @@ const ContactMessagesManagement = ({
     if (!message.is_read) {
       try {
         await supabase
-          .from('contact_messages')
-          .update({ is_read: true })
+          .from('contact_messages' as any)
+          .update({ is_read: true } as any)
           .eq('id', message.id);
           
         onRefresh();
@@ -71,8 +71,8 @@ const ContactMessagesManagement = ({
       setProcessingId(id);
       
       const { error } = await supabase
-        .from('contact_messages')
-        .update({ is_read: true })
+        .from('contact_messages' as any)
+        .update({ is_read: true } as any)
         .eq('id', id);
         
       if (error) throw error;
@@ -100,7 +100,7 @@ const ContactMessagesManagement = ({
       setProcessingId(id);
       
       const { error } = await supabase
-        .from('contact_messages')
+        .from('contact_messages' as any)
         .delete()
         .eq('id', id);
         

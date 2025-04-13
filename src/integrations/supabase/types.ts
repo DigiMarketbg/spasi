@@ -42,6 +42,39 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_read: boolean
+          message: string
+          name: string
+          phone: string | null
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_read?: boolean
+          message: string
+          name: string
+          phone?: string | null
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          name?: string
+          phone?: string | null
+          subject?: string | null
+        }
+        Relationships: []
+      }
       partners: {
         Row: {
           company_name: string

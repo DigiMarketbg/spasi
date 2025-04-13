@@ -22,15 +22,16 @@ const ContactForm = () => {
 
   const onSubmit = async (data: any) => {
     try {
+      // Using any here to avoid TypeScript errors until Supabase types are properly updated
       const { error } = await supabase
-        .from('contact_messages')
+        .from('contact_messages' as any)
         .insert({
           name: data.name,
           email: data.email,
           phone: data.phone || null,
           message: data.message,
           subject: data.subject || 'Общо запитване'
-        });
+        } as any);
 
       if (error) throw error;
 
