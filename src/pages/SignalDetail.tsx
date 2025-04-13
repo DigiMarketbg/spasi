@@ -47,6 +47,7 @@ const SignalDetail = () => {
   const [loading, setLoading] = useState(true);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchSignalDetails = async () => {
@@ -128,6 +129,29 @@ const SignalDetail = () => {
     );
   };
 
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
+  const handleDelete = () => {
+    // Delete functionality would go here
+    console.log('Delete signal:', data.id);
+  };
+
+  const handleToggleApproval = async (currentValue: boolean) => {
+    // Toggle approval functionality would go here
+    console.log('Toggle approval from', currentValue, 'to', !currentValue);
+  };
+
+  const handleToggleResolution = async (currentValue: boolean) => {
+    // Toggle resolution functionality would go here
+    console.log('Toggle resolution from', currentValue, 'to', !currentValue);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -192,7 +216,12 @@ const SignalDetail = () => {
               Back
             </Button>
             
-            <SignalActions signal={data} onUpdate={() => {}} />
+            <SignalActions 
+              isEditing={isEditing}
+              onEdit={handleEdit}
+              onCancel={handleCancel}
+              onDelete={handleDelete}
+            />
           </div>
         </div>
         
@@ -206,7 +235,7 @@ const SignalDetail = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <SignalDetails signal={data} />
+                <SignalDetails signal={data} formatDate={formatDate} />
               </CardContent>
             </Card>
             
@@ -218,7 +247,12 @@ const SignalDetail = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <SignalStatusActions signal={data} onUpdate={() => {}} />
+                <SignalStatusActions 
+                  isApproved={data.is_approved}
+                  isResolved={data.is_resolved}
+                  onToggleApproval={handleToggleApproval}
+                  onToggleResolution={handleToggleResolution}
+                />
               </CardContent>
             </Card>
           </div>
