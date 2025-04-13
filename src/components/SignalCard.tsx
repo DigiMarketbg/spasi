@@ -44,38 +44,38 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
   return (
     <div 
       className={cn(
-        "glass p-5 rounded-xl h-full flex flex-col justify-between transition-all duration-300",
+        "bg-green-600 text-white p-5 rounded-xl h-full flex flex-col justify-between transition-all duration-300",
         "hover:translate-y-[-5px] hover:shadow-lg",
         className
       )}
     >
       <div>
         <Badge 
-          style={{ backgroundColor: signal.categoryColor }}
-          className="mb-4"
+          variant="outline"
+          className="mb-4 text-white border-white/50 bg-white/20"
         >
           {translatedCategory}
         </Badge>
         
         <h3 className="text-xl font-semibold mb-2 line-clamp-1">{signal.title}</h3>
         
-        <div className="flex items-center text-sm text-muted-foreground mb-3">
+        <div className="flex items-center text-sm text-white/80 mb-3">
           <MapPin className="h-3.5 w-3.5 mr-1" />
           <span>{signal.city}</span>
           <span className="mx-2">•</span>
           <span>{signal.createdAt}</span>
         </div>
         
-        <p className="text-muted-foreground mb-4 line-clamp-2">{signal.description}</p>
+        <p className="text-white/90 mb-4 line-clamp-2">{signal.description}</p>
       </div>
       
       <Button 
         variant="outline" 
         size="sm" 
-        className="w-full mt-auto flex items-center gap-2 group"
+        className="w-full mt-auto flex items-center gap-2 group text-white border-white/50 hover:bg-white/20"
         onClick={handleViewSignal}
       >
-        <Eye className="h-4 w-4 group-hover:text-primary transition-colors" />
+        <Eye className="h-4 w-4 group-hover:text-white transition-colors" />
         <span>Виж повече</span>
       </Button>
     </div>
