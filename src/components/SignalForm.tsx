@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
-import { Camera, Link2, MapPin, Send, Upload } from 'lucide-react';
+import { Camera, Link2, MapPin, Phone, Send, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -30,6 +30,9 @@ const signalCategories = [
   { value: 'other', label: 'Друго' },
 ];
 
+// Phone regex for Bulgarian numbers
+const phoneRegex = /^(\+359|0)[0-9]{9}$/;
+
 const formSchema = z.object({
   category: z.string({
     required_error: "Моля, изберете категория",
@@ -44,6 +47,10 @@ const formSchema = z.object({
     .min(20, { message: "Описанието трябва да е поне 20 символа" })
     .max(2000, { message: "Описанието не може да надвишава 2000 символа" }),
   link: z.string().url({ message: "Моля, въведете валиден URL адрес" }).optional().or(z.literal('')),
+  phone: z.string()
+    .regex(phoneRegex, { message: "Невалиден телефонен номер. Пример: 0888123456 или +359888123456" })
+    .optional()
+    .or(z.literal(''))
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -67,25 +74,31 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       city: '',
       description: '',
       link: '',
+      phone: '',
     },
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError("Файлът трябва да е по-малък от 5MB");
-        return;
-      }
-      
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      setImageFile(file);
-      setError(null);
+    const files = e.target.files;
+    
+    if (!files || files.length === 0) {
+      return;
     }
+    
+    const file = files[0];
+    
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Файлът трябва да е по-малък от 5MB");
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    setImageFile(file);
+    setError(null);
   };
 
   const uploadImage = async (file: File): Promise<string | null> => {
@@ -94,19 +107,34 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
       const filePath = `signals/${fileName}`;
       
-      const { error: uploadError } = await supabase.storage
+      // Create bucket if it doesn't exist
+      const { data: buckets } = await supabase.storage.listBuckets();
+      const signalsBucketExists = buckets?.some(bucket => bucket.name === 'signals');
+      
+      if (!signalsBucketExists) {
+        await supabase.storage.createBucket('signals', {
+          public: true,
+          fileSizeLimit: 5 * 1024 * 1024 // 5MB limit
+        });
+      }
+      
+      const { error: uploadError, data } = await supabase.storage
         .from('signals')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
       
       if (uploadError) {
+        console.error('Upload error:', uploadError);
         throw uploadError;
       }
       
-      const { data } = supabase.storage
+      const { data: urlData } = supabase.storage
         .from('signals')
         .getPublicUrl(filePath);
         
-      return data.publicUrl;
+      return urlData.publicUrl;
     } catch (error) {
       console.error('Грешка при качване на изображение:', error);
       return null;
@@ -142,6 +170,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         city: data.city,
         link: data.link || null,
         image_url: imageUrl,
+        phone: data.phone || null,
         is_approved: false,
         is_resolved: false
       });
@@ -261,6 +290,30 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
               </FormControl>
               <FormDescription>
                 Опишете подробно ситуацията, за да получите най-добра помощ
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Телефон за връзка (по избор)</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    placeholder="0888123456 или +359888123456"
+                    className="bg-gradient-to-r from-background to-accent/30 backdrop-blur-sm pl-10"
+                    {...field}
+                  />
+                </div>
+              </FormControl>
+              <FormDescription>
+                Въведете телефонен номер за контакт при нужда
               </FormDescription>
               <FormMessage />
             </FormItem>
