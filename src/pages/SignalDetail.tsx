@@ -74,18 +74,18 @@ const SignalDetail = () => {
 
       if (error) throw error;
       
-      // Check if profiles is a valid object with the expected properties
-      const profileData = data.profiles && 
-        typeof data.profiles === 'object' && 
-        !('code' in data.profiles) && 
-        !('details' in data.profiles) && 
-        !('hint' in data.profiles) && 
-        !('message' in data.profiles) 
-          ? { 
-              full_name: 'full_name' in data.profiles ? data.profiles.full_name : undefined, 
-              email: 'email' in data.profiles ? data.profiles.email : undefined 
-            } 
-          : null;
+      // Add null check before accessing profiles data
+      let profileData = null;
+      if (data.profiles && typeof data.profiles === 'object') {
+        // Make sure profiles is not an error object
+        if (!('code' in data.profiles) && !('details' in data.profiles) && 
+            !('hint' in data.profiles) && !('message' in data.profiles)) {
+          profileData = {
+            full_name: 'full_name' in data.profiles ? data.profiles.full_name : undefined,
+            email: 'email' in data.profiles ? data.profiles.email : undefined
+          };
+        }
+      }
       
       // Handle the data and ensure it conforms to the Signal type
       const signalData: Signal = {
