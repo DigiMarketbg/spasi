@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, List, Plus, Info, User, Palette } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useAuth } from './AuthProvider';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -63,23 +64,51 @@ const MobileNavBar = () => {
         </div>
       </div>
 
-      {/* Bottom navigation */}
-      <div className="flex justify-around items-center h-16">
-        {navItems.map((item) => (
-          <Link
-            key={item.name}
-            to={item.path}
-            className={cn(
-              "flex flex-col items-center justify-center w-full h-full px-1",
-              location.pathname === item.path
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <item.icon className="h-5 w-5 mb-1" />
-            <span className="text-xs">{item.name}</span>
-          </Link>
-        ))}
+      {/* Bottom navigation with tubelight effect */}
+      <div className="flex justify-around items-center h-16 px-2">
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          
+          return (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={cn(
+                "relative flex flex-col items-center justify-center w-full h-full px-1",
+                "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <div className="relative">
+                {isActive && (
+                  <motion.div
+                    layoutId="mobileTubelight"
+                    className="absolute -inset-1 rounded-full bg-primary/10 -z-10"
+                    initial={false}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                    }}
+                  >
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-6 h-1 bg-primary rounded-t-full">
+                      <div className="absolute w-8 h-4 bg-primary/20 rounded-full blur-md -top-1 -left-1" />
+                      <div className="absolute w-6 h-4 bg-primary/20 rounded-full blur-md -top-0.5" />
+                      <div className="absolute w-3 h-3 bg-primary/20 rounded-full blur-sm top-0 left-1.5" />
+                    </div>
+                  </motion.div>
+                )}
+                <item.icon className={cn(
+                  "h-5 w-5 mb-1",
+                  isActive ? "text-primary" : "text-muted-foreground"
+                )} />
+              </div>
+              <span className={cn(
+                "text-xs",
+                isActive ? "text-primary" : "text-muted-foreground"
+              )}>{item.name}</span>
+            </Link>
+          );
+        })}
       </div>
       {/* Add safe area padding for iOS devices */}
       <div className="h-safe-area-bottom bg-background" />
