@@ -25,7 +25,7 @@ interface SignalData {
   profiles?: {
     full_name: string | null;
     email: string | null;
-  } | null;
+  } | null | any; // Added 'any' to handle potential error case
 }
 
 interface UserData {
@@ -57,7 +57,20 @@ const Admin = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setSignals(data || []);
+      
+      // Add type checking to ensure compatibility with SignalData
+      const typedData: SignalData[] = data?.map(item => ({
+        id: item.id,
+        title: item.title,
+        category: item.category,
+        city: item.city,
+        created_at: item.created_at,
+        is_approved: item.is_approved,
+        is_resolved: item.is_resolved,
+        profiles: item.profiles
+      })) || [];
+      
+      setSignals(typedData);
     } catch (error: any) {
       console.error('Error fetching signals:', error);
       toast({
