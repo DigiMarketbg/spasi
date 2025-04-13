@@ -1,4 +1,3 @@
-
 import { cn } from '@/lib/utils';
 
 // Color definitions for signals by category
@@ -57,7 +56,7 @@ export const cardStyles = {
 // Detail page card styling
 export const detailCardStyles = {
   container: "relative overflow-hidden bg-gradient-to-br from-background to-background/80 shadow-xl border border-border/50 backdrop-blur-md rounded-xl animate-scale-in",
-  header: "px-4 sm:px-6 pt-6 pb-3 border-b border-border/10 flex flex-col gap-2",
+  header: "px-4 sm:px-6 pt-6 pb-3 border-b border-border/10",
   title: "text-xl sm:text-2xl md:text-3xl font-bold text-foreground",
   subtitle: "text-sm text-muted-foreground flex items-center flex-wrap gap-2",
   content: "p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8",
@@ -69,4 +68,3 @@ export const detailCardStyles = {
   button: "transition-all flex items-center gap-2 hover:gap-3",
   shareButton: "fixed bottom-6 right-6 z-10 bg-primary text-white shadow-lg rounded-full p-3 md:hidden animate-pulse hover:animate-none hover:scale-110 transition-transform"
 };
-

@@ -70,8 +70,8 @@ const ReportDialog: React.FC<ReportDialogProps> = ({ signalId }) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" size="sm">
-          <Flag className="h-4 w-4 mr-2" />
+        <Button variant="destructive" size="sm" className="text-xs px-3 py-1 h-8">
+          <Flag className="h-3 w-3 mr-1" />
           Докладвай
         </Button>
       </AlertDialogTrigger>

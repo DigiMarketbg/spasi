@@ -19,14 +19,11 @@ const SignalHeader: React.FC<SignalHeaderProps> = ({ signal, formatDate }) => {
   const translatedCategory = categoryTranslations[signal.category] || signal.category;
   
   return (
-    <div className="flex justify-between items-start">
+    <div className="flex justify-between items-start gap-4">
       <div>
-        <h1 className="text-3xl font-semibold mb-2">{signal.title}</h1>
-        <div className="flex items-center gap-2">
-          <Badge>{translatedCategory}</Badge>
-          <span className="text-muted-foreground">
-            {formatDate(signal.created_at)}
-          </span>
+        <h1 className="text-2xl md:text-3xl font-semibold mb-2">{signal.title}</h1>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span>{formatDate(signal.created_at)}</span>
         </div>
       </div>
       

@@ -26,38 +26,39 @@ const SignalContent: React.FC<SignalContentProps> = ({ signal, formatDate }) => 
   return (
     <div className="grid md:grid-cols-2 gap-6 animate-fade-in" style={{ animationDelay: '0.2s' }}>
       <div className={detailCardStyles.section}>
-        <div className="flex items-center flex-wrap gap-2">
+        {/* Category badge moved to the top of the content section */}
+        <div className="mb-4">
           <Badge variant="outline" className={detailCardStyles.badge}>
             {translatedCategory}
           </Badge>
-          <div className={detailCardStyles.metadata}>
-            <Calendar className="h-3.5 w-3.5 mr-1" />
-            {formatDate(signal.created_at)}
-          </div>
         </div>
         
-        <div className={detailCardStyles.metadata}>
-          <MapPin className="h-4 w-4" />
-          <span className="ml-1"><strong>Град:</strong> {signal.city}</span>
+        <div className="space-y-3">
+          <div className={detailCardStyles.metadata}>
+            <MapPin className="h-4 w-4" />
+            <span className="ml-1"><strong>Град:</strong> {signal.city}</span>
+          </div>
+          
+          {signal.phone && (
+            <div className={detailCardStyles.metadata}>
+              <Phone className="h-4 w-4" />
+              <span className="ml-1">
+                <strong>Телефон:</strong>{' '}
+                <a 
+                  href={`tel:${signal.phone}`} 
+                  className="text-primary hover:underline transition-colors"
+                  aria-label="Обади се"
+                >
+                  {signal.phone}
+                </a>
+              </span>
+            </div>
+          )}
         </div>
         
-        {signal.phone && (
-          <div className={detailCardStyles.metadata}>
-            <Phone className="h-4 w-4" />
-            <span className="ml-1">
-              <strong>Телефон:</strong>{' '}
-              <a 
-                href={`tel:${signal.phone}`} 
-                className="text-primary hover:underline transition-colors"
-                aria-label="Обади се"
-              >
-                {signal.phone}
-              </a>
-            </span>
-          </div>
-        )}
-        
-        <p className={detailCardStyles.description}>{signal.description}</p>
+        <div className="my-5 border-t border-border/30 pt-5">
+          <p className={detailCardStyles.description}>{signal.description}</p>
+        </div>
         
         {signal.link && (
           <div className="mt-6">
