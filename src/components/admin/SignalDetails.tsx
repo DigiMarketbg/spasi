@@ -15,13 +15,9 @@ const SignalDetails: React.FC<SignalDetailsProps> = ({ signal, formatDate }) => 
   const getSubmitterInfo = () => {
     if (!signal.profiles) return 'Неизвестен';
     
-    // Check if profiles is an object with the expected properties
-    if (typeof signal.profiles === 'object' && signal.profiles !== null) {
-      const profileData = signal.profiles as { full_name?: string; email?: string; };
-      return profileData.full_name || profileData.email || 'Неизвестен';
-    }
-    
-    return 'Неизвестен';
+    // Since we've already validated the profiles object in SignalDetail.tsx,
+    // we can safely access its properties here
+    return signal.profiles.full_name || signal.profiles.email || 'Неизвестен';
   };
 
   return (
