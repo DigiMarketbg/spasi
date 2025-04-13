@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 export interface SignalProps {
-  id: number;
+  id: string; // Changed from number to string to match UUID from Supabase
   title: string;
   city: string;
   category: string;

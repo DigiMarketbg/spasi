@@ -27,10 +27,13 @@ const SignalsList = () => {
       if (error) throw error;
       
       return data?.map(signal => ({
-        ...signal,
+        id: signal.id,
+        title: signal.title,
+        city: signal.city,
+        category: signal.category,
+        description: signal.description,
         createdAt: format(new Date(signal.created_at), 'd MMMM yyyy', { locale: bg }),
-        id: signal.id
-      })) || [];
+      } as SignalProps)) || [];
     }
   });
 
@@ -50,7 +53,7 @@ const SignalsList = () => {
               className="opacity-0 animate-fade-in" 
               style={{ animationDelay: `${0.1 * index}s` }}
             >
-              <SignalCard signal={signal as SignalProps} />
+              <SignalCard signal={signal} />
             </div>
           ))}
         </div>
