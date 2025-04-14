@@ -1,13 +1,14 @@
 
 // Cache name
-const CACHE_NAME = 'spasi-bg-v2';
+const CACHE_NAME = 'spasi-bg-v1';
 
 // Files to cache
 const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/lovable-uploads/6ae889da-fa60-4bae-9811-a9f6c34c7166.png'
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
 // Install event

@@ -24,7 +24,6 @@ import AdminBlog from "./pages/AdminBlog";
 import Donations from "./pages/Donations";
 import Contact from "./pages/Contact";
 import Info from "./pages/Info";
-import IconGenerator from "./components/IconGenerator";
 
 const queryClient = new QueryClient();
 
@@ -37,7 +36,6 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
-            <IconGenerator />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
