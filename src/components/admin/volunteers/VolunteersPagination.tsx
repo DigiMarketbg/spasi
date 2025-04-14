@@ -22,7 +22,7 @@ const VolunteersPagination: React.FC<VolunteersPaginationProps> = ({
           variant="outline"
           size="sm"
           disabled={currentPage === 1}
-          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
         >
           Предишна
         </Button>
@@ -57,7 +57,7 @@ const VolunteersPagination: React.FC<VolunteersPaginationProps> = ({
           variant="outline"
           size="sm"
           disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
         >
           Следваща
         </Button>
