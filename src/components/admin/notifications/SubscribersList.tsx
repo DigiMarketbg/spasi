@@ -18,6 +18,12 @@ interface Subscriber {
   user_name?: string | null;
 }
 
+// Define the profiles type for proper type checking
+interface Profile {
+  email: string | null;
+  full_name: string | null;
+}
+
 const SubscribersList = () => {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,27 +37,40 @@ const SubscribersList = () => {
       // Fetch subscribers
       const { data, error } = await supabase
         .from('push_subscribers')
-        .select(`
-          *,
-          profiles:user_id (
-            email,
-            full_name
-          )
-        `)
+        .select('*')
         .order(sortKey, { ascending: sortDirection === 'asc' });
       
       if (error) throw error;
       
-      // Transform data to include user details
-      const formattedData = data.map(sub => ({
-        id: sub.id,
-        player_id: sub.player_id,
-        city: sub.city,
-        category: sub.category,
-        created_at: sub.created_at,
-        user_id: sub.user_id,
-        user_email: sub.profiles?.email || null,
-        user_name: sub.profiles?.full_name || null
+      // Fetch profiles separately to avoid join issues
+      const formattedData: Subscriber[] = await Promise.all(data.map(async (sub) => {
+        let userEmail = null;
+        let userName = null;
+        
+        if (sub.user_id) {
+          // Fetch the user profile for each subscriber that has a user_id
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('email, full_name')
+            .eq('id', sub.user_id)
+            .single();
+            
+          if (!profileError && profileData) {
+            userEmail = profileData.email;
+            userName = profileData.full_name;
+          }
+        }
+        
+        return {
+          id: sub.id,
+          player_id: sub.player_id,
+          city: sub.city,
+          category: sub.category,
+          created_at: sub.created_at,
+          user_id: sub.user_id,
+          user_email: userEmail,
+          user_name: userName
+        };
       }));
       
       setSubscribers(formattedData);

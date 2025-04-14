@@ -70,7 +70,7 @@ const AdminTabs = ({
       <TabsContent value="signals">
         <SignalsManagement 
           signals={signals} 
-          loading={loadingSignals}
+          loadingSignals={loadingSignals}
           onRefresh={onRefreshSignals}
         />
       </TabsContent>
@@ -78,7 +78,7 @@ const AdminTabs = ({
       <TabsContent value="users">
         <UsersManagement 
           users={users} 
-          loading={loadingUsers}
+          loadingUsers={loadingUsers}
           onRefresh={onRefreshUsers}
         />
       </TabsContent>
@@ -86,7 +86,7 @@ const AdminTabs = ({
       <TabsContent value="partners">
         <PartnerRequestsManagement 
           partnerRequests={partnerRequests} 
-          loading={loadingPartnerRequests}
+          loadingPartnerRequests={loadingPartnerRequests}
           onRefresh={onRefreshPartnerRequests}
         />
       </TabsContent>
@@ -94,7 +94,7 @@ const AdminTabs = ({
       <TabsContent value="messages">
         <ContactMessagesManagement 
           messages={contactMessages} 
-          loading={loadingContactMessages}
+          loadingContactMessages={loadingContactMessages}
           onRefresh={onRefreshContactMessages}
         />
       </TabsContent>

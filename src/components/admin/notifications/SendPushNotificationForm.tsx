@@ -31,6 +31,15 @@ const notificationSchema = z.object({
 
 type NotificationFormValues = z.infer<typeof notificationSchema>;
 
+// Define the notification data interface
+interface NotificationData {
+  app_id: string;
+  headings: { bg: string; en: string; };
+  contents: { bg: string; en: string; };
+  include_player_ids: string[];
+  url?: string; // Make url optional
+}
+
 const SendPushNotificationForm = () => {
   const [isSending, setIsSending] = useState(false);
 
@@ -80,8 +89,8 @@ const SendPushNotificationForm = () => {
       // Extract player IDs
       const playerIds = subscribers.map(sub => sub.player_id);
       
-      // Prepare notification data
-      const notificationData = {
+      // Prepare notification data with proper typing
+      const notificationData: NotificationData = {
         app_id: "35af33cb-8ab8-4d90-b789-17fb5c45542b",
         headings: { "bg": data.title, "en": data.title },
         contents: { "bg": data.message, "en": data.message },
