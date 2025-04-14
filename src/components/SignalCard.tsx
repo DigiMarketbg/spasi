@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Eye, MapPin, Calendar, Phone, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle } from 'lucide-react';
+import { Eye, MapPin, Calendar, Phone, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,7 @@ export interface SignalProps {
   createdAt: string;
   categoryColor?: string;
   phone?: string;
+  isResolved?: boolean;
 }
 
 interface SignalCardProps {
@@ -59,11 +60,25 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
   // Translate category or use original if not found
   const translatedCategory = categoryTranslations[signal.category] || signal.category;
 
+  // Determine additional styling for resolved signals
+  const resolvedStyles = signal.isResolved 
+    ? "from-green-50/90 to-green-50/80 border-green-200 dark:from-green-900/20 dark:to-green-900/10 dark:border-green-900/30" 
+    : "";
+
   return (
     <div 
-      className={cardStyles.container(className)}
+      className={`${cardStyles.container(className)} ${resolvedStyles}`}
     >
       <div className="flex flex-col h-full">
+        {signal.isResolved && (
+          <div className="absolute -top-2 -right-2 z-10">
+            <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border-green-300 dark:border-green-800/60 flex items-center px-2 py-1">
+              <CheckCircle className="h-3.5 w-3.5 mr-1" />
+              <span>Решен</span>
+            </Badge>
+          </div>
+        )}
+        
         <Badge 
           variant="outline"
           className={cardStyles.badge}

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ExternalLink, Phone, Calendar, MapPin, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle } from 'lucide-react';
+import { ExternalLink, Phone, Calendar, MapPin, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { categoryTranslations, detailCardStyles } from '@/lib/card-styles';
@@ -15,6 +15,7 @@ interface SignalContentProps {
     phone?: string;
     link?: string;
     image_url?: string;
+    is_resolved?: boolean;
   };
   formatDate: (dateString: string) => string;
 }
@@ -48,18 +49,29 @@ const SignalContent: React.FC<SignalContentProps> = ({
   // Translate category
   const translatedCategory = categoryTranslations[signal.category] || signal.category;
   
-  return <div style={{
-    animationDelay: '0.2s'
-  }} className="grid md:grid-cols-2 gap-6 animate-fade-in pt-4 sm:pt-6 py-0"> {/* Increased top padding for better spacing especially on mobile */}
+  return (
+    <div 
+      style={{
+        animationDelay: '0.2s'
+      }} 
+      className={`grid md:grid-cols-2 gap-6 animate-fade-in pt-4 sm:pt-6 py-0 ${signal.is_resolved ? 'bg-green-50/30 dark:bg-green-900/10 rounded-lg' : ''}`}
+    >
       <div className={detailCardStyles.section}>
-        {/* Category badge moved to the top of the content section */}
-        <div className="mb-4">
+        {/* Status and Category badges */}
+        <div className="mb-4 flex flex-wrap gap-2">
           <Badge variant="outline" className={detailCardStyles.badge}>
             <div className="flex items-center">
               {getCategoryIcon(signal.category)}
               <span>{translatedCategory}</span>
             </div>
           </Badge>
+          
+          {signal.is_resolved && (
+            <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border-green-300 dark:border-green-800/60">
+              <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
+              <span>Решен сигнал</span>
+            </Badge>
+          )}
         </div>
         
         <div className="space-y-3">
@@ -94,7 +106,8 @@ const SignalContent: React.FC<SignalContentProps> = ({
       {signal.image_url ? <div className="order-first md:order-last mb-6 md:mb-0">
           <img src={signal.image_url} alt={signal.title} className={detailCardStyles.image} loading="eager" />
         </div> : null}
-    </div>;
+    </div>
+  );
 };
 
 export default SignalContent;

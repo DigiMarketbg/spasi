@@ -70,7 +70,8 @@ const SignalsList = ({
         description: signal.description,
         phone: signal.phone,
         createdAt: format(new Date(signal.created_at), 'd MMMM yyyy', { locale: bg }),
-        categoryColor: getCategoryColor(signal.category)
+        categoryColor: getCategoryColor(signal.category),
+        isResolved: signal.is_resolved || false
       } as SignalProps)) || [];
     }
   });
