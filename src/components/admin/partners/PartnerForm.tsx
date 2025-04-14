@@ -134,7 +134,8 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
     }
   }, [initialData]);
 
-  const logoRequired = !initialData?.logo_url && !previewImage;
+  // Logo required validation logic - consider both previewImage and hasSelectedFile
+  const logoRequired = !initialData?.logo_url && !previewImage && !hasSelectedFile;
 
   return (
     <Card>
