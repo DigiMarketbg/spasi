@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Eye, MapPin, Calendar, Phone, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
