@@ -24,6 +24,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Спаси БГ" />
     
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/lovable-uploads/8db7f922-f5d9-4a9a-a53a-f93967d704dd.png" as="image" />
+    <link rel="preload" href="/lovable-uploads/67305523-c36e-48e8-b434-fbcbd7931232.png" as="image" />
+    
     <!-- Manifest link for PWA -->
     <link rel="manifest" href="/manifest.json" />
     
@@ -42,11 +46,14 @@
     <!-- Service Worker Registration -->
     <script>
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-        .then(function(reg) {
-          console.log('Service worker registered.', reg);
-        }).catch(function(error) {
-          console.log('Service worker registration failed:', error);
+        // Register service worker as soon as possible
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+          .then(function(reg) {
+            console.log('Service worker registered.', reg);
+          }).catch(function(error) {
+            console.log('Service worker registration failed:', error);
+          });
         });
       }
     </script>
