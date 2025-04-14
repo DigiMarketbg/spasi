@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button';
 
 interface SubmitButtonProps {
   isSubmitting: boolean;
-  isUploading: boolean;
+  isUploading?: boolean; // Making this optional with a default value
 }
 
-const SubmitButton = ({ isSubmitting, isUploading }: SubmitButtonProps) => {
+const SubmitButton = ({ isSubmitting, isUploading = false }: SubmitButtonProps) => {
   return (
     <Button 
       type="submit" 
