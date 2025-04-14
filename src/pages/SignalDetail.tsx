@@ -9,6 +9,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
 import { useAuth } from '@/components/AuthProvider';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 // Import the Trash2 icon from lucide-react
 import { Trash2 } from 'lucide-react';
@@ -20,6 +31,7 @@ const SignalDetail = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
 
   // Fetch the signal data using the useQuery hook
   const { data: signal, isLoading, isError } = useQuery({
@@ -51,10 +63,8 @@ const SignalDetail = () => {
 
   // Function to handle the delete action
   const handleDelete = async () => {
-    if (!window.confirm("Сигурни ли сте, че искате да изтриете този сигнал?")) {
-      return;
-    }
     await deleteMutation.mutateAsync(id as string);
+    setIsDeleteDialogOpen(false);
   };
 
   // Render loading state
@@ -94,26 +104,43 @@ const SignalDetail = () => {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={() => navigate('/admin')}>
-              Обратно
-            </Button>
-            {user?.role === 'admin' && (
-              <Button 
-                variant="destructive" 
-                onClick={handleDelete} 
-                disabled={deleteMutation.isPending}
-              >
-                {deleteMutation.isPending ? (
-                  "Изтриване..."
-                ) : (
-                  <>
-                    <Trash2 className="h-4 w-4 mr-2" />
+          <Button variant="outline" onClick={() => navigate('/admin')}>
+            Обратно
+          </Button>
+          {user?.role === 'admin' && (
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="destructive" 
+                  disabled={deleteMutation.isPending}
+                >
+                  {deleteMutation.isPending ? (
+                    "Изтриване..."
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Изтрий
+                    </>
+                  )}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Изтриване на сигнал</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Сигурни ли сте, че искате да изтриете този сигнал? Това действие не може да бъде отменено.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Отказ</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
                     Изтрий
-                  </>
-                )}
-              </Button>
-            )}
-          </CardFooter>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </CardFooter>
       </Card>
     </div>
   );
