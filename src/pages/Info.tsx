@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import ContactCollapsible from '@/components/info/ContactCollapsible';
 import PlatformDescription from '@/components/info/PlatformDescription';
 import TermsAccordion from '@/components/info/TermsAccordion';
+import AboutUsSection from '@/components/info/AboutUsSection';
 
 const Info = () => {
   return (
@@ -15,6 +16,7 @@ const Info = () => {
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">Информация</h1>
           
+          <AboutUsSection />
           <ContactCollapsible />
           <PlatformDescription />
           
