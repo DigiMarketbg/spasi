@@ -21,13 +21,15 @@ const PartnerSection = () => {
             да поддържаме и развиваме платформата.
           </p>
           
-          <Button 
-            className="bg-spasi-green hover:bg-spasi-green/90 text-white py-6 px-8 rounded-lg text-lg font-medium flex items-center gap-2"
-            onClick={() => navigate('/donations')}
-          >
-            <Heart className="h-5 w-5" />
-            <span>Направи дарение</span>
-          </Button>
+          <div className="flex justify-center">
+            <Button 
+              className="bg-green-600 hover:bg-green-700 text-white py-6 px-8 rounded-lg text-base font-medium flex items-center gap-2"
+              onClick={() => navigate('/donations')}
+            >
+              <Heart className="h-5 w-5" />
+              <span>Направи дарение</span>
+            </Button>
+          </div>
         </div>
       </div>
     </section>
