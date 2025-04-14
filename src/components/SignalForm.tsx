@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -20,6 +19,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { uploadFile } from '@/lib/storage';
+import { useToast } from '@/hooks/use-toast';
 
 const signalCategories = [
   { value: 'blood', label: 'Нужда от кръводарители' },
@@ -61,10 +62,12 @@ interface SignalFormProps {
 
 const SignalForm = ({ onSuccess }: SignalFormProps) => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -101,46 +104,6 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
     setError(null);
   };
 
-  const uploadImage = async (file: File): Promise<string | null> => {
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-      const filePath = `signals/${fileName}`;
-      
-      // Create bucket if it doesn't exist
-      const { data: buckets } = await supabase.storage.listBuckets();
-      const signalsBucketExists = buckets?.some(bucket => bucket.name === 'signals');
-      
-      if (!signalsBucketExists) {
-        await supabase.storage.createBucket('signals', {
-          public: true,
-          fileSizeLimit: 5 * 1024 * 1024 // 5MB limit
-        });
-      }
-      
-      const { error: uploadError, data } = await supabase.storage
-        .from('signals')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-      
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        throw uploadError;
-      }
-      
-      const { data: urlData } = supabase.storage
-        .from('signals')
-        .getPublicUrl(filePath);
-        
-      return urlData.publicUrl;
-    } catch (error) {
-      console.error('Грешка при качване на изображение:', error);
-      return null;
-    }
-  };
-
   const onSubmit = async (data: FormValues) => {
     if (!user) {
       setError("Трябва да сте влезли в профила си, за да подадете сигнал");
@@ -155,7 +118,16 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       
       // Качване на изображение, ако има такова
       if (imageFile) {
-        imageUrl = await uploadImage(imageFile);
+        setIsUploading(true);
+        
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+        const filePath = `${fileName}`;
+        
+        imageUrl = await uploadFile('signals', filePath, imageFile);
+        
+        setIsUploading(false);
+        
         if (!imageUrl) {
           throw new Error("Неуспешно качване на изображението");
         }
@@ -170,7 +142,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         city: data.city,
         link: data.link || null,
         image_url: imageUrl,
-        phone: data.phone || null,  // Add the phone field here
+        phone: data.phone || null,
         is_approved: false,
         is_resolved: false
       });
@@ -184,6 +156,12 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       setImageFile(null);
       setImagePreview(null);
       
+      // Показване на съобщение за успех
+      toast({
+        title: "Успешно подаден сигнал",
+        description: "Сигналът беше изпратен успешно и ще бъде прегледан от администратор.",
+      });
+      
       // Извикване на callback функцията при успех
       if (onSuccess) {
         onSuccess();
@@ -191,8 +169,15 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
     } catch (error: any) {
       console.error('Грешка при подаване на сигнал:', error);
       setError(error.message || "Възникна грешка при подаването на сигнала");
+      
+      toast({
+        variant: "destructive",
+        title: "Грешка при подаване на сигнал",
+        description: error.message || "Възникна грешка при подаването на сигнала",
+      });
     } finally {
       setIsSubmitting(false);
+      setIsUploading(false);
     }
   };
 
@@ -356,6 +341,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
                 accept="image/*"
                 className="hidden"
                 onChange={handleImageChange}
+                disabled={isUploading}
               />
             </label>
             
@@ -375,6 +361,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
                     setImageFile(null);
                     setImagePreview(null);
                   }}
+                  disabled={isUploading}
                 >
                   Премахни
                 </Button>
@@ -385,13 +372,13 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         
         <Button 
           type="submit" 
-          disabled={isSubmitting}
+          disabled={isSubmitting || isUploading}
           className="w-full bg-gradient-to-r from-[#d53369] to-[#daae51] hover:from-[#c62e5e] hover:to-[#c69d47] text-white font-bold py-3"
         >
-          {isSubmitting ? (
+          {isSubmitting || isUploading ? (
             <span className="flex items-center gap-2">
               <Upload className="h-4 w-4 animate-spin" />
-              Изпращане...
+              {isUploading ? "Качване на изображение..." : "Изпращане..."}
             </span>
           ) : (
             <span className="flex items-center gap-2">

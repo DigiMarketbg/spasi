@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { Signal } from "@/types/signal";
+import { uploadFile } from "./storage";
 
 // Get a single signal by ID
 export const getSignalById = async (id: string): Promise<Signal> => {
@@ -59,4 +60,15 @@ export const deleteSignal = async (id: string): Promise<void> => {
   }
   
   console.log("Signal successfully deleted");
+};
+
+// Upload an image for a signal
+export const uploadSignalImage = async (file: File): Promise<string | null> => {
+  if (!file) return null;
+  
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+  const filePath = `${fileName}`;
+  
+  return await uploadFile('signals', filePath, file);
 };
