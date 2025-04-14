@@ -4,14 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
-
-interface Video {
-  id: string;
-  title: string;
-  youtube_url: string;
-  created_at: string;
-  description?: string;
-}
+import { Video } from '@/types/video';
 
 const Videos = () => {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -27,7 +20,7 @@ const Videos = () => {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setVideos(data || []);
+        setVideos(data as Video[] || []);
       } catch (error) {
         console.error('Error fetching videos:', error);
       } finally {

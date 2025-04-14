@@ -263,6 +263,33 @@ export type Database = {
         }
         Relationships: []
       }
+      videos: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_published: boolean
+          title: string
+          youtube_url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          title: string
+          youtube_url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_published?: boolean
+          title?: string
+          youtube_url?: string
+        }
+        Relationships: []
+      }
       volunteers: {
         Row: {
           can_help_with: string[]

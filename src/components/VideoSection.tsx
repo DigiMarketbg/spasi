@@ -6,13 +6,7 @@ import { ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
-
-interface Video {
-  id: string;
-  title: string;
-  youtube_url: string;
-  created_at: string;
-}
+import { Video } from '@/types/video';
 
 const VideoSection = () => {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -30,7 +24,7 @@ const VideoSection = () => {
           .limit(isMobile ? 1 : 3);
 
         if (error) throw error;
-        setVideos(data || []);
+        setVideos(data as Video[] || []);
       } catch (error) {
         console.error('Error fetching videos:', error);
       } finally {

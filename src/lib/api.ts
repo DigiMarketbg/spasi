@@ -1,6 +1,6 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Signal } from "@/types/signal";
+import { Video } from "@/types/video"; 
 import { uploadFile } from "./storage";
 
 // Get a single signal by ID
@@ -96,14 +96,6 @@ export const uploadSignalImage = async (file: File): Promise<string | null> => {
 };
 
 // Video-related functions
-export interface Video {
-  id: string;
-  title: string;
-  description?: string;
-  youtube_url: string;
-  is_published: boolean;
-  created_at: string;
-}
 
 // Get all videos
 export const getVideos = async (limit?: number, publishedOnly = false): Promise<Video[]> => {

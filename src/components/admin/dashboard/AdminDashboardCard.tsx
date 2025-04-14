@@ -1,48 +1,56 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 
 interface AdminDashboardCardProps {
   title: string;
-  description: string;
   icon: LucideIcon;
-  onClick?: () => void;
-  badge?: number;
+  actionText?: string;
+  actionLink?: string;
+  gradient?: string;
+  notificationCount?: number;
 }
 
 const AdminDashboardCard = ({ 
   title, 
-  description, 
   icon: Icon,
-  onClick,
-  badge
+  actionText,
+  actionLink,
+  gradient,
+  notificationCount
 }: AdminDashboardCardProps) => {
-  return (
-    <Card 
-      className={onClick ? "hover:shadow-lg transition-all cursor-pointer" : "hover:shadow-lg transition-all"} 
-      onClick={onClick}
-    >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-xl font-medium">
+  const cardContent = (
+    <div className={`glass rounded-xl p-6 transition-all duration-200 hover:shadow-md ${actionLink ? 'cursor-pointer' : ''}`}>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-medium flex items-center">
           {title}
-          {badge !== undefined && badge > 0 && (
-            <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold text-white bg-blue-500 rounded-full">
-              {badge}
+          {notificationCount !== undefined && notificationCount > 0 && (
+            <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold text-white bg-red-500 rounded-full">
+              {notificationCount}
             </span>
           )}
-        </CardTitle>
-        <div className="p-2 bg-primary/10 rounded-full">
-          <Icon className="h-6 w-6 text-primary" />
+        </h3>
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${gradient ? `bg-gradient-to-r ${gradient}` : 'bg-primary/10'}`}>
+          <Icon className="h-5 w-5 text-primary" />
         </div>
-      </CardHeader>
-      <CardContent>
-        <CardDescription>
-          {description}
-        </CardDescription>
-      </CardContent>
-    </Card>
+      </div>
+      
+      {actionText && actionLink && (
+        <Link to={actionLink} className="flex items-center justify-between text-sm mt-2 text-muted-foreground hover:text-foreground transition-colors">
+          <span>{actionText}</span>
+          <ChevronRight className="h-4 w-4" />
+        </Link>
+      )}
+    </div>
   );
+
+  if (actionLink) {
+    return <Link to={actionLink}>{cardContent}</Link>;
+  }
+
+  return cardContent;
 };
 
 export default AdminDashboardCard;
