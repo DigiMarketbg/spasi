@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 const links = [
   { href: "/", label: "Начало" },
   { href: "/signals", label: "Сигнали" },
-  { href: "/how-we-help", label: "Как помагаме" },
   { href: "/blog", label: "Блог" },
   { href: "/volunteers", label: "Доброволци" },
   { href: "/donations", label: "Дарения" },

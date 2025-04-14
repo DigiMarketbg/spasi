@@ -23,7 +23,6 @@ import AdminBlog from "./pages/AdminBlog";
 import Donations from "./pages/Donations";
 import Contact from "./pages/Contact";
 import Info from "./pages/Info";
-import HowWeHelp from "./pages/HowWeHelp";
 
 const queryClient = new QueryClient();
 
@@ -51,7 +50,6 @@ const App = () => (
               <Route path="/donations" element={<Donations />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/info" element={<Info />} />
-              <Route path="/how-we-help" element={<HowWeHelp />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <MobileNavBar />

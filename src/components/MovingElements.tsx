@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AlertCircle, Shield, Clock, HeartPulse, MapPin, Phone } from 'lucide-react';
 
@@ -40,7 +39,12 @@ const MovingElements = () => {
         <Phone className="h-12 w-12 text-primary" />
       </div>
       
-      {/* Floating Spasi.bg text at different positions */}
+      {/* Expanded Floating Spasi.bg text at multiple positions */}
+      <div className="absolute top-[10%] left-[5%] animate-float opacity-10"
+           style={{ animationDelay: '0.5s' }}>
+        <span className="text-xl font-bold text-secondary">Spasi.bg</span>
+      </div>
+      
       <div className="absolute top-[15%] right-[30%] animate-float opacity-15"
            style={{ animationDelay: '1.2s' }}>
         <span className="text-2xl font-bold text-spasi-red">Spasi.bg</span>
@@ -61,6 +65,27 @@ const MovingElements = () => {
         <span className="text-xl font-bold text-spasi-red">Spasi.bg</span>
       </div>
       
+      {/* New additional Spasi.bg text elements */}
+      <div className="absolute top-[5%] right-[10%] animate-float opacity-10"
+           style={{ animationDelay: '0.7s' }}>
+        <span className="text-lg font-bold text-primary">Spasi.bg</span>
+      </div>
+      
+      <div className="absolute bottom-[40%] right-[5%] animate-float opacity-12"
+           style={{ animationDelay: '2.5s' }}>
+        <span className="text-xl font-bold text-secondary">Spasi.bg</span>
+      </div>
+      
+      <div className="absolute top-[60%] left-[40%] animate-float opacity-10"
+           style={{ animationDelay: '1.5s' }}>
+        <span className="text-lg font-bold text-spasi-red">Spasi.bg</span>
+      </div>
+      
+      <div className="absolute bottom-[10%] right-[15%] animate-float opacity-12"
+           style={{ animationDelay: '2.8s' }}>
+        <span className="text-xl font-bold text-primary">Spasi.bg</span>
+      </div>
+
       {/* Pulsing circles */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] opacity-10">
         <div className="absolute inset-0 rounded-full border-2 border-spasi-red animate-ping" style={{ animationDuration: '3s' }}></div>
