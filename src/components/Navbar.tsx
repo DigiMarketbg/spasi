@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, useCallback, memo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,14 +17,14 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
   
-  const handleScroll = useCallback(() => {
-    setScrolled(window.scrollY > 10);
-  }, []);
-  
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
+  }, []);
 
   const handleSignOut = async () => {
     await signOut();
@@ -94,4 +94,4 @@ const Navbar = () => {
   );
 };
 
-export default memo(Navbar);
+export default Navbar;

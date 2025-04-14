@@ -29,36 +29,32 @@ const SignalDetail = () => {
 
   // Define the delete mutation using the useMutation hook
   const deleteMutation = useMutation({
-    mutationFn: deleteSignal,
+    mutationFn: (id: string) => deleteSignal(id),
     onSuccess: () => {
-      console.log("Delete mutation succeeded");
       toast({
         title: "Успешно изтриване!",
         description: "Сигналът беше успешно изтрит.",
       });
-      // Invalidate signals query cache to refresh the admin panel
-      queryClient.invalidateQueries({ queryKey: ['signals'] });
-      // Navigate back to admin panel
       navigate('/admin');
     },
     onError: (error: any) => {
-      console.error("Delete mutation failed:", error);
       toast({
         variant: "destructive",
         title: "Грешка при изтриване!",
         description: error.message || "Възникна грешка при изтриването на сигнала. Моля, опитайте пак.",
       });
-    }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['signals'] });
+    },
   });
 
   // Function to handle the delete action
-  const handleDelete = () => {
-    if (!id) return;
-    
-    console.log("Initiating signal deletion for ID:", id);
-    if (window.confirm("Сигурни ли сте, че искате да изтриете този сигнал?")) {
-      deleteMutation.mutate(id);
+  const handleDelete = async () => {
+    if (!window.confirm("Сигурни ли сте, че искате да изтриете този сигнал?")) {
+      return;
     }
+    await deleteMutation.mutateAsync(id as string);
   };
 
   // Render loading state
