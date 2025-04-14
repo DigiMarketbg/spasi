@@ -8,6 +8,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { AuthProvider } from "./components/AuthProvider";
 import { OneSignalProvider } from "./components/notifications/OneSignalProvider";
 import NotificationDialog from "./components/notifications/NotificationDialog";
+import SubscribeButton from "./components/notifications/SubscribeButton";
 import MobileNavBar from "./components/MobileNavBar";
 import ScrollToTop from "./components/ScrollToTop";
 import Index from "./pages/Index";
@@ -40,6 +41,10 @@ const App = () => (
             <BrowserRouter>
               <ScrollToTop />
               <NotificationDialog />
+              {/* Добавяме SubscribeButton към основния App компонент за тестване */}
+              <div className="fixed bottom-4 right-4 z-50">
+                <SubscribeButton />
+              </div>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />

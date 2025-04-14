@@ -19,11 +19,28 @@ const SubscribeButton = ({
 }: SubscribeButtonProps) => {
   const { isSubscribed, isPushSupported, isInitialized, subscribe, unsubscribe } = useOneSignal();
 
-  if (!isInitialized || !isPushSupported) {
+  // Добавяме повече log съобщения за по-добро дебъгване
+  console.log('SubscribeButton State:', { 
+    isSubscribed, 
+    isPushSupported, 
+    isInitialized 
+  });
+
+  // Показваме бутона, дори ако не е абониран
+  if (!isInitialized) {
+    console.log('OneSignal не е инициализиран');
+    return null;
+  }
+
+  if (!isPushSupported) {
+    console.log('Push известията не се поддържат');
     return null;
   }
 
   const handleClick = () => {
+    console.log('SubscribeButton clicked', { 
+      currentSubscriptionStatus: isSubscribed 
+    });
     if (isSubscribed) {
       unsubscribe();
     } else {
