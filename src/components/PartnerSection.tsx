@@ -41,7 +41,11 @@ const PartnerSection = () => {
           </p>
           
           {/* Partner Logos Section */}
-          {partners.length > 0 && (
+          {loading ? (
+            <div className="text-center mb-8">
+              <div className="animate-pulse">Зареждане...</div>
+            </div>
+          ) : partners.length > 0 ? (
             <div className="flex justify-center flex-wrap gap-4 mb-8">
               {partners.map(partner => (
                 <div key={partner.id} className="bg-black/50 p-4 rounded-lg inline-block">
@@ -63,7 +67,7 @@ const PartnerSection = () => {
                 </div>
               ))}
             </div>
-          )}
+          ) : null}
           
           <div className="flex justify-center">
             <Button 

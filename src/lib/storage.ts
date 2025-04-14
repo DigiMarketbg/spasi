@@ -67,9 +67,10 @@ export const uploadFile = async (
     
     if (error) {
       console.error('Upload error details:', error);
-      console.error('Error code:', error.code);
       console.error('Error message:', error.message);
-      console.error('Error details:', error.details);
+      // Safe access to optional properties - removes TypeScript errors
+      console.error('Error name:', error.name);
+      console.error('Error stack:', error.stack);
       throw new Error(`Error uploading file: ${error.message}`);
     }
     

@@ -11,27 +11,19 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-
-// Partner interface matching Supabase schema
-interface Partner {
-  id: string;
-  company_name: string;
-  logo_url: string;
-  website_url?: string | null;
-}
+import { Partner } from '@/types/partner';
 
 const PartnerCarousel = () => {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Fetch partners from Supabase
-  const { data: partners = [] } = useQuery<Partner[]>({
+  const { data: partners = [], isLoading } = useQuery<Partner[]>({
     queryKey: ['partners'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('partners')
-        .select('*')
-        .not('website_url', 'is', null);  // Changed to filter non-null website URLs
+        .select('*');
       
       if (error) {
         console.error('Error fetching partners:', error);
@@ -88,23 +80,49 @@ const PartnerCarousel = () => {
           </Button>
         </div>
         
-        <div className="relative w-full">
-          <div className="overflow-hidden">
-            <div className="flex gap-8 animate-slide-left">
-              {[...partners, ...partners].map((partner, index) => (
-                <div 
-                  key={`${partner.id}-${index}`} 
-                  className={cn(
-                    "flex-shrink-0 h-16 w-32 glass rounded-lg flex items-center justify-center",
-                    "hover:border-primary/50 transition-all duration-300"
-                  )}
-                >
-                  <span className="font-medium">{partner.company_name}</span>
-                </div>
-              ))}
+        {isLoading ? (
+          <div className="text-center py-4">
+            <div className="animate-pulse">Зареждане...</div>
+          </div>
+        ) : partners.length > 0 ? (
+          <div className="relative w-full">
+            <div className="overflow-hidden">
+              <div className="flex gap-8 animate-slide-left">
+                {[...partners, ...partners].map((partner, index) => (
+                  <div 
+                    key={`${partner.id}-${index}`} 
+                    className="flex-shrink-0 h-20 w-40 glass rounded-lg flex items-center justify-center p-2"
+                  >
+                    {partner.website_url ? (
+                      <a 
+                        href={partner.website_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="w-full h-full flex items-center justify-center"
+                      >
+                        <img 
+                          src={partner.logo_url} 
+                          alt={partner.company_name} 
+                          className="max-h-full max-w-full object-contain"
+                        />
+                      </a>
+                    ) : (
+                      <img 
+                        src={partner.logo_url} 
+                        alt={partner.company_name} 
+                        className="max-h-full max-w-full object-contain"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-8 border border-dashed rounded-lg">
+            <p className="text-muted-foreground">Все още няма добавени партньори</p>
+          </div>
+        )}
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="sm:max-w-[425px]">
