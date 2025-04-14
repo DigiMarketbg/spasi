@@ -233,6 +233,7 @@ export type Database = {
           is_resolved: boolean
           link: string | null
           phone: string | null
+          status: string
           title: string
           user_id: string
         }
@@ -247,6 +248,7 @@ export type Database = {
           is_resolved?: boolean
           link?: string | null
           phone?: string | null
+          status?: string
           title: string
           user_id: string
         }
@@ -261,6 +263,7 @@ export type Database = {
           is_resolved?: boolean
           link?: string | null
           phone?: string | null
+          status?: string
           title?: string
           user_id?: string
         }
