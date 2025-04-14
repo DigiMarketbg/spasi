@@ -32,45 +32,66 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
   useEffect(() => {
     if (!window.OneSignal) {
       console.warn('OneSignal SDK not loaded');
+      // Setting initialized to true even if OneSignal is not available
+      // This allows our components to render properly in development
+      setIsInitialized(true);
       return;
     }
 
     const checkSubscriptionStatus = async () => {
       try {
-        // Check if push notifications are supported
-        const isPushSupported = await window.OneSignal.isPushNotificationsSupported();
-        setIsPushSupported(isPushSupported);
-        
-        if (isPushSupported) {
-          // Check if the user is subscribed
-          const isPushEnabled = await window.OneSignal.isPushNotificationsEnabled();
-          setIsSubscribed(isPushEnabled);
+        // In development/test environments, we need to handle domain restriction errors
+        try {
+          // Check if push notifications are supported
+          const isPushSupported = await window.OneSignal.isPushNotificationsSupported();
+          setIsPushSupported(isPushSupported);
+          
+          if (isPushSupported) {
+            // Check if the user is subscribed
+            const isPushEnabled = await window.OneSignal.isPushNotificationsEnabled();
+            setIsSubscribed(isPushEnabled);
+          }
+        } catch (error) {
+          // If we get a domain restriction error, we're in development
+          console.warn('OneSignal domain restriction in development mode:', error);
+          // Setting these values for development testing
+          setIsPushSupported(true);
         }
         
         setIsInitialized(true);
       } catch (error) {
         console.error('Error checking OneSignal subscription:', error);
+        setIsInitialized(true);
       }
     };
 
     // Add subscription change event listener
-    window.OneSignal.push(() => {
-      window.OneSignal.on('subscriptionChange', async (isSubscribed: boolean) => {
-        console.log('Subscription changed:', isSubscribed);
-        setIsSubscribed(isSubscribed);
+    try {
+      window.OneSignal.push(() => {
+        window.OneSignal.on('subscriptionChange', async (isSubscribed: boolean) => {
+          console.log('Subscription changed:', isSubscribed);
+          setIsSubscribed(isSubscribed);
+          
+          if (isSubscribed) {
+            await saveSubscriptionToDatabase();
+          }
+        });
         
-        if (isSubscribed) {
-          await saveSubscriptionToDatabase();
-        }
+        checkSubscriptionStatus();
       });
-      
-      checkSubscriptionStatus();
-    });
+    } catch (error) {
+      console.warn('OneSignal initialization error in development:', error);
+      setIsInitialized(true);
+    }
     
     return () => {
       // Clean up OneSignal event listeners if needed
       if (window.OneSignal) {
-        window.OneSignal.off('subscriptionChange');
+        try {
+          window.OneSignal.off('subscriptionChange');
+        } catch (error) {
+          console.warn('Error cleaning up OneSignal:', error);
+        }
       }
     };
   }, []);
@@ -117,6 +138,15 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
   const subscribe = async () => {
     if (!window.OneSignal) {
       console.warn('OneSignal SDK not loaded');
+      
+      // In development, we can simulate subscription
+      if (process.env.NODE_ENV !== 'production') {
+        setIsSubscribed(true);
+        toast({
+          title: 'Симулирано абониране',
+          description: 'В тестов режим, абонирането е симулирано',
+        });
+      }
       return;
     }
     
@@ -135,11 +165,21 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
       }
     } catch (error) {
       console.error('Error subscribing to push notifications:', error);
-      toast({
-        title: 'Грешка',
-        description: 'Не успяхме да ви абонираме за известия',
-        variant: 'destructive',
-      });
+      
+      // In development, we can simulate subscription on error
+      if (process.env.NODE_ENV !== 'production') {
+        setIsSubscribed(true);
+        toast({
+          title: 'Симулирано абониране',
+          description: 'В тестов режим, абонирането е симулирано',
+        });
+      } else {
+        toast({
+          title: 'Грешка',
+          description: 'Не успяхме да ви абонираме за известия',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
@@ -147,6 +187,15 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
   const unsubscribe = async () => {
     if (!window.OneSignal) {
       console.warn('OneSignal SDK not loaded');
+      
+      // In development, we can simulate unsubscription
+      if (process.env.NODE_ENV !== 'production') {
+        setIsSubscribed(false);
+        toast({
+          title: 'Симулирано отписване',
+          description: 'В тестов режим, отписването е симулирано',
+        });
+      }
       return;
     }
     
@@ -160,11 +209,21 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
       });
     } catch (error) {
       console.error('Error unsubscribing from push notifications:', error);
-      toast({
-        title: 'Грешка',
-        description: 'Не успяхме да ви отпишем от известия',
-        variant: 'destructive',
-      });
+      
+      // In development, we can simulate unsubscription on error
+      if (process.env.NODE_ENV !== 'production') {
+        setIsSubscribed(false);
+        toast({
+          title: 'Симулирано отписване',
+          description: 'В тестов режим, отписването е симулирано',
+        });
+      } else {
+        toast({
+          title: 'Грешка',
+          description: 'Не успяхме да ви отпишем от известия',
+          variant: 'destructive',
+        });
+      }
     }
   };
 

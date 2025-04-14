@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { AuthProvider } from "./components/AuthProvider";
 import { OneSignalProvider } from "./components/notifications/OneSignalProvider";
+import NotificationDialog from "./components/notifications/NotificationDialog";
 import MobileNavBar from "./components/MobileNavBar";
 import ScrollToTop from "./components/ScrollToTop";
 import Index from "./pages/Index";
@@ -38,6 +39,7 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <ScrollToTop />
+              <NotificationDialog />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
