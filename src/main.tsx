@@ -3,6 +3,13 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
+// Declare the refreshAfterDeploy property on the Window interface
+declare global {
+  interface Window {
+    refreshAfterDeploy: () => void;
+  }
+}
+
 // Оптимизирано стартиране на приложението
 const startApp = () => {
   const rootElement = document.getElementById("root");

@@ -23,7 +23,7 @@ const Logo = ({ className }: LogoProps) => {
         width="48"
         height="48"
         loading="eager"
-        fetchpriority="high"
+        fetchPriority="high"
         decoding="async"
       />
     </div>
