@@ -5,8 +5,8 @@ import { toast } from '@/hooks/use-toast';
 // Check if we're in development environment
 export const isDevelopmentEnvironment = (): boolean => {
   const host = window.location.hostname;
-  return host.includes('localhost') || 
-         host.includes('127.0.0.1') || 
+  return host === 'localhost' || 
+         host === '127.0.0.1' || 
          host.includes('lovableproject.com');
 };
 

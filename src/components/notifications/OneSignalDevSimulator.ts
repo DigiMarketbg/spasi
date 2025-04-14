@@ -3,10 +3,16 @@
 
 // Set up dev environment simulation for OneSignal
 export const setupDevSimulation = (): void => {
-  // Check if OneSignal is already defined globally
-  if (window.OneSignal) {
-    console.log('OneSignal already defined, not setting up dev simulation');
+  // Check if OneSignal is already defined and properly initialized
+  if (window.OneSignal && typeof window.OneSignal.isPushNotificationsSupported === 'function') {
+    console.log('OneSignal already properly defined, not setting up dev simulation');
     return;
+  }
+  
+  // Clear any partial implementations
+  if (window.OneSignal) {
+    console.log('Clearing partial OneSignal implementation');
+    delete window.OneSignal;
   }
   
   console.log('Setting up OneSignal development simulation');
