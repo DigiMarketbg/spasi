@@ -15,6 +15,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { 
   Check, 
   X, 
@@ -48,6 +59,8 @@ const SignalDetail = () => {
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchSignalDetails = async () => {
@@ -137,9 +150,35 @@ const SignalDetail = () => {
     setIsEditing(false);
   };
 
-  const handleDelete = () => {
-    // Delete functionality would go here
-    console.log('Delete signal:', data.id);
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      
+      const { error } = await supabase
+        .from('signals')
+        .delete()
+        .eq('id', id!);
+
+      if (error) throw error;
+      
+      toast({
+        title: "Успешно",
+        description: "Сигналът беше изтрит успешно.",
+      });
+
+      // Close dialog and navigate back to admin page
+      setIsDeleteDialogOpen(false);
+      navigate('/admin');
+    } catch (error: any) {
+      console.error('Error deleting signal:', error);
+      toast({
+        title: "Грешка",
+        description: error.message || "Възникна проблем при изтриването на сигнала.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleToggleApproval = async (currentValue: boolean) => {
@@ -216,12 +255,50 @@ const SignalDetail = () => {
               Back
             </Button>
             
-            <SignalActions 
-              isEditing={isEditing}
-              onEdit={handleEdit}
-              onCancel={handleCancel}
-              onDelete={handleDelete}
-            />
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Изтрий
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Изтриване на сигнал</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Сигурни ли сте, че искате да изтриете този сигнал? Това действие не може да бъде отменено.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Отказ</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={handleDelete} 
+                    className="bg-red-600 hover:bg-red-700"
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? 'Изтриване...' : 'Изтрий'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            
+            <Button onClick={handleEdit}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="1em"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide-pencil h-4 w-4 mr-2"
+              >
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path>
+                <path d="m15 5 4 4"></path>
+              </svg>
+              Редактирай
+            </Button>
           </div>
         </div>
         

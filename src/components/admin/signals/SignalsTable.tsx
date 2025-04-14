@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, X, Eye } from 'lucide-react';
+import { Check, X, Eye, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -31,6 +31,7 @@ interface SignalsTableProps {
   onViewDetails: (id: string) => void;
   onToggleApproval: (id: string, currentStatus: boolean) => Promise<void>;
   onToggleResolution: (id: string, currentStatus: boolean) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
 }
 
 const SignalsTable: React.FC<SignalsTableProps> = ({
@@ -38,7 +39,8 @@ const SignalsTable: React.FC<SignalsTableProps> = ({
   formatDate,
   onViewDetails,
   onToggleApproval,
-  onToggleResolution
+  onToggleResolution,
+  onDelete
 }) => {
   return (
     <Table>
@@ -96,6 +98,14 @@ const SignalsTable: React.FC<SignalsTableProps> = ({
                 >
                   {signal.is_resolved ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
                   {signal.is_resolved ? 'Маркирай като неразрешен' : 'Маркирай като разрешен'}
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="destructive"
+                  onClick={() => onDelete(signal.id)}
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Изтрий
                 </Button>
               </div>
             </TableCell>
