@@ -15,7 +15,7 @@ const Logo = ({ className }: LogoProps) => {
       {theme === 'light' ? (
         // Light mode logo
         <img 
-          src="/lovable-uploads/fa43aecf-68b6-4f4a-b076-d80dca8d25b4.png" 
+          src="/lovable-uploads/8db7f922-f5d9-4a9a-a53a-f93967d704dd.png" 
           alt="Spasi.bg Logo" 
           className="h-12 w-auto" 
         />
