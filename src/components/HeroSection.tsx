@@ -8,6 +8,7 @@ import MovingElements from './MovingElements';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 interface SearchResult {
   id: string;
@@ -25,6 +26,54 @@ const HeroSection = () => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  // Функция за абониране за известия
+  const handleSubscribe = async () => {
+    try {
+      setIsSubscribing(true);
+      
+      if (window.OneSignal) {
+        // Проверяваме дали потребителят вече е абониран
+        const isPushEnabled = await window.OneSignal.User.PushSubscription.optedIn;
+        
+        if (isPushEnabled) {
+          toast({
+            title: "Вече сте абонирани",
+            description: "Вече получавате известия от платформата",
+          });
+        } else {
+          // Показваме диалога за абониране
+          await window.OneSignal.Slidedown.promptPush();
+          
+          // Проверяваме резултата след показване на диалога
+          const isNowEnabled = await window.OneSignal.User.PushSubscription.optedIn;
+          
+          if (isNowEnabled) {
+            toast({
+              title: "Успешно абониране",
+              description: "Вече ще получавате известия за нови сигнали",
+            });
+          }
+        }
+      } else {
+        toast({
+          title: "Грешка",
+          description: "OneSignal не е наличен. Моля, опитайте отново по-късно.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error subscribing to notifications:", error);
+      toast({
+        title: "Грешка",
+        description: "Възникна проблем при абониране за известия",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
 
   // Функция за търсене в реално време
   useEffect(() => {
@@ -181,8 +230,16 @@ const HeroSection = () => {
               </Button>
             )}
             
-            {/* OneSignal Custom Link Button Container */}
-            <div className="onesignal-customlink-container"></div>
+            {/* Notification Subscribe Button */}
+            <Button
+              className="bg-spasi-green hover:bg-spasi-green/90 text-white py-6 px-8 rounded-lg text-lg font-medium flex items-center gap-2 relative group overflow-hidden"
+              onClick={handleSubscribe}
+              disabled={isSubscribing}
+            >
+              <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
+              <Bell className="h-5 w-5 relative z-10" />
+              <span className="relative z-10">{isSubscribing ? "Обработка..." : "Абонирай се"}</span>
+            </Button>
           </div>
         </div>
       </div>

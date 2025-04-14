@@ -8,6 +8,8 @@ import { supabase } from './integrations/supabase/client'
 declare global {
   interface Window {
     supabase: typeof supabase;
+    OneSignal: any;
+    OneSignalDeferred: any[];
   }
 }
 window.supabase = supabase;
