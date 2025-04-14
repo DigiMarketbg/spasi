@@ -1,14 +1,29 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, Bell, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ParticleBackground from './ParticleBackground';
 import MovingElements from './MovingElements';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Функция за обработка на търсенето
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/signals?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  // Функция за подаване на сигнал
+  const handleSubmitSignal = () => {
+    navigate('/submit-signal');
+  };
 
   return (
     <section className="relative py-20 px-4 md:px-6 lg:px-8 overflow-hidden min-h-[80vh] flex items-center">
@@ -31,14 +46,27 @@ const HeroSection = () => {
                 type="text" 
                 placeholder="Търсене по дума или град..." 
                 className="pr-10 py-6 text-lg rounded-lg border-2 border-spasi-red focus:ring-2 focus:ring-spasi-red"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearch}
               />
-              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Search 
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 cursor-pointer" 
+                onClick={() => {
+                  if (searchQuery.trim()) {
+                    navigate(`/signals?search=${encodeURIComponent(searchQuery)}`);
+                  }
+                }}
+              />
             </div>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-4 animate-fade-in" style={{animationDelay: '0.4s'}}>
             {!isMobile && (
-              <Button className="bg-spasi-red hover:bg-spasi-red/90 text-white py-6 px-8 rounded-lg text-lg font-medium flex items-center gap-2 relative group overflow-hidden">
+              <Button 
+                className="bg-spasi-red hover:bg-spasi-red/90 text-white py-6 px-8 rounded-lg text-lg font-medium flex items-center gap-2 relative group overflow-hidden"
+                onClick={handleSubmitSignal}
+              >
                 <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
                 <AlertTriangle className="h-5 w-5 relative z-10" />
                 <span className="relative z-10">Подай сигнал</span>

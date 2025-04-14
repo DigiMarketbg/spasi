@@ -11,6 +11,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { bg } from 'date-fns/locale';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 interface BlogPost {
   id: string;
@@ -21,34 +22,28 @@ interface BlogPost {
 }
 
 const Blog = () => {
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
 
+  // Използвам useQuery за зареждане на постовете
+  const { data: blogPosts, isLoading, error } = useQuery({
+    queryKey: ['blog_posts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('id, title, short_description, image_url, created_at')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // Обновяване на филтрираните постове при промяна на търсенето
   useEffect(() => {
-    const fetchBlogPosts = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('blog_posts')
-          .select('id, title, short_description, image_url, created_at')
-          .eq('is_published', true)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        setBlogPosts(data || []);
-        setFilteredPosts(data || []);
-      } catch (error) {
-        console.error('Error fetching blog posts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBlogPosts();
-  }, []);
-
-  useEffect(() => {
+    if (!blogPosts) return;
+    
     if (searchQuery.trim()) {
       const filtered = blogPosts.filter(post => 
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -59,6 +54,11 @@ const Blog = () => {
       setFilteredPosts(blogPosts);
     }
   }, [searchQuery, blogPosts]);
+
+  // Реализирам функция за моментално търсене
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   const formatDate = (dateString: string) => {
     try {
@@ -86,14 +86,14 @@ const Blog = () => {
                 placeholder="Търси в блога..."
                 className="pr-10"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
               />
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {loading ? (
+            {isLoading ? (
               Array(6).fill(0).map((_, idx) => (
                 <Card key={idx} className="overflow-hidden">
                   <Skeleton className="h-48 w-full" />
@@ -106,7 +106,11 @@ const Blog = () => {
                   </CardContent>
                 </Card>
               ))
-            ) : filteredPosts.length > 0 ? (
+            ) : error ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-destructive text-lg">Грешка при зареждане на блог статиите</p>
+              </div>
+            ) : filteredPosts && filteredPosts.length > 0 ? (
               filteredPosts.map(post => (
                 <Card key={post.id} className="overflow-hidden h-full flex flex-col">
                   <div className="h-48 bg-muted relative">

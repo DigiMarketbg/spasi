@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import SignalCard, { SignalProps } from './SignalCard';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,8 @@ const SignalsList = ({
   const { 
     data: signals, 
     isLoading, 
-    error 
+    error,
+    refetch 
   } = useQuery({
     queryKey: ['signals', allSignals, searchQuery, categoryFilter, cityFilter],
     queryFn: async () => {
@@ -73,7 +74,8 @@ const SignalsList = ({
         categoryColor: getCategoryColor(signal.category),
         isResolved: signal.is_resolved || false
       } as SignalProps)) || [];
-    }
+    },
+    enabled: true
   });
 
   // Function to get color based on category
@@ -89,6 +91,11 @@ const SignalsList = ({
         return '#ff9800';
     }
   };
+
+  // Effect to refetch when filters change
+  useEffect(() => {
+    refetch();
+  }, [searchQuery, categoryFilter, cityFilter, refetch]);
 
   if (isLoading) return (
     <div className="py-10 md:py-20 text-center">

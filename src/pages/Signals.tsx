@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SignalsList from '@/components/SignalsList';
@@ -9,18 +9,44 @@ import { Search, Filter, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useLocation } from 'react-router-dom';
 
 const Signals = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const searchFromURL = searchParams.get('search') || '';
+
+  const [searchQuery, setSearchQuery] = useState(searchFromURL);
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [cityFilter, setCityFilter] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const isMobile = useIsMobile();
 
+  // Обновявам searchQuery, когато URL параметрите се променят
+  useEffect(() => {
+    const searchFromURL = searchParams.get('search') || '';
+    setSearchQuery(searchFromURL);
+  }, [searchParams]);
+
   const clearFilters = () => {
     setSearchQuery('');
     setCategoryFilter('all');
     setCityFilter('all');
+  };
+
+  // Реализирам функция за моментално търсене
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  // Реализирам мигновена промяна при избор на категория
+  const handleCategoryChange = (value: string) => {
+    setCategoryFilter(value);
+  };
+
+  // Реализирам мигновена промяна при избор на град
+  const handleCityChange = (value: string) => {
+    setCityFilter(value);
   };
 
   return (
@@ -45,7 +71,7 @@ const Signals = () => {
                     placeholder="Търси по заглавие, описание или град..."
                     className="pl-10 pr-10"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={handleSearchChange}
                   />
                   {searchQuery && (
                     <button 
@@ -82,7 +108,7 @@ const Signals = () => {
                 
                 {showFilters && (
                   <div className="grid grid-cols-1 gap-3 mt-4 animate-fade-in">
-                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                    <Select value={categoryFilter} onValueChange={handleCategoryChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Избери категория" />
                       </SelectTrigger>
@@ -95,7 +121,7 @@ const Signals = () => {
                       </SelectContent>
                     </Select>
                     
-                    <Select value={cityFilter} onValueChange={setCityFilter}>
+                    <Select value={cityFilter} onValueChange={handleCityChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Избери град" />
                       </SelectTrigger>
@@ -122,11 +148,11 @@ const Signals = () => {
                     placeholder="Търси по заглавие, описание или град..."
                     className="pl-10"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={handleSearchChange}
                   />
                 </div>
                 
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <Select value={categoryFilter} onValueChange={handleCategoryChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Избери категория" />
                   </SelectTrigger>
@@ -139,7 +165,7 @@ const Signals = () => {
                   </SelectContent>
                 </Select>
                 
-                <Select value={cityFilter} onValueChange={setCityFilter}>
+                <Select value={cityFilter} onValueChange={handleCityChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Избери град" />
                   </SelectTrigger>
