@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
@@ -10,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
 import { Partner } from '@/types/partner';
 
 const PartnerCarousel = () => {
@@ -71,13 +69,7 @@ const PartnerCarousel = () => {
     <section className="py-10 px-4 overflow-hidden">
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-xl font-medium text-muted-foreground">Нашите партньори</h2>
-          <Button 
-            variant="outline" 
-            onClick={() => setIsDialogOpen(true)}
-          >
-            Стани партньор
-          </Button>
+          <h2 className="text-2xl font-bold text-foreground w-full text-center">Нашите партньори</h2>
         </div>
         
         {isLoading ? (
