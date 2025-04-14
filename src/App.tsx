@@ -21,6 +21,8 @@ import SignalDetailPublic from "./pages/SignalDetailPublic";
 import Blog from "./pages/Blog";
 import BlogPostDetail from "./pages/BlogPostDetail";
 import AdminBlog from "./pages/AdminBlog";
+import AdminVideos from "./pages/AdminVideos";
+import Videos from "./pages/Videos";
 import Donations from "./pages/Donations";
 import Contact from "./pages/Contact";
 import Info from "./pages/Info";
@@ -45,10 +47,12 @@ const App = () => (
               <Route path="/admin/signals/:id" element={<SignalDetail />} />
               <Route path="/admin/volunteers" element={<AdminVolunteers />} />
               <Route path="/admin/blog" element={<AdminBlog />} />
+              <Route path="/admin/videos" element={<AdminVideos />} />
               <Route path="/signals" element={<Signals />} />
               <Route path="/signal/:id" element={<SignalDetailPublic />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:id" element={<BlogPostDetail />} />
+              <Route path="/videos" element={<Videos />} />
               <Route path="/donations" element={<Donations />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/info" element={<Info />} />

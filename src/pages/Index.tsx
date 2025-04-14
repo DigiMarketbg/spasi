@@ -5,6 +5,7 @@ import HeroSection from '@/components/HeroSection';
 import SignalsList from '@/components/SignalsList';
 import PartnerCarousel from '@/components/PartnerCarousel';
 import BlogSection from '@/components/BlogSection';
+import VideoSection from '@/components/VideoSection';
 import PartnerSection from '@/components/PartnerSection';
 import Footer from '@/components/Footer';
 
@@ -17,6 +18,7 @@ const Index = () => {
         <HeroSection />
         <SignalsList />
         <PartnerCarousel />
+        <VideoSection />
         <BlogSection />
         <PartnerSection />
       </main>
