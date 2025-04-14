@@ -3,5 +3,5 @@
 export * from './signals';
 export * from './videos';
 export * from './partners';
-export * from './volunteers';
+export * from './volunteers/index';
 export * from './storage';
