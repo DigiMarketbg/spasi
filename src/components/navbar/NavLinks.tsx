@@ -16,16 +16,18 @@ const links = [
 interface NavLinksProps {
   mobile?: boolean;
   onClick?: () => void;
+  className?: string; // Added className prop
 }
 
-export default function NavLinks({ mobile, onClick }: NavLinksProps) {
+export default function NavLinks({ mobile, onClick, className }: NavLinksProps) {
   const location = useLocation();
 
   return (
     <div
       className={cn(
         "flex items-center gap-1 md:gap-2",
-        mobile && "flex-col w-full items-start gap-0"
+        mobile && "flex-col w-full items-start gap-0",
+        className // Apply the className prop
       )}
     >
       {links.map((link) => (
