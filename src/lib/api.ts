@@ -3,6 +3,7 @@ import { Signal } from "@/types/signal";
 import { Video } from "@/types/video"; 
 import { uploadFile } from "./storage";
 import { Partner } from "@/types/partner";
+import { VolunteerMission } from "@/types/volunteer";
 
 // Get a single signal by ID
 export const getSignalById = async (id: string): Promise<Signal> => {
@@ -244,4 +245,145 @@ export const deletePartner = async (id: string): Promise<void> => {
     console.error("Error deleting partner:", error);
     throw new Error("Error deleting partner");
   }
+};
+
+// Volunteer missions related functions
+
+// Get all volunteer missions
+export const getVolunteerMissions = async (volunteerId?: string, limit?: number): Promise<VolunteerMission[]> => {
+  try {
+    let query = supabase
+      .from("volunteer_missions")
+      .select("*")
+      .order("date", { ascending: true });
+    
+    if (volunteerId) {
+      query = query.eq("volunteer_id", volunteerId);
+    }
+    
+    if (limit) {
+      query = query.limit(limit);
+    }
+    
+    const { data, error } = await query;
+    
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching volunteer missions:", error);
+    throw new Error("Error fetching volunteer missions");
+  }
+};
+
+// Get a single mission by ID
+export const getVolunteerMissionById = async (id: string): Promise<VolunteerMission> => {
+  if (!id) {
+    throw new Error("ID is required");
+  }
+
+  const { data, error } = await supabase
+    .from("volunteer_missions")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error("Error fetching volunteer mission:", error);
+    throw new Error("Error fetching volunteer mission details");
+  }
+
+  return data as VolunteerMission;
+};
+
+// Add a new volunteer mission
+export const addVolunteerMission = async (mission: Omit<VolunteerMission, 'id' | 'created_at'>): Promise<VolunteerMission> => {
+  const { data, error } = await supabase
+    .from("volunteer_missions")
+    .insert([mission])
+    .select()
+    .single();
+    
+  if (error) {
+    console.error("Error adding volunteer mission:", error);
+    throw new Error("Error adding volunteer mission");
+  }
+  
+  return data as VolunteerMission;
+};
+
+// Update a volunteer mission
+export const updateVolunteerMission = async (id: string, mission: Partial<Omit<VolunteerMission, 'id' | 'created_at'>>): Promise<void> => {
+  const { error } = await supabase
+    .from("volunteer_missions")
+    .update(mission)
+    .eq("id", id);
+    
+  if (error) {
+    console.error("Error updating volunteer mission:", error);
+    throw new Error("Error updating volunteer mission");
+  }
+};
+
+// Delete a volunteer mission
+export const deleteVolunteerMission = async (id: string): Promise<void> => {
+  const { error } = await supabase
+    .from("volunteer_missions")
+    .delete()
+    .eq("id", id);
+    
+  if (error) {
+    console.error("Error deleting volunteer mission:", error);
+    throw new Error("Error deleting volunteer mission");
+  }
+};
+
+// Register a volunteer for a mission
+export const registerForMission = async (missionId: string, volunteerId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("volunteer_mission_registrations")
+    .insert([{ 
+      mission_id: missionId, 
+      volunteer_id: volunteerId,
+      status: 'pending' 
+    }]);
+    
+  if (error) {
+    console.error("Error registering for mission:", error);
+    throw new Error("Error registering for mission");
+  }
+};
+
+// Update registration status
+export const updateRegistrationStatus = async (
+  missionId: string, 
+  volunteerId: string, 
+  status: 'pending' | 'approved' | 'rejected' | 'completed'
+): Promise<void> => {
+  const { error } = await supabase
+    .from("volunteer_mission_registrations")
+    .update({ status })
+    .match({ mission_id: missionId, volunteer_id: volunteerId });
+    
+  if (error) {
+    console.error("Error updating registration status:", error);
+    throw new Error("Error updating registration status");
+  }
+};
+
+// Get a volunteer's mission registrations
+export const getVolunteerRegistrations = async (volunteerId: string): Promise<any[]> => {
+  const { data, error } = await supabase
+    .from("volunteer_mission_registrations")
+    .select(`
+      *,
+      mission:mission_id(*)
+    `)
+    .eq("volunteer_id", volunteerId);
+    
+  if (error) {
+    console.error("Error fetching volunteer registrations:", error);
+    throw new Error("Error fetching volunteer registrations");
+  }
+  
+  return data || [];
 };

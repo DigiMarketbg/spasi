@@ -78,3 +78,58 @@ export const uploadFile = async (
     throw error;
   }
 };
+
+// Add new function to download a file from a bucket
+export const downloadFile = async (
+  bucketName: string,
+  filePath: string
+): Promise<Blob | null> => {
+  try {
+    console.log(`Downloading file '${filePath}' from bucket '${bucketName}'...`);
+    
+    const { data, error } = await supabase.storage
+      .from(bucketName)
+      .download(filePath);
+    
+    if (error) {
+      console.error('Download error details:', error);
+      throw new Error(`Error downloading file: ${error.message}`);
+    }
+    
+    if (!data) {
+      console.error('No data returned from download');
+      return null;
+    }
+    
+    console.log('File downloaded successfully');
+    return data;
+  } catch (error) {
+    console.error(`Error downloading file from ${bucketName}:`, error);
+    throw error;
+  }
+};
+
+// Delete a file from a bucket
+export const deleteFile = async (
+  bucketName: string,
+  filePath: string
+): Promise<boolean> => {
+  try {
+    console.log(`Deleting file '${filePath}' from bucket '${bucketName}'...`);
+    
+    const { error } = await supabase.storage
+      .from(bucketName)
+      .remove([filePath]);
+    
+    if (error) {
+      console.error('Delete error details:', error);
+      throw new Error(`Error deleting file: ${error.message}`);
+    }
+    
+    console.log('File deleted successfully');
+    return true;
+  } catch (error) {
+    console.error(`Error deleting file from ${bucketName}:`, error);
+    throw error;
+  }
+};

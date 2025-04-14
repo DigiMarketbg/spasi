@@ -14,6 +14,19 @@ export interface Volunteer {
 
 export type VolunteerFormData = Omit<Volunteer, 'id' | 'created_at' | 'user_id' | 'is_approved'>;
 
+export interface VolunteerMission {
+  id: string;
+  created_at: string;
+  title: string;
+  description: string;
+  location: string;
+  date: string;
+  category: string;
+  status: 'active' | 'upcoming' | 'completed';
+  max_volunteers: number;
+  created_by: string;
+}
+
 export const HELP_OPTIONS = [
   { id: 'transport', label: 'Транспорт' },
   { id: 'food', label: 'Храна' },

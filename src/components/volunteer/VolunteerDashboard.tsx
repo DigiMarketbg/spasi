@@ -1,46 +1,108 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Volunteer } from '@/types/volunteer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { getVolunteerRegistrations } from '@/lib/api';
+import { registerForMission } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
+import { Calendar, Clock, MapPin } from 'lucide-react';
 
 interface VolunteerDashboardProps {
   volunteer: Volunteer;
 }
 
 const VolunteerDashboard = ({ volunteer }: VolunteerDashboardProps) => {
-  // For now, these are placeholder missions
-  const missions = [
+  const { toast } = useToast();
+  const [missions, setMissions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchMissions = async () => {
+      try {
+        setLoading(true);
+        const registrations = await getVolunteerRegistrations(volunteer.id);
+        setMissions(registrations);
+      } catch (error) {
+        console.error('Error fetching missions:', error);
+        toast({
+          variant: "destructive",
+          title: "Грешка",
+          description: "Възникна проблем при зареждането на мисиите"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMissions();
+  }, [volunteer.id, toast]);
+
+  const handleRegister = async (missionId: string) => {
+    try {
+      await registerForMission(missionId, volunteer.id);
+      toast({
+        title: "Успешно записване",
+        description: "Успешно се записахте за мисията",
+      });
+      
+      // Refresh missions
+      const registrations = await getVolunteerRegistrations(volunteer.id);
+      setMissions(registrations);
+    } catch (error) {
+      console.error('Error registering for mission:', error);
+      toast({
+        variant: "destructive",
+        title: "Грешка",
+        description: "Възникна проблем при записването за мисията"
+      });
+    }
+  };
+
+  // For demonstration, use placeholder missions if no registered missions are found
+  const placeholderMissions = [
     {
-      id: 1,
-      title: "Транспорт на хранителни продукти",
-      location: "София - Младост 4",
-      date: "21.04.2025",
-      status: "активна",
-      category: "транспорт"
+      mission: {
+        id: 1,
+        title: "Транспорт на хранителни продукти",
+        location: "София - Младост 4",
+        date: "21.04.2025",
+        status: "active",
+        category: "transport"
+      },
+      status: "pending"
     },
     {
-      id: 2,
-      title: "Помощ в пакетиране на дарения",
-      location: "София - Люлин 5",
-      date: "25.04.2025",
-      status: "предстояща",
-      category: "логистика"
+      mission: {
+        id: 2,
+        title: "Помощ в пакетиране на дарения",
+        location: "София - Люлин 5",
+        date: "25.04.2025",
+        status: "upcoming",
+        category: "logistics"
+      },
+      status: null
     },
     {
-      id: 3,
-      title: "Доставка на храна до центрове",
-      location: "София - Център",
-      date: "18.04.2025",
-      status: "приключена",
-      category: "храна"
+      mission: {
+        id: 3,
+        title: "Доставка на храна до центрове",
+        location: "София - Център",
+        date: "18.04.2025",
+        status: "completed",
+        category: "food"
+      },
+      status: "completed"
     }
   ];
 
+  const displayMissions = missions.length > 0 ? missions : placeholderMissions;
+
   // Filter missions that match volunteer skills
-  const relevantMissions = missions.filter(mission => 
+  const relevantMissions = displayMissions.filter(item => 
     volunteer.can_help_with.some(skill => 
-      mission.category.includes(skill) || skill === 'other'
+      item.mission.category.includes(skill) || skill === 'other'
     )
   );
 
@@ -74,46 +136,93 @@ const VolunteerDashboard = ({ volunteer }: VolunteerDashboardProps) => {
 
       <div>
         <h3 className="text-xl font-semibold mb-4">Текущи мисии</h3>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {relevantMissions.map(mission => (
-            <Card key={mission.id} className="overflow-hidden transition-all hover:shadow-lg">
-              <div 
-                className={`h-2 w-full ${
-                  mission.status === 'активна' 
-                    ? 'bg-green-500' 
-                    : mission.status === 'предстояща' 
-                    ? 'bg-blue-500' 
-                    : 'bg-gray-500'
-                }`}
-              />
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-base">{mission.title}</CardTitle>
-                  <Badge variant="outline" className={
-                    mission.status === 'активна' 
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
-                      : mission.status === 'предстояща' 
-                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' 
-                      : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
-                  }>
-                    {mission.status}
-                  </Badge>
-                </div>
-                <CardDescription>{mission.location}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">{mission.date}</span>
-                  {mission.status !== 'приключена' && (
-                    <button className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                      Детайли
-                    </button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <div className="animate-pulse">Зареждане на мисии...</div>
+          </div>
+        ) : relevantMissions.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {relevantMissions.map((item, index) => (
+              <Card key={index} className="overflow-hidden transition-all hover:shadow-lg">
+                <div 
+                  className={`h-2 w-full ${
+                    item.mission.status === 'active' 
+                      ? 'bg-green-500' 
+                      : item.mission.status === 'upcoming' 
+                      ? 'bg-blue-500' 
+                      : 'bg-gray-500'
+                  }`}
+                />
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-base">{item.mission.title}</CardTitle>
+                    <Badge variant="outline" className={
+                      item.mission.status === 'active' 
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+                        : item.mission.status === 'upcoming' 
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' 
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+                    }>
+                      {item.mission.status === 'active' && 'Активна'}
+                      {item.mission.status === 'upcoming' && 'Предстояща'}
+                      {item.mission.status === 'completed' && 'Приключена'}
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    <div className="flex items-center gap-1 mt-1">
+                      <MapPin className="h-3 w-3" />
+                      <span>{item.mission.location}</span>
+                    </div>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Calendar className="h-3 w-3" />
+                      <span>{item.mission.date}</span>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-center">
+                    {item.status ? (
+                      <Badge variant={
+                        item.status === 'approved' ? 'default' : 
+                        item.status === 'pending' ? 'secondary' : 
+                        item.status === 'completed' ? 'outline' : 'destructive'
+                      }>
+                        {item.status === 'approved' && 'Одобрен'}
+                        {item.status === 'pending' && 'В изчакване'}
+                        {item.status === 'rejected' && 'Отхвърлен'}
+                        {item.status === 'completed' && 'Завършена'}
+                      </Badge>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">Незаписан</span>
+                    )}
+                    {(item.mission.status !== 'completed' && !item.status) && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleRegister(item.mission.id)}
+                      >
+                        Запиши се
+                      </Button>
+                    )}
+                    {(item.mission.status !== 'completed' && item.status) && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                      >
+                        Детайли
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 bg-muted/20 rounded-lg">
+            <p className="text-muted-foreground">Няма налични мисии, съответстващи на вашите умения в момента.</p>
+            <p className="text-sm mt-2">Моля, проверете отново по-късно за нови възможности.</p>
+          </div>
+        )}
       </div>
 
       <Card>
@@ -131,7 +240,7 @@ const VolunteerDashboard = ({ volunteer }: VolunteerDashboardProps) => {
           <div className="space-y-2">
             <h4 className="font-medium">2. Записване за мисия</h4>
             <p className="text-sm text-muted-foreground">
-              За да се запишете за мисия, използвайте бутона "Детайли" и следвайте инструкциите.
+              За да се запишете за мисия, използвайте бутона "Запиши се" и изчакайте одобрение.
             </p>
           </div>
           
