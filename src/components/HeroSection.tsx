@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, AlertTriangle, Shield, Users, Award, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -258,42 +259,42 @@ const HeroSection = () => {
             </Button>
           </div>
           
-          {/* Updated smaller buttons in a single row with consistent style */}
-          <div className="flex flex-row justify-center gap-2 mt-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
+          {/* Updated smaller buttons in a single row with consistent style and fixed mobile display */}
+          <div className="flex flex-row flex-wrap justify-center gap-2 mt-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
             {/* Button 1: Спасители */}
             <Button 
-              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center gap-1 transition-transform hover:scale-105 hover:bg-background/20"
+              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20"
               onClick={navigateToRescuers}
             >
               <Shield className="h-5 w-5 mb-1" />
-              <span className="text-[0.65rem] truncate max-w-full">Спасители</span>
+              <span className="text-[0.6rem] truncate w-[60px] text-center">Спасители</span>
             </Button>
             
             {/* Button 2: Доброволци */}
             <Button 
-              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center gap-1 transition-transform hover:scale-105 hover:bg-background/20"
+              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20"
               onClick={navigateToVolunteers}
             >
               <Users className="h-5 w-5 mb-1" />
-              <span className="text-[0.65rem] truncate max-w-full">Доброволци</span>
+              <span className="text-[0.6rem] truncate w-[60px] text-center">Доброволци</span>
             </Button>
             
             {/* Button 3: Placeholder */}
             <Button 
-              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center gap-1 transition-transform hover:scale-105 hover:bg-background/20 opacity-70 cursor-not-allowed"
+              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20 opacity-70 cursor-not-allowed"
               disabled
             >
               <Award className="h-5 w-5 mb-1" />
-              <span className="text-[0.65rem] truncate max-w-full">Бутон 3</span>
+              <span className="text-[0.6rem] truncate w-[60px] text-center">Бутон 3</span>
             </Button>
             
             {/* Button 4: Placeholder */}
             <Button 
-              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center gap-1 transition-transform hover:scale-105 hover:bg-background/20 opacity-70 cursor-not-allowed"
+              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20 opacity-70 cursor-not-allowed"
               disabled
             >
               <Star className="h-5 w-5 mb-1" />
-              <span className="text-[0.65rem] truncate max-w-full">Бутон 4</span>
+              <span className="text-[0.6rem] truncate w-[60px] text-center">Бутон 4</span>
             </Button>
           </div>
         </div>
