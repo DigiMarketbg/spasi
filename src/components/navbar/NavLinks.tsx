@@ -2,7 +2,11 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-const NavLinks = () => {
+interface NavLinksProps {
+  className?: string;
+}
+
+const NavLinks = ({ className }: NavLinksProps) => {
   const location = useLocation();
   
   const isActive = (path: string) => {
@@ -32,7 +36,7 @@ const NavLinks = () => {
         <Link
           key={link.path}
           to={link.path}
-          className={`text-sm font-medium transition-colors hover:text-primary ${
+          className={`${className ? className : ''} text-sm font-medium transition-colors hover:text-primary ${
             isActive(link.path) 
               ? 'text-primary font-bold' 
               : 'text-muted-foreground'

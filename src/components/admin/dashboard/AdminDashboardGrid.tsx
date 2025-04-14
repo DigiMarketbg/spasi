@@ -20,21 +20,21 @@ const AdminDashboardGrid: React.FC<AdminDashboardGridProps> = ({
       <AdminDashboardCard
         title="Потребители"
         description="Управление на потребителски профили"
-        icon={<UsersRound />}
+        icon={UsersRound}
         onClick={() => navigate('/admin/volunteers')}
       />
       
       <AdminDashboardCard
         title="Видео съдържание"
         description="Управление на видеа"
-        icon={<VideoIcon />}
+        icon={VideoIcon}
         onClick={() => navigate('/admin/videos')}
       />
       
       <AdminDashboardCard
         title="Партньори"
         description="Управление на партньори"
-        icon={<Building />}
+        icon={Building}
         badgeCount={pendingRequestsCount}
         onClick={() => navigate('/admin/partners')}
       />
@@ -42,7 +42,7 @@ const AdminDashboardGrid: React.FC<AdminDashboardGridProps> = ({
       <AdminDashboardCard
         title="Съобщения"
         description="Съобщения от контактната форма"
-        icon={<MessageSquare />}
+        icon={MessageSquare}
         badgeCount={unreadMessagesCount}
         onClick={() => navigate('/admin')}
       />
@@ -50,14 +50,14 @@ const AdminDashboardGrid: React.FC<AdminDashboardGridProps> = ({
       <AdminDashboardCard
         title="Блог"
         description="Управление на блог публикации"
-        icon={<FileText />}
+        icon={FileText}
         onClick={() => navigate('/admin/blog')}
       />
       
       <AdminDashboardCard
         title="Спасители"
         description="Управление на списъка със спасители"
-        icon={<Medal />}
+        icon={Medal}
         onClick={() => navigate('/admin/rescuers')}
       />
     </div>
