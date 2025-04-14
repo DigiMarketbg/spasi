@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, AlertTriangle, Medal, UserPlus } from 'lucide-react';
+import { Search, Bell, AlertTriangle, Medal, UserPlus, Shield, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ParticleBackground from './ParticleBackground';
@@ -258,40 +258,40 @@ const HeroSection = () => {
             </Button>
           </div>
           
-          {/* Нови бутони със същия дизайн като на снимката */}
+          {/* Бутони със стил от втората снимка */}
           <div className="flex flex-wrap gap-4 justify-center mt-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
             {/* Бутон 1: Спасители */}
             <Button 
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-3 px-5 rounded-lg text-base font-medium flex items-center gap-2 group shadow-lg transition-all duration-300 border-none"
+              className="bg-[#ff6b18] hover:bg-[#ff5500] text-white py-4 px-6 rounded-2xl text-base font-medium flex items-center gap-3 transition-colors duration-200 border-none"
               onClick={navigateToRescuers}
             >
-              <Medal className="h-5 w-5 relative z-10" />
-              <span className="relative z-10">Спасители</span>
+              <Medal className="h-6 w-6" />
+              <span className="text-xl">Спасители</span>
             </Button>
             
             {/* Бутон 2: Доброволци */}
             <Button 
-              className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white py-3 px-5 rounded-lg text-base font-medium flex items-center gap-2 group shadow-lg transition-all duration-300 border-none"
+              className="bg-[#9b30ff] hover:bg-[#8a20ee] text-white py-4 px-6 rounded-2xl text-base font-medium flex items-center gap-3 transition-colors duration-200 border-none"
               onClick={navigateToVolunteers}
             >
-              <UserPlus className="h-5 w-5 relative z-10" />
-              <span className="relative z-10">Доброволци</span>
+              <UserPlus className="h-6 w-6" />
+              <span className="text-xl">Доброволци</span>
             </Button>
             
             {/* Бутон 3: Празен */}
             <Button 
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-3 px-5 rounded-lg text-base font-medium flex items-center gap-2 group shadow-lg transition-all duration-300 border-none opacity-70 cursor-not-allowed"
+              className="bg-[#1961c3] hover:bg-[#1450a8] text-gray-300 py-4 px-6 rounded-2xl text-base font-medium flex items-center gap-3 transition-colors duration-200 border-none opacity-90 cursor-not-allowed"
               disabled
             >
-              <span className="relative z-10">Бутон 3</span>
+              <span className="text-xl">Бутон 3</span>
             </Button>
             
             {/* Бутон 4: Празен */}
             <Button 
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-5 rounded-lg text-base font-medium flex items-center gap-2 group shadow-lg transition-all duration-300 border-none opacity-70 cursor-not-allowed"
+              className="bg-[#0a833d] hover:bg-[#096c32] text-gray-300 py-4 px-6 rounded-2xl text-base font-medium flex items-center gap-3 transition-colors duration-200 border-none opacity-90 cursor-not-allowed"
               disabled
             >
-              <span className="relative z-10">Бутон 4</span>
+              <span className="text-xl">Бутон 4</span>
             </Button>
           </div>
         </div>
