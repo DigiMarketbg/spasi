@@ -1,8 +1,6 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
-// Instead of trying to create the bucket, we'll just check if it exists
 export const ensureStorageBucket = async (bucketName: string): Promise<boolean> => {
   try {
     console.log(`Checking if bucket '${bucketName}' exists...`);
