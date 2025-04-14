@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AlertCircle, Shield, Clock, HeartPulse, MapPin, Phone } from 'lucide-react';
 
@@ -38,6 +37,27 @@ const MovingElements = () => {
       <div className="absolute top-[60%] left-[20%] animate-float opacity-20"
            style={{ animationDelay: '2.5s' }}>
         <Phone className="h-12 w-12 text-primary" />
+      </div>
+
+      {/* Floating text elements */}
+      <div className="absolute top-[10%] left-[5%] animate-float opacity-20"
+           style={{ animationDelay: '0.5s' }}>
+        <span className="text-xl font-bold text-secondary">Spasi.bg</span>
+      </div>
+      
+      <div className="absolute top-[15%] right-[30%] animate-float opacity-20"
+           style={{ animationDelay: '1.2s' }}>
+        <span className="text-2xl font-bold text-spasi-red">Спаси Бг</span>
+      </div>
+      
+      <div className="absolute bottom-[25%] right-[25%] animate-float opacity-20"
+           style={{ animationDelay: '2.2s' }}>
+        <span className="text-2xl font-bold text-primary">Спаси</span>
+      </div>
+      
+      <div className="absolute top-[40%] left-[15%] animate-float opacity-20"
+           style={{ animationDelay: '1.8s' }}>
+        <span className="text-2xl font-bold text-secondary">Бг</span>
       </div>
 
       {/* Pulsing circles */}
