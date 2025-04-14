@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, AlertTriangle, Shield, Users, Award, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useTheme } from './ThemeProvider';
 
 interface SearchResult {
   id: string;
@@ -21,6 +21,7 @@ const HeroSection = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get('search') || '';
+  const { theme } = useTheme();
   
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -143,6 +144,15 @@ const HeroSection = () => {
     navigate('/volunteers');
   };
 
+  // Style for feature buttons based on theme
+  const featureButtonStyle = theme === 'light' 
+    ? "w-[80px] h-[80px] bg-spasi-red/10 backdrop-blur-sm border-2 border-spasi-red text-spasi-red rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-spasi-red/20"
+    : "w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20";
+
+  const disabledFeatureButtonStyle = theme === 'light'
+    ? "w-[80px] h-[80px] bg-spasi-red/5 backdrop-blur-sm border-2 border-spasi-red/30 text-spasi-red/50 rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform opacity-70 cursor-not-allowed"
+    : "w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20 opacity-70 cursor-not-allowed";
+
   return (
     <section className="relative py-20 px-4 md:px-6 lg:px-8 overflow-hidden min-h-[80vh] flex items-center">
       <ParticleBackground count={80} />
@@ -259,41 +269,41 @@ const HeroSection = () => {
             </Button>
           </div>
           
-          {/* Updated smaller buttons in a single row with consistent style and fixed mobile display */}
+          {/* Updated buttons with theme-aware styling */}
           <div className="flex flex-row flex-wrap justify-center gap-2 mt-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
             {/* Button 1: Спасители */}
             <Button 
-              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20"
+              className={featureButtonStyle}
               onClick={navigateToRescuers}
             >
-              <Shield className="h-5 w-5 mb-1" />
+              <Shield className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
               <span className="text-[0.6rem] truncate w-[60px] text-center">Спасители</span>
             </Button>
             
             {/* Button 2: Доброволци */}
             <Button 
-              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20"
+              className={featureButtonStyle}
               onClick={navigateToVolunteers}
             >
-              <Users className="h-5 w-5 mb-1" />
+              <Users className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
               <span className="text-[0.6rem] truncate w-[60px] text-center">Доброволци</span>
             </Button>
             
             {/* Button 3: Placeholder */}
             <Button 
-              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20 opacity-70 cursor-not-allowed"
+              className={disabledFeatureButtonStyle}
               disabled
             >
-              <Award className="h-5 w-5 mb-1" />
+              <Award className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red/50' : 'text-white'}`} />
               <span className="text-[0.6rem] truncate w-[60px] text-center">Бутон 3</span>
             </Button>
             
             {/* Button 4: Placeholder */}
             <Button 
-              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20 opacity-70 cursor-not-allowed"
+              className={disabledFeatureButtonStyle}
               disabled
             >
-              <Star className="h-5 w-5 mb-1" />
+              <Star className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red/50' : 'text-white'}`} />
               <span className="text-[0.6rem] truncate w-[60px] text-center">Бутон 4</span>
             </Button>
           </div>
