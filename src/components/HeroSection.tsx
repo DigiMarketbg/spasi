@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, AlertTriangle, Medal, UserPlus, Shield, Users } from 'lucide-react';
+import { Search, Bell, AlertTriangle, Shield, Users, Award, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ParticleBackground from './ParticleBackground';
@@ -258,40 +259,42 @@ const HeroSection = () => {
             </Button>
           </div>
           
-          {/* Бутони със стил от втората снимка */}
+          {/* Square, stylish buttons as requested */}
           <div className="flex flex-wrap gap-4 justify-center mt-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
-            {/* Бутон 1: Спасители */}
+            {/* Button 1: Спасители */}
             <Button 
-              className="bg-[#ff6b18] hover:bg-[#ff5500] text-white py-4 px-6 rounded-2xl text-base font-medium flex items-center gap-3 transition-colors duration-200 border-none"
+              className="w-[130px] h-[130px] bg-[#ff6b18] hover:bg-[#ff5500] text-white rounded-xl text-xl font-medium flex flex-col items-center justify-center gap-2 transition-transform hover:scale-105"
               onClick={navigateToRescuers}
             >
-              <Medal className="h-6 w-6" />
-              <span className="text-xl">Спасители</span>
+              <Shield className="h-8 w-8" />
+              <span>Спасители</span>
             </Button>
             
-            {/* Бутон 2: Доброволци */}
+            {/* Button 2: Доброволци */}
             <Button 
-              className="bg-[#9b30ff] hover:bg-[#8a20ee] text-white py-4 px-6 rounded-2xl text-base font-medium flex items-center gap-3 transition-colors duration-200 border-none"
+              className="w-[130px] h-[130px] bg-[#9b30ff] hover:bg-[#8a20ee] text-white rounded-xl text-xl font-medium flex flex-col items-center justify-center gap-2 transition-transform hover:scale-105"
               onClick={navigateToVolunteers}
             >
-              <UserPlus className="h-6 w-6" />
-              <span className="text-xl">Доброволци</span>
+              <Users className="h-8 w-8" />
+              <span>Доброволци</span>
             </Button>
             
-            {/* Бутон 3: Празен */}
+            {/* Button 3: Placeholder */}
             <Button 
-              className="bg-[#1961c3] hover:bg-[#1450a8] text-gray-300 py-4 px-6 rounded-2xl text-base font-medium flex items-center gap-3 transition-colors duration-200 border-none opacity-90 cursor-not-allowed"
+              className="w-[130px] h-[130px] bg-[#1961c3] hover:bg-[#1450a8] text-white rounded-xl text-xl font-medium flex flex-col items-center justify-center gap-2 transition-transform hover:scale-105 opacity-70 cursor-not-allowed"
               disabled
             >
-              <span className="text-xl">Бутон 3</span>
+              <Award className="h-8 w-8" />
+              <span>Бутон 3</span>
             </Button>
             
-            {/* Бутон 4: Празен */}
+            {/* Button 4: Placeholder */}
             <Button 
-              className="bg-[#0a833d] hover:bg-[#096c32] text-gray-300 py-4 px-6 rounded-2xl text-base font-medium flex items-center gap-3 transition-colors duration-200 border-none opacity-90 cursor-not-allowed"
+              className="w-[130px] h-[130px] bg-[#0a833d] hover:bg-[#096c32] text-white rounded-xl text-xl font-medium flex flex-col items-center justify-center gap-2 transition-transform hover:scale-105 opacity-70 cursor-not-allowed"
               disabled
             >
-              <span className="text-xl">Бутон 4</span>
+              <Star className="h-8 w-8" />
+              <span>Бутон 4</span>
             </Button>
           </div>
         </div>
