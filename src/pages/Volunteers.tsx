@@ -29,7 +29,10 @@ const Volunteers = () => {
 
   useEffect(() => {
     const fetchVolunteerRecord = async () => {
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
       
       try {
         setLoading(true);
@@ -101,30 +104,6 @@ const Volunteers = () => {
     }
   };
 
-  // If the user is not logged in, redirect to auth page
-  useEffect(() => {
-    if (user === null && !loading) {
-      toast({
-        title: "Необходим е вход",
-        description: "За да станете доброволец, трябва първо да влезете в акаунта си.",
-        variant: "default",
-      });
-      navigate('/auth?redirect=/volunteers');
-    }
-  }, [user, loading, navigate, toast]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <Navbar />
-        <main className="flex-grow mt-20 container mx-auto px-4 py-10 flex items-center justify-center">
-          <div className="animate-pulse">Зареждане...</div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
@@ -133,73 +112,79 @@ const Volunteers = () => {
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">Доброволци</h1>
           
-          {!volunteer ? (
-            // Show application button if user has no volunteer record
-            <>
-              <div className="text-center mb-12">
-                <p className="text-lg mb-6">
-                  Стани част от екипа ни от доброволци и помогни на хората в нужда.
-                </p>
-                {!showForm ? (
-                  <Button 
-                    onClick={() => setShowForm(true)}
-                    size="lg" 
-                    className="animate-pulse bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 transition-all shadow-lg hover:shadow-xl"
-                  >
-                    <UserPlus className="mr-2" />
-                    Стани доброволец
-                  </Button>
-                ) : (
-                  <div className="glass p-6 md:p-8 rounded-xl">
-                    <h2 className="text-xl font-bold mb-4">Кандидатствай за доброволец</h2>
-                    <VolunteerForm onSuccess={handleFormSuccess} />
-                    <div className="mt-4 text-center">
-                      <Button variant="ghost" onClick={() => setShowForm(false)}>
-                        Отказ
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            // Show dashboard or pending status based on approval status
-            <div className="glass p-6 md:p-8 rounded-xl mb-10">
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="dashboard">Начало</TabsTrigger>
-                  <TabsTrigger value="profile">Моят профил</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="dashboard">
-                  {volunteer.is_approved ? (
-                    <VolunteerDashboard volunteer={volunteer} />
-                  ) : (
-                    <PendingStatus />
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="profile">
-                  <div className="space-y-6">
-                    <h2 className="text-xl font-semibold">Моят профил</h2>
-                    <p className="text-muted-foreground mb-4">
-                      Тук можете да актуализирате информацията за своя доброволчески профил.
-                    </p>
-                    <VolunteerForm 
-                      existingData={{
-                        full_name: volunteer.full_name,
-                        email: volunteer.email,
-                        phone: volunteer.phone || '',
-                        city: volunteer.city,
-                        can_help_with: volunteer.can_help_with,
-                        motivation: volunteer.motivation || '',
-                      }} 
-                      onSuccess={handleFormSuccess} 
-                    />
-                  </div>
-                </TabsContent>
-              </Tabs>
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-pulse">Зареждане...</div>
             </div>
+          ) : (
+            <>
+              {!volunteer ? (
+                // Show application button if user has no volunteer record
+                <div className="text-center mb-12">
+                  <p className="text-lg mb-6">
+                    Стани част от екипа ни от доброволци и помогни на хората в нужда.
+                  </p>
+                  {!showForm ? (
+                    <Button 
+                      onClick={() => setShowForm(true)}
+                      size="lg" 
+                      className="animate-pulse bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 transition-all shadow-lg hover:shadow-xl"
+                    >
+                      <UserPlus className="mr-2" />
+                      Стани доброволец
+                    </Button>
+                  ) : (
+                    <div className="glass p-6 md:p-8 rounded-xl">
+                      <h2 className="text-xl font-bold mb-4">Кандидатствай за доброволец</h2>
+                      <VolunteerForm onSuccess={handleFormSuccess} />
+                      <div className="mt-4 text-center">
+                        <Button variant="ghost" onClick={() => setShowForm(false)}>
+                          Отказ
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Show dashboard or pending status based on approval status
+                <div className="glass p-6 md:p-8 rounded-xl mb-10">
+                  <Tabs value={activeTab} onValueChange={setActiveTab}>
+                    <TabsList className="grid w-full grid-cols-2 mb-6">
+                      <TabsTrigger value="dashboard">Начало</TabsTrigger>
+                      <TabsTrigger value="profile">Моят профил</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="dashboard">
+                      {volunteer.is_approved ? (
+                        <VolunteerDashboard volunteer={volunteer} />
+                      ) : (
+                        <PendingStatus />
+                      )}
+                    </TabsContent>
+                    
+                    <TabsContent value="profile">
+                      <div className="space-y-6">
+                        <h2 className="text-xl font-semibold">Моят профил</h2>
+                        <p className="text-muted-foreground mb-4">
+                          Тук можете да актуализирате информацията за своя доброволчески профил.
+                        </p>
+                        <VolunteerForm 
+                          existingData={{
+                            full_name: volunteer.full_name,
+                            email: volunteer.email,
+                            phone: volunteer.phone || '',
+                            city: volunteer.city,
+                            can_help_with: volunteer.can_help_with,
+                            motivation: volunteer.motivation || '',
+                          }} 
+                          onSuccess={handleFormSuccess} 
+                        />
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              )}
+            </>
           )}
           
           {/* Volunteers by City Section */}
