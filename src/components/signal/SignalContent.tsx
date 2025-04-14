@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ExternalLink, Phone, Calendar, MapPin, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,15 +21,20 @@ interface SignalContentProps {
 
 // Helper function to get the appropriate icon based on category
 const getCategoryIcon = (category: string) => {
-  switch(category) {
-    case 'Екология':
+  switch(category.toLowerCase()) {
+    case 'екология':
+    case 'ecology':
       return <Leaf className="h-5 w-5 mr-2" />;
-    case 'Инфраструктура':
+    case 'инфраструктура':
+    case 'infrastructure':
       return <Building className="h-5 w-5 mr-2" />;
-    case 'Бедствие':
+    case 'бедствие':
+    case 'disaster':
+    case 'danger':
       return <AlertTriangle className="h-5 w-5 mr-2" />;
-    case 'Хора в беда':
+    case 'хора в беда':
     case 'help':
+    case 'people in need':
       return <HelpingHand className="h-5 w-5 mr-2" />;
     default:
       return <HelpCircle className="h-5 w-5 mr-2" />;
