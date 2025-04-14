@@ -55,11 +55,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
     
     const file = files[0];
     
-    if (file.size > 10 * 1024 * 1024) {
-      setError("Файлът трябва да е по-малък от 10MB");
-      return;
-    }
-    
+    // File validation is now handled in the ImageUpload component
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreview(reader.result as string);
@@ -85,34 +81,30 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
     try {
       let imageUrl = null;
       
-      // Качване на изображение, ако има такова
+      // Upload image if there is one
       if (imageFile) {
         setIsUploading(true);
         console.log("Starting image upload process...");
         
-        // Simulate progress for better UX
-        const progressInterval = setInterval(() => {
-          setUploadProgress(prev => {
-            const newProgress = prev + 10;
-            return newProgress > 90 ? 90 : newProgress;
+        try {
+          imageUrl = await uploadSignalImage(imageFile, (progress) => {
+            setUploadProgress(progress);
           });
-        }, 500);
-        
-        imageUrl = await uploadSignalImage(imageFile);
-        
-        clearInterval(progressInterval);
-        setUploadProgress(100);
-        setIsUploading(false);
-        
-        if (!imageUrl) {
-          console.error("Image upload failed - null URL returned");
-          throw new Error("Неуспешно качване на изображението. Моля, опитайте отново.");
+          
+          if (!imageUrl) {
+            throw new Error("Неуспешно качване на изображението. Моля, опитайте отново.");
+          }
+          
+          console.log("Image uploaded successfully:", imageUrl);
+        } catch (uploadError: any) {
+          console.error("Error during image upload:", uploadError);
+          throw new Error(uploadError.message || "Неуспешно качване на изображението. Моля, опитайте отново.");
+        } finally {
+          setIsUploading(false);
         }
-        
-        console.log("Image uploaded successfully:", imageUrl);
       }
       
-      // Запазване на сигнала в базата данни
+      // Save signal to database
       console.log("Saving signal to database with data:", {
         user_id: user.id,
         category: data.category,
@@ -139,18 +131,18 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         throw signalError;
       }
       
-      // Нулиране на формуляра
+      // Reset form
       form.reset();
       setImageFile(null);
       setImagePreview(null);
       
-      // Показване на съобщение за успех
+      // Show success message
       toast({
         title: "Успешно подаден сигнал",
         description: "Сигналът беше изпратен успешно и ще бъде прегледан от администратор.",
       });
       
-      // Извикване на callback функцията при успех
+      // Call success callback if provided
       if (onSuccess) {
         onSuccess();
       }
@@ -165,7 +157,6 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       });
     } finally {
       setIsSubmitting(false);
-      setIsUploading(false);
       setUploadProgress(0);
     }
   };

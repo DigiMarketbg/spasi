@@ -9,7 +9,7 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
     
     if (listError) {
       console.error('Error checking buckets:', listError);
-      return false;
+      throw new Error(`Error checking buckets: ${listError.message}`);
     }
     
     const bucketExists = buckets.some(bucket => bucket.name === bucketName);
