@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from '@/components/ui/use-toast';
 import { uploadFile } from '@/lib/storage';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Partner } from '@/types/partner';
 
 // Create a schema for partner form validation
@@ -32,6 +32,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
   const [isLoading, setIsLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(initialData?.logo_url || null);
   const [hasSelectedFile, setHasSelectedFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<PartnerFormData>({
     resolver: zodResolver(partnerFormSchema),
@@ -86,6 +87,9 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
         form.reset();
         setPreviewImage(null);
         setHasSelectedFile(false);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
       }
     } catch (error) {
       console.error('Error submitting partner:', error);
@@ -101,41 +105,46 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+    
     if (files && files.length > 0) {
       const file = files[0];
       setHasSelectedFile(true);
+      
+      // Create a preview of the image
       const reader = new FileReader();
       reader.onload = () => {
         setPreviewImage(reader.result as string);
       };
       reader.readAsDataURL(file);
+      
+      console.log("File selected:", file.name, "hasSelectedFile set to:", true);
     } else {
-      // Reset if file selection is canceled
+      // Reset if file selection is canceled and no initial data
       if (!initialData?.logo_url) {
         setPreviewImage(null);
         setHasSelectedFile(false);
+        console.log("File selection canceled, reset states");
       }
     }
   };
 
-  // Monitor file input to detect when user clears the selection
+  // Manually reset file input when form is reset
   useEffect(() => {
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    if (fileInput) {
-      const checkFileState = () => {
-        if (fileInput.files && fileInput.files.length === 0 && !initialData?.logo_url) {
-          setPreviewImage(null);
-          setHasSelectedFile(false);
-        }
-      };
-      
-      fileInput.addEventListener('change', checkFileState);
-      return () => fileInput.removeEventListener('change', checkFileState);
-    }
-  }, [initialData]);
+    const subscription = form.watch(() => {
+      // We can detect form reset here if needed
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   // Logo required validation logic - consider both previewImage and hasSelectedFile
   const logoRequired = !initialData?.logo_url && !previewImage && !hasSelectedFile;
+
+  console.log("Form state:", { 
+    hasInitialLogo: !!initialData?.logo_url, 
+    hasPreviewImage: !!previewImage, 
+    hasSelectedFile, 
+    logoRequired 
+  });
 
   return (
     <Card>
@@ -179,6 +188,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
                   type="file" 
                   accept="image/*"
                   onChange={handleImageChange}
+                  ref={fileInputRef}
                   {...form.register('logo_file')}
                 />
               </FormControl>
@@ -204,7 +214,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
               )}
             </FormItem>
             
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading || logoRequired}>
               {isLoading ? 'Запазване...' : submitLabel}
             </Button>
           </form>
