@@ -1,26 +1,13 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { toast } from '@/hooks/use-toast';
+import { OneSignalContext, OneSignalContextType } from './OneSignalContext';
+import { isDevelopmentEnvironment, saveSubscriptionToDatabase } from './OneSignalUtils';
+import { setupDevSimulation } from './OneSignalDevSimulator';
 
-interface OneSignalContextType {
-  isSubscribed: boolean;
-  isPushSupported: boolean;
-  isInitialized: boolean;
-  subscribe: () => Promise<void>;
-  unsubscribe: () => Promise<void>;
-}
-
-const OneSignalContext = createContext<OneSignalContextType | undefined>(undefined);
-
-export const useOneSignal = () => {
-  const context = useContext(OneSignalContext);
-  if (context === undefined) {
-    throw new Error('useOneSignal must be used within a OneSignalProvider');
-  }
-  return context;
-};
+// Export the useOneSignal hook directly from the context file
+export { useOneSignal } from './OneSignalContext';
 
 export const OneSignalProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
@@ -31,24 +18,18 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
 
   // Initialize OneSignal
   useEffect(() => {
-    const isDev = () => {
-      const host = window.location.hostname;
-      return host.includes('localhost') || 
-             host.includes('127.0.0.1') || 
-             host.includes('lovableproject.com');
-    };
-
     // Check if we're in development environment
-    const devMode = isDev();
+    const devMode = isDevelopmentEnvironment();
     setIsDevEnvironment(devMode);
     
     // In development, we'll simulate OneSignal functionality
     if (devMode) {
       console.log('Running in development mode: OneSignal simulation active');
+      setupDevSimulation();
       setIsPushSupported(true);
       setIsInitialized(true);
       
-      // Check if we already showed the dialog before and user subscribed
+      // Check if user already subscribed in development
       const hasSubscribed = localStorage.getItem('onesignal_subscribed');
       if (hasSubscribed === 'true') {
         setIsSubscribed(true);
@@ -92,7 +73,8 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
           setIsSubscribed(isSubscribed);
           
           if (isSubscribed) {
-            await saveSubscriptionToDatabase();
+            const playerId = await window.OneSignal.getUserId();
+            await saveSubscriptionToDatabase(playerId, user?.id, false);
           }
         });
         
@@ -114,51 +96,7 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
         }
       }
     };
-  }, []);
-
-  // Save subscription to database
-  const saveSubscriptionToDatabase = async () => {
-    try {
-      // In development, we just simulate
-      if (isDevEnvironment) {
-        console.log('DEV: Simulating saving subscription to database');
-        return;
-      }
-      
-      // Get OneSignal User ID (player_id)
-      const playerId = await window.OneSignal.getUserId();
-      
-      if (!playerId) {
-        console.error('No OneSignal player ID found');
-        return;
-      }
-      
-      // Save subscription to Supabase
-      const { error } = await supabase.from('push_subscribers').upsert(
-        {
-          player_id: playerId,
-          user_id: user?.id || null,
-          // Default to empty for now, can be updated later
-          city: null,
-          category: null,
-        },
-        { onConflict: 'player_id' }
-      );
-      
-      if (error) {
-        console.error('Error saving subscription to database:', error);
-        toast({
-          title: 'Грешка',
-          description: 'Не успяхме да запазим вашия абонамент',
-          variant: 'destructive',
-        });
-      } else {
-        console.log('Subscription saved to database successfully');
-      }
-    } catch (error) {
-      console.error('Error in saveSubscriptionToDatabase:', error);
-    }
-  };
+  }, [user?.id]);
 
   // Subscribe to push notifications
   const subscribe = async () => {
@@ -186,7 +124,8 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
       
       if (isSubscribed) {
         setIsSubscribed(true);
-        await saveSubscriptionToDatabase();
+        const playerId = await window.OneSignal.getUserId();
+        await saveSubscriptionToDatabase(playerId, user?.id, false);
         
         toast({
           title: 'Абонирани сте успешно',
@@ -243,7 +182,7 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
     }
   };
 
-  const value = {
+  const value: OneSignalContextType = {
     isSubscribed,
     isPushSupported,
     isInitialized,
@@ -257,11 +196,3 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
     </OneSignalContext.Provider>
   );
 };
-
-// Add global type definition for OneSignal
-declare global {
-  interface Window {
-    OneSignal: any;
-    OneSignalDeferred: any[];
-  }
-}
