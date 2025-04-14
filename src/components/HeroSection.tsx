@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, AlertTriangle } from 'lucide-react';
+import { Search, Bell, AlertTriangle, Medal, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ParticleBackground from './ParticleBackground';
@@ -134,6 +133,15 @@ const HeroSection = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
+  // Функции за навигация към различни страници
+  const navigateToRescuers = () => {
+    navigate('/rescuers');
+  };
+
+  const navigateToVolunteers = () => {
+    navigate('/volunteers');
+  };
+
   return (
     <section className="relative py-20 px-4 md:px-6 lg:px-8 overflow-hidden min-h-[80vh] flex items-center">
       <ParticleBackground count={80} />
@@ -247,6 +255,45 @@ const HeroSection = () => {
               <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
               <Bell className="h-5 w-5 relative z-10" />
               <span className="relative z-10">{isSubscribing ? "Обработка..." : "Абонирай се"}</span>
+            </Button>
+          </div>
+          
+          {/* Нови бутони */}
+          <div className="flex flex-wrap gap-4 justify-center mt-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
+            {/* Бутон 1: Спасители */}
+            <Button 
+              className="bg-spasi-red/80 hover:bg-spasi-red text-white py-5 px-6 rounded-lg text-base font-medium flex items-center gap-2 relative group overflow-hidden"
+              onClick={navigateToRescuers}
+            >
+              <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
+              <Medal className="h-5 w-5 relative z-10" />
+              <span className="relative z-10">Спасители</span>
+            </Button>
+            
+            {/* Бутон 2: Доброволци */}
+            <Button 
+              className="bg-purple-600 hover:bg-purple-700 text-white py-5 px-6 rounded-lg text-base font-medium flex items-center gap-2 relative group overflow-hidden"
+              onClick={navigateToVolunteers}
+            >
+              <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
+              <UserPlus className="h-5 w-5 relative z-10" />
+              <span className="relative z-10">Доброволци</span>
+            </Button>
+            
+            {/* Бутон 3: Празен */}
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700 text-white py-5 px-6 rounded-lg text-base font-medium flex items-center gap-2 relative group overflow-hidden opacity-70 cursor-not-allowed"
+              disabled
+            >
+              <span className="relative z-10">Бутон 3</span>
+            </Button>
+            
+            {/* Бутон 4: Празен */}
+            <Button 
+              className="bg-green-600 hover:bg-green-700 text-white py-5 px-6 rounded-lg text-base font-medium flex items-center gap-2 relative group overflow-hidden opacity-70 cursor-not-allowed"
+              disabled
+            >
+              <span className="relative z-10">Бутон 4</span>
             </Button>
           </div>
         </div>
