@@ -91,14 +91,11 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
             setUploadProgress(progress);
           });
           
-          if (!imageUrl) {
-            throw new Error("Неуспешно качване на изображението. Моля, опитайте отново.");
-          }
-          
-          console.log("Image uploaded successfully:", imageUrl);
+          console.log("Image upload result:", imageUrl ? "Success" : "Not uploaded");
         } catch (uploadError: any) {
           console.error("Error during image upload:", uploadError);
-          throw new Error(uploadError.message || "Неуспешно качване на изображението. Моля, опитайте отново.");
+          // Continue with signal submission without the image
+          imageUrl = null;
         } finally {
           setIsUploading(false);
         }

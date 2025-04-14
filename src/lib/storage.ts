@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -8,22 +9,21 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
     
     if (listError) {
       console.error('Error checking buckets:', listError);
-      throw new Error(`Error checking buckets: ${listError.message}`);
+      return false;
     }
     
     const bucketExists = buckets.some(bucket => bucket.name === bucketName);
     
     if (!bucketExists) {
-      console.log(`Bucket '${bucketName}' does not exist. It should be created from the Supabase dashboard.`);
-      throw new Error(`Bucket ${bucketName} does not exist. Please contact the administrator.`);
+      console.log(`Bucket '${bucketName}' does not exist.`);
+      return false;
     } else {
       console.log(`Bucket '${bucketName}' exists.`);
+      return true;
     }
-    
-    return true;
   } catch (error) {
     console.error('Error ensuring bucket exists:', error);
-    throw error;
+    return false;
   }
 };
 
@@ -60,8 +60,18 @@ export const uploadFile = async (
       return null;
     }
     
-    // Check if bucket exists instead of trying to create it
-    await ensureStorageBucket(bucketName);
+    // Check if bucket exists
+    const bucketExists = await ensureStorageBucket(bucketName);
+    if (!bucketExists) {
+      // If bucket doesn't exist, we'll return null but not throw an error
+      console.log(`Bucket '${bucketName}' doesn't exist, proceeding without image upload.`);
+      toast({ 
+        title: "Notice",
+        description: "Image upload is currently unavailable. Your signal will be submitted without an image.",
+        variant: "default"
+      });
+      return null;
+    }
     
     // Generate unique filename
     const fileExt = file.name.split('.').pop();
@@ -99,7 +109,12 @@ export const uploadFile = async (
     
     if (error) {
       console.error('Upload error details:', error);
-      throw new Error(`Error uploading file: ${error.message}`);
+      toast({
+        title: "Upload Failed",
+        description: "Unable to upload image. Your signal will be submitted without an image.",
+        variant: "default"
+      });
+      return null;
     }
     
     console.log('File uploaded successfully, getting public URL...');
@@ -113,6 +128,11 @@ export const uploadFile = async (
     return urlData.publicUrl;
   } catch (error) {
     console.error(`Error uploading file to ${bucketName}:`, error);
-    throw error;
+    toast({
+      title: "Upload Failed",
+      description: "Unable to upload image. Your signal will be submitted without an image.",
+      variant: "default"
+    });
+    return null;
   }
 };

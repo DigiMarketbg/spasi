@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Signal } from "@/types/signal";
 import { uploadFile } from "./storage";
@@ -80,11 +79,10 @@ export const uploadSignalImage = async (
     // Use the improved uploadFile function
     const imageUrl = await uploadFile('signals', file, onProgress);
     
-    if (!imageUrl) {
-      console.error("Failed to upload image, null URL returned");
-      throw new Error("Image upload failed");
-    } else {
+    if (imageUrl) {
       console.log("Image successfully uploaded:", imageUrl);
+    } else {
+      console.log("No image URL returned, continuing without image");
     }
     
     return imageUrl;
@@ -93,11 +91,11 @@ export const uploadSignalImage = async (
     
     // Show a toast notification for the error
     toast({
-      variant: "destructive",
-      title: "Грешка при подаване на сигнал",
-      description: error.message || "Неуспешно качване на изображението. Моля, опитайте отново."
+      variant: "default",
+      title: "Сигналът ще бъде изпратен без изображение",
+      description: "Не можахме да качим изображението, но сигналът ви все още ще бъде подаден."
     });
     
-    throw new Error(error.message || "Неуспешно качване на изображението. Моля, опитайте отново.");
+    return null;
   }
 };
