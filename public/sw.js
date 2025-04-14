@@ -1,6 +1,6 @@
 
-// Cache name
-const CACHE_NAME = 'spasi-bg-v1';
+// Cache name - update version to force refresh
+const CACHE_NAME = 'spasi-bg-v3';
 
 // Files to cache
 const urlsToCache = [
@@ -13,6 +13,9 @@ const urlsToCache = [
 
 // Install event
 self.addEventListener('install', (event) => {
+  // Force the waiting service worker to become the active service worker
+  self.skipWaiting();
+  
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -37,6 +40,9 @@ self.addEventListener('fetch', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  // Take control of all clients immediately
+  event.waitUntil(clients.claim());
+  
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
