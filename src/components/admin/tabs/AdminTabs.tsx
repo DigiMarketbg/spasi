@@ -85,8 +85,8 @@ const AdminTabs = ({
       
       <TabsContent value="partners">
         <PartnerRequestsManagement 
-          partnerRequests={partnerRequests} 
-          loadingPartnerRequests={loadingPartnerRequests}
+          requests={partnerRequests} 
+          loadingRequests={loadingPartnerRequests}
           onRefresh={onRefreshPartnerRequests}
         />
       </TabsContent>
@@ -94,7 +94,7 @@ const AdminTabs = ({
       <TabsContent value="messages">
         <ContactMessagesManagement 
           messages={contactMessages} 
-          loadingContactMessages={loadingContactMessages}
+          loadingMessages={loadingContactMessages}
           onRefresh={onRefreshContactMessages}
         />
       </TabsContent>
