@@ -1,6 +1,6 @@
 
 // Cache name - update version to force refresh
-const CACHE_NAME = 'spasi-bg-v4';
+const CACHE_NAME = 'spasi-bg-v5';
 
 // Files to cache
 const urlsToCache = [
@@ -81,3 +81,7 @@ self.addEventListener('notificationclick', function(event) {
     clients.openWindow(event.notification.data.url)
   );
 });
+
+// Important: Don't interfere with OneSignal's service worker
+// This ensures the OneSignal SDK can properly handle push messages
+self.importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');

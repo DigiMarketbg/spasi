@@ -43,20 +43,28 @@ const HeroSection = () => {
             description: "Вече получавате известия от платформата",
           });
         } else {
-          // Показваме диалога за абониране
-          await window.OneSignal.Slidedown.promptPush();
+          // Използваме стандартния OneSignal прозорец за абониране
+          window.OneSignal.Slidedown.promptPush({
+            force: true // Това ще покаже прозореца дори ако потребителят вече го е отхвърлил
+          });
           
-          // Проверяваме резултата след показване на диалога
-          const isNowEnabled = await window.OneSignal.User.PushSubscription.optedIn;
-          
-          if (isNowEnabled) {
-            toast({
-              title: "Успешно абониране",
-              description: "Вече ще получавате известия за нови сигнали",
-            });
-          }
+          // Добавяме слушател за промяна на статуса на абонамента
+          const unsubscribe = window.OneSignal.User.PushSubscription.addEventListener('change', async (event) => {
+            const isNowEnabled = await window.OneSignal.User.PushSubscription.optedIn;
+            
+            if (isNowEnabled) {
+              toast({
+                title: "Успешно абониране",
+                description: "Вече ще получавате известия за нови сигнали",
+              });
+              
+              // Премахваме слушателя след успешно абониране
+              unsubscribe();
+            }
+          });
         }
       } else {
+        console.error("OneSignal not available");
         toast({
           title: "Грешка",
           description: "OneSignal не е наличен. Моля, опитайте отново по-късно.",
