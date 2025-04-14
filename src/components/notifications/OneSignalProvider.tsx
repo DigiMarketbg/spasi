@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/components/AuthProvider';
 import { toast } from '@/hooks/use-toast';
 import { OneSignalContext, OneSignalContextType } from './OneSignalContext';
-import { isDevelopmentEnvironment, saveSubscriptionToDatabase } from './OneSignalUtils';
+import { isDevelopmentEnvironment, isProductionDomain, saveSubscriptionToDatabase } from './OneSignalUtils';
 import { setupDevSimulation } from './OneSignalDevSimulator';
 
 // Export the useOneSignal hook directly from the context file
@@ -64,11 +64,11 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
       }
     };
 
-    // Add subscription change event listener
+    // Add subscription change event listener using the push method
     try {
       window.OneSignal.push(() => {
-        // Using addEventListener instead of on/off pattern
-        window.OneSignal.addEventListener('subscriptionChange', async (isSubscribed: boolean) => {
+        // Using on method instead of addEventListener
+        window.OneSignal.on('subscriptionChange', async (isSubscribed: boolean) => {
           console.log('Subscription changed:', isSubscribed);
           setIsSubscribed(isSubscribed);
           
@@ -78,6 +78,7 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
           }
         });
         
+        // Run the check
         checkSubscriptionStatus();
       });
     } catch (error) {
@@ -89,8 +90,8 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
       // Clean up OneSignal event listeners if needed
       if (window.OneSignal) {
         try {
-          // Using removeEventListener for cleanup
-          window.OneSignal.removeEventListener('subscriptionChange');
+          // Using off method instead of removeEventListener
+          window.OneSignal.off('subscriptionChange');
         } catch (error) {
           console.warn('Error cleaning up OneSignal:', error);
         }

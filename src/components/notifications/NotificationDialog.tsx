@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useOneSignal } from './OneSignalProvider';
+import { isProductionDomain } from './OneSignalUtils';
 
 const NotificationDialog = () => {
   const [open, setOpen] = useState(false);
@@ -20,7 +21,8 @@ const NotificationDialog = () => {
     console.log('NotificationDialog Mount:', {
       isInitialized,
       isPushSupported,
-      isSubscribed
+      isSubscribed,
+      isDomain: isProductionDomain()
     });
     
     // Don't show if notifications are not supported or user is already subscribed

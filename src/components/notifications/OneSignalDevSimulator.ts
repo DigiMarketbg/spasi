@@ -28,13 +28,13 @@ export const setupDevSimulation = (): void => {
     
     // Event management
     _eventListeners: {},
-    addEventListener: function(event: string, listener: Function) {
+    on: function(event: string, listener: Function) {
       if (!this._eventListeners[event]) {
         this._eventListeners[event] = [];
       }
       this._eventListeners[event].push(listener);
     },
-    removeEventListener: function(event: string) {
+    off: function(event: string) {
       this._eventListeners[event] = [];
     },
     
@@ -97,8 +97,8 @@ declare global {
     OneSignal: {
       isPushNotificationsSupported: () => Promise<boolean>;
       isPushNotificationsEnabled: () => Promise<boolean>;
-      addEventListener: (event: string, listener: Function) => void;
-      removeEventListener: (event: string) => void;
+      on: (event: string, listener: Function) => void;
+      off: (event: string) => void;
       _eventListeners: Record<string, Function[]>;
       _triggerEvent: (event: string, data: any) => void;
       getUserId: () => Promise<string>;

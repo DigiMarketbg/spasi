@@ -10,6 +10,11 @@ export const isDevelopmentEnvironment = (): boolean => {
          host.includes('lovableproject.com');
 };
 
+// Check if we're on the production spasi.bg domain
+export const isProductionDomain = (): boolean => {
+  return window.location.hostname === 'spasi.bg';
+};
+
 // Save OneSignal subscription to database
 export const saveSubscriptionToDatabase = async (
   playerId: string, 

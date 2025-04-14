@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bg">
   <head>
@@ -38,11 +39,15 @@
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       
       // Only initialize OneSignal if we're on the production domain
-      if (window.location.hostname === 'spasi.bg') {
+      if (window.location.hostname === 'spasi.bg' || window.location.hostname === 'www.spasi.bg') {
         console.log('Initializing OneSignal for production domain');
         OneSignalDeferred.push(async function(OneSignal) {
           await OneSignal.init({
             appId: "35af33cb-8ab8-4d90-b789-17fb5c45542b",
+            notifyButton: {
+              enable: true,
+            },
+            allowLocalhostAsSecureOrigin: true,
           });
         });
       } else {
