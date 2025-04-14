@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ExternalLink, Phone, Calendar, MapPin, Leaf, Building, AlertTriangle, HandHelp, HelpCircle } from 'lucide-react';
+import { ExternalLink, Phone, Calendar, MapPin, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { categoryTranslations, detailCardStyles } from '@/lib/card-styles';
@@ -30,7 +30,7 @@ const getCategoryIcon = (category: string) => {
       return <AlertTriangle className="h-5 w-5 mr-2" />;
     case 'Хора в беда':
     case 'help':
-      return <HandHelp className="h-5 w-5 mr-2" />;
+      return <HelpingHand className="h-5 w-5 mr-2" />;
     default:
       return <HelpCircle className="h-5 w-5 mr-2" />;
   }
