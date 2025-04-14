@@ -2,7 +2,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Signal } from "@/types/signal";
 import { uploadFile } from "./storage";
-import { toast } from "@/hooks/use-toast";
 
 // Get a single signal by ID
 export const getSignalById = async (id: string): Promise<Signal> => {
@@ -63,52 +62,35 @@ export const deleteSignal = async (id: string): Promise<void> => {
   console.log("Signal successfully deleted");
 };
 
-// Upload an image for a signal with improved error handling and progress tracking
-export const uploadSignalImage = async (
-  file: File, 
-  onProgress?: (progress: number) => void
-): Promise<string | null> => {
+// Upload an image for a signal with improved error handling
+export const uploadSignalImage = async (file: File): Promise<string | null> => {
   if (!file) {
     console.log("No file provided for upload");
     return null;
   }
   
   try {
-    // Check if user is authenticated first
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (!sessionData.session) {
-      const errorMsg = 'User must be logged in to upload files';
-      console.error(errorMsg);
-      toast({ 
-        title: "Authentication Error",
-        description: errorMsg,
-        variant: "destructive"
-      });
-      return null;
-    }
+    // Generate a unique filename to avoid collisions
+    const timestamp = new Date().getTime();
+    const randomString = Math.random().toString(36).substring(2, 10);
+    const fileExt = file.name.split('.').pop();
+    const fileName = `signal_${timestamp}_${randomString}.${fileExt}`;
+    const filePath = fileName;
     
-    console.log(`Preparing to upload file: ${file.name} of type ${file.type} and size ${file.size} bytes`);
+    console.log(`Attempting to upload file: ${fileName} of type ${file.type} and size ${file.size} bytes`);
     
-    // Use the improved uploadFile function
-    const imageUrl = await uploadFile('signals', file, onProgress);
+    const imageUrl = await uploadFile('signals', filePath, file);
     
-    if (imageUrl) {
-      console.log("Image successfully uploaded:", imageUrl);
+    if (!imageUrl) {
+      console.error("Failed to upload image, null URL returned");
+      throw new Error("Image upload failed");
     } else {
-      console.log("No image URL returned, continuing without image");
+      console.log("Image successfully uploaded:", imageUrl);
     }
     
     return imageUrl;
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in uploadSignalImage:", error);
-    
-    // Show a toast notification for the error
-    toast({
-      variant: "destructive",
-      title: "Upload Failed",
-      description: error.message || "Unable to upload image. Your signal will be submitted without an image."
-    });
-    
-    return null;
+    throw new Error("Неуспешно качване на изображението. Моля, опитайте отново.");
   }
 };

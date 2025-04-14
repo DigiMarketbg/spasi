@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,6 @@ import MovingElements from './MovingElements';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import SubscribeButton from './notifications/SubscribeButton';
 
 interface SearchResult {
   id: string;
@@ -181,15 +181,13 @@ const HeroSection = () => {
               </Button>
             )}
             
-            <div className="relative">
-              {/* OneSignal custom link container */}
-              <div className="onesignal-customlink-container absolute inset-0 z-10 opacity-0"></div>
-              <SubscribeButton 
-                variant="outline" 
-                className="border-2 border-spasi-red/50 bg-soft-purple/10 hover:bg-soft-purple/20 py-3 px-6 rounded-lg text-sm font-medium"
-                showText={true}
-              />
-            </div>
+            <Button 
+              variant="outline" 
+              className="border-2 border-spasi-red/50 bg-soft-purple/10 hover:bg-soft-purple/20 py-3 px-6 rounded-lg text-sm font-medium flex items-center gap-2 relative group"
+            >
+              <Bell className="h-4 w-4 text-primary opacity-70" />
+              <span>Абонирай се за известия</span>
+            </Button>
           </div>
         </div>
       </div>

@@ -115,20 +115,9 @@ const SignalContent: React.FC<SignalContentProps> = ({
           </div>}
       </div>
       
-      {signal.image_url ? (
-        <div className="order-first md:order-last mb-6 md:mb-0">
-          <img 
-            src={signal.image_url} 
-            alt={signal.title} 
-            className={detailCardStyles.image} 
-            loading="eager" 
-            onError={(e) => {
-              console.error("Error loading image:", signal.image_url);
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
-        </div>
-      ) : null}
+      {signal.image_url ? <div className="order-first md:order-last mb-6 md:mb-0">
+          <img src={signal.image_url} alt={signal.title} className={detailCardStyles.image} loading="eager" />
+        </div> : null}
     </div>
   );
 };

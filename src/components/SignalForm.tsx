@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import { Form } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
+import { uploadSignalImage } from '@/lib/api';
 
 // Import form schema and components
 import { formSchema, FormValues } from './signal-form/FormSchema';
@@ -15,7 +16,7 @@ import CityField from './signal-form/CityField';
 import DescriptionField from './signal-form/DescriptionField';
 import PhoneField from './signal-form/PhoneField';
 import LinkField from './signal-form/LinkField';
-import ImageUrlField from './signal-form/ImageUrlField';
+import ImageUpload from './signal-form/ImageUpload';
 import SubmitButton from './signal-form/SubmitButton';
 import ErrorAlert from './signal-form/ErrorAlert';
 
@@ -28,6 +29,10 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -37,10 +42,35 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       city: '',
       description: '',
       link: '',
-      imageUrl: '',
       phone: '',
     },
   });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    
+    if (!files || files.length === 0) {
+      return;
+    }
+    
+    const file = files[0];
+    
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Файлът трябва да е по-малък от 10MB");
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    setImageFile(file);
+    setError(null);
+    
+    // Log file details for debugging
+    console.log(`Selected file: ${file.name}, type: ${file.type}, size: ${file.size} bytes`);
+  };
 
   const onSubmit = async (data: FormValues) => {
     if (!user) {
@@ -50,15 +80,45 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
 
     setIsSubmitting(true);
     setError(null);
+    setUploadProgress(0);
 
     try {
-      // Save signal to database
+      let imageUrl = null;
+      
+      // Качване на изображение, ако има такова
+      if (imageFile) {
+        setIsUploading(true);
+        console.log("Starting image upload process...");
+        
+        // Simulate progress for better UX
+        const progressInterval = setInterval(() => {
+          setUploadProgress(prev => {
+            const newProgress = prev + 10;
+            return newProgress > 90 ? 90 : newProgress;
+          });
+        }, 500);
+        
+        imageUrl = await uploadSignalImage(imageFile);
+        
+        clearInterval(progressInterval);
+        setUploadProgress(100);
+        setIsUploading(false);
+        
+        if (!imageUrl) {
+          console.error("Image upload failed - null URL returned");
+          throw new Error("Неуспешно качване на изображението. Моля, опитайте отново.");
+        }
+        
+        console.log("Image uploaded successfully:", imageUrl);
+      }
+      
+      // Запазване на сигнала в базата данни
       console.log("Saving signal to database with data:", {
         user_id: user.id,
         category: data.category,
         title: data.title,
         city: data.city,
-        imageUrl: data.imageUrl
+        imageUrl: imageUrl
       });
       
       const { error: signalError } = await supabase.from('signals').insert({
@@ -68,7 +128,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         description: data.description,
         city: data.city,
         link: data.link || null,
-        image_url: data.imageUrl || null,
+        image_url: imageUrl,
         phone: data.phone || null,
         is_approved: false,
         is_resolved: false
@@ -79,16 +139,18 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         throw signalError;
       }
       
-      // Reset form
+      // Нулиране на формуляра
       form.reset();
+      setImageFile(null);
+      setImagePreview(null);
       
-      // Show success message
+      // Показване на съобщение за успех
       toast({
         title: "Успешно подаден сигнал",
         description: "Сигналът беше изпратен успешно и ще бъде прегледан от администратор.",
       });
       
-      // Call success callback if provided
+      // Извикване на callback функцията при успех
       if (onSuccess) {
         onSuccess();
       }
@@ -103,7 +165,14 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       });
     } finally {
       setIsSubmitting(false);
+      setIsUploading(false);
+      setUploadProgress(0);
     }
+  };
+
+  const handleImageRemove = () => {
+    setImageFile(null);
+    setImagePreview(null);
   };
   
   return (
@@ -116,10 +185,18 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         <DescriptionField control={form.control} />
         <PhoneField control={form.control} />
         <LinkField control={form.control} />
-        <ImageUrlField control={form.control} />
+        
+        <ImageUpload 
+          imagePreview={imagePreview}
+          isUploading={isUploading}
+          uploadProgress={uploadProgress}
+          onImageChange={handleImageChange}
+          onImageRemove={handleImageRemove}
+        />
         
         <SubmitButton 
-          isSubmitting={isSubmitting}
+          isSubmitting={isSubmitting} 
+          isUploading={isUploading} 
         />
       </form>
     </Form>

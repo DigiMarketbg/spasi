@@ -49,10 +49,8 @@ const SignalDetailPublic = () => {
         if (error) throw error;
         if (!data) throw new Error('Сигналът не е намерен или не е одобрен.');
         
-        console.log("Fetched signal details:", data);
         setSignal(data);
       } catch (error: any) {
-        console.error("Error fetching signal:", error);
         toast({
           title: "Грешка",
           description: "Сигналът не може да бъде зареден или не е одобрен.",

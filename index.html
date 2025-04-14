@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bg">
   <head>
@@ -32,85 +31,6 @@
     
     <!-- Updated favicon to use the uploaded image -->
     <link rel="icon" href="/lovable-uploads/9ebf9964-e102-4d6e-866b-63884dc1f10f.png" type="image/png">
-
-    <!-- OneSignal Web Push SDK -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      
-      // Only initialize OneSignal if we're on the production domain
-      if (window.location.hostname === 'spasi.bg' || window.location.hostname === 'www.spasi.bg') {
-        console.log('Initializing OneSignal for production domain');
-        OneSignalDeferred.push(async function(OneSignal) {
-          await OneSignal.init({
-            appId: "35af33cb-8ab8-4d90-b789-17fb5c45542b",
-            notifyButton: {
-              enable: true,
-            },
-            allowLocalhostAsSecureOrigin: true,
-          });
-          
-          // IMPORTANT: For OneSignal v16, we need to manually check and show
-          // the slidedown prompt to subscribe users
-          console.log('OneSignal initialized, checking subscription status');
-          const isPushEnabled = await OneSignal.isPushNotificationsEnabled();
-          if (!isPushEnabled) {
-            console.log('User not subscribed, showing subscription slidedown in 3 seconds');
-            // Wait 3 seconds to ensure app is fully loaded
-            setTimeout(async () => {
-              // Show the slidedown prompt
-              try {
-                await OneSignal.showSlidedownPrompt();
-                console.log('Slidedown prompt shown');
-              } catch (error) {
-                console.error('Error showing slidedown prompt:', error);
-              }
-            }, 3000);
-          } else {
-            console.log('User already subscribed to notifications');
-          }
-        });
-      } else {
-        console.log('OneSignal initialization skipped in development environment');
-      }
-      
-      // Add event listener for any subscribe button click
-      document.addEventListener('DOMContentLoaded', () => {
-        console.log('Setting up subscription button event listeners');
-        
-        // We need to use a mutation observer to detect dynamically added buttons
-        const observer = new MutationObserver((mutations) => {
-          const subscribeBtn = document.getElementById('subscribeBtn');
-          const dialogSubscribeBtn = document.getElementById('dialogSubscribeBtn');
-          
-          // Check if our buttons exist and don't have listeners yet
-          if (subscribeBtn && !subscribeBtn.getAttribute('data-listener')) {
-            console.log('Adding event listener to subscribe button');
-            subscribeBtn.addEventListener('click', () => {
-              console.log('Subscribe button clicked');
-              OneSignalDeferred.push(async function(OneSignal) {
-                await OneSignal.showSlidedownPrompt();
-              });
-            });
-            subscribeBtn.setAttribute('data-listener', 'true');
-          }
-          
-          if (dialogSubscribeBtn && !dialogSubscribeBtn.getAttribute('data-listener')) {
-            console.log('Adding event listener to dialog subscribe button');
-            dialogSubscribeBtn.addEventListener('click', () => {
-              console.log('Dialog subscribe button clicked');
-              OneSignalDeferred.push(async function(OneSignal) {
-                await OneSignal.showSlidedownPrompt();
-              });
-            });
-            dialogSubscribeBtn.setAttribute('data-listener', 'true');
-          }
-        });
-        
-        // Start observing the document with the configured parameters
-        observer.observe(document.body, { childList: true, subtree: true });
-      });
-    </script>
 
     <style>
       @media (display-mode: standalone) {

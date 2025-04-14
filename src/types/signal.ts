@@ -18,9 +18,6 @@ export const signalSchema = z.object({
   link: z.string().url({
     message: "Моля, въведете валиден URL адрес.",
   }).optional().or(z.literal('')),
-  imageUrl: z.string().url({
-    message: "Моля, въведете валиден URL адрес на изображение.",
-  }).optional().or(z.literal('')),
 });
 
 export type SignalFormValues = z.infer<typeof signalSchema>;

@@ -103,7 +103,7 @@ const SignalForm: React.FC<SignalFormProps> = ({ form, onSubmit, onCancel }) => 
             name="link"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Facebook Линк (опционално)</FormLabel>
+                <FormLabel>Линк (опционално)</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -112,20 +112,6 @@ const SignalForm: React.FC<SignalFormProps> = ({ form, onSubmit, onCancel }) => 
             )}
           />
         </div>
-        
-        <FormField
-          control={form.control}
-          name="imageUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Линк към снимка (опционално)</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         
         <Button type="submit">
           <Save className="h-4 w-4 mr-2" />

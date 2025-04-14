@@ -1,28 +1,27 @@
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import SignalsManagement from '../SignalsManagement';
-import UsersManagement from '../UsersManagement';
-import PartnerRequestsManagement from '../PartnerRequestsManagement';
-import ContactMessagesManagement from '../ContactMessagesManagement';
-import NotificationsManagement from '../notifications/NotificationsManagement';
-import { SignalData, UserData, PartnerRequestData, ContactMessageData } from '../hooks/useAdminData';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import SignalsManagement from '@/components/admin/SignalsManagement';
+import UsersManagement from '@/components/admin/UsersManagement';
+import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagement';
+import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
 
 interface AdminTabsProps {
-  signals: SignalData[];
-  users: UserData[];
-  partnerRequests: PartnerRequestData[];
-  contactMessages: ContactMessageData[];
+  signals: any[];
+  users: any[];
+  partnerRequests: any[];
+  contactMessages: any[];
   loadingSignals: boolean;
   loadingUsers: boolean;
   loadingPartnerRequests: boolean;
   loadingContactMessages: boolean;
   unreadCount: number;
   pendingRequestsCount: number;
-  onRefreshSignals: () => Promise<void>;
-  onRefreshUsers: () => Promise<void>;
-  onRefreshPartnerRequests: () => Promise<void>;
-  onRefreshContactMessages: () => Promise<void>;
+  onRefreshSignals: () => void;
+  onRefreshUsers: () => void;
+  onRefreshPartnerRequests: () => void;
+  onRefreshContactMessages: () => void;
 }
 
 const AdminTabs = ({
@@ -42,14 +41,14 @@ const AdminTabs = ({
   onRefreshContactMessages
 }: AdminTabsProps) => {
   return (
-    <Tabs defaultValue="signals" className="mt-8">
-      <TabsList className="grid w-full max-w-4xl grid-cols-5 mb-8">
+    <Tabs defaultValue="signals">
+      <TabsList className="mb-4">
         <TabsTrigger value="signals">Сигнали</TabsTrigger>
         <TabsTrigger value="users">Потребители</TabsTrigger>
         <TabsTrigger value="partners">
           Партньори
           {pendingRequestsCount > 0 && (
-            <span className="ml-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+            <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-500 rounded-full">
               {pendingRequestsCount}
             </span>
           )}
@@ -57,50 +56,83 @@ const AdminTabs = ({
         <TabsTrigger value="messages">
           Съобщения
           {unreadCount > 0 && (
-            <span className="ml-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+            <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-500 rounded-full">
               {unreadCount}
             </span>
           )}
         </TabsTrigger>
-        <TabsTrigger value="notifications">
-          Известия
-        </TabsTrigger>
       </TabsList>
       
-      <TabsContent value="signals">
-        <SignalsManagement 
-          signals={signals} 
-          loadingSignals={loadingSignals}
-          onRefresh={onRefreshSignals}
-        />
+      <TabsContent value="signals" className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Управление на сигнали</CardTitle>
+            <CardDescription>
+              Преглед на всички сигнали в системата, одобрение и отбелязване като решени.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SignalsManagement 
+              signals={signals} 
+              loadingSignals={loadingSignals} 
+              onRefresh={onRefreshSignals} 
+            />
+          </CardContent>
+        </Card>
       </TabsContent>
       
-      <TabsContent value="users">
-        <UsersManagement 
-          users={users} 
-          loadingUsers={loadingUsers}
-          onRefresh={onRefreshUsers}
-        />
+      <TabsContent value="users" className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Управление на потребители</CardTitle>
+            <CardDescription>
+              Преглед и управление на всички регистрирани потребители.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <UsersManagement 
+              users={users} 
+              loadingUsers={loadingUsers} 
+              onRefresh={onRefreshUsers} 
+            />
+          </CardContent>
+        </Card>
       </TabsContent>
       
-      <TabsContent value="partners">
-        <PartnerRequestsManagement 
-          requests={partnerRequests} 
-          loadingRequests={loadingPartnerRequests}
-          onRefresh={onRefreshPartnerRequests}
-        />
+      <TabsContent value="partners" className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Заявки за партньорство</CardTitle>
+            <CardDescription>
+              Преглед и управление на заявките за партньорство.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <PartnerRequestsManagement 
+              requests={partnerRequests} 
+              loadingRequests={loadingPartnerRequests} 
+              onRefresh={onRefreshPartnerRequests} 
+            />
+          </CardContent>
+        </Card>
       </TabsContent>
       
-      <TabsContent value="messages">
-        <ContactMessagesManagement 
-          messages={contactMessages} 
-          loadingMessages={loadingContactMessages}
-          onRefresh={onRefreshContactMessages}
-        />
-      </TabsContent>
-
-      <TabsContent value="notifications">
-        <NotificationsManagement />
+      <TabsContent value="messages" className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Съобщения от контактната форма</CardTitle>
+            <CardDescription>
+              Преглед и управление на съобщенията от контактната форма.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ContactMessagesManagement 
+              messages={contactMessages} 
+              loadingMessages={loadingContactMessages} 
+              onRefresh={onRefreshContactMessages} 
+            />
+          </CardContent>
+        </Card>
       </TabsContent>
     </Tabs>
   );

@@ -15,7 +15,7 @@ const LinkField = ({ control }: LinkFieldProps) => {
       name="link"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Facebook Линк</FormLabel>
+          <FormLabel>Линк към Facebook пост (по избор)</FormLabel>
           <FormControl>
             <div className="relative">
               <Link2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -27,7 +27,7 @@ const LinkField = ({ control }: LinkFieldProps) => {
             </div>
           </FormControl>
           <FormDescription>
-            Добавете линк към публикация във Facebook, свързана с този сигнал
+            Добавете линк към публикация в социалните мрежи, ако има такава
           </FormDescription>
           <FormMessage />
         </FormItem>
