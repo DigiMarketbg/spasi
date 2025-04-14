@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, AlertTriangle, Shield, Users, Award, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -77,7 +76,7 @@ const HeroSection = () => {
         title: "Грешка",
         description: "Възникна проблем при абониране за известия",
         variant: "destructive",
-      });
+        });
     } finally {
       setIsSubscribing(false);
     }
@@ -259,41 +258,41 @@ const HeroSection = () => {
             </Button>
           </div>
           
-          {/* Square, stylish buttons as requested */}
-          <div className="flex flex-wrap gap-4 justify-center mt-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
+          {/* Updated smaller buttons in a single row with consistent style */}
+          <div className="flex flex-row justify-center gap-2 mt-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
             {/* Button 1: Спасители */}
             <Button 
-              className="w-[130px] h-[130px] bg-[#ff6b18] hover:bg-[#ff5500] text-white rounded-xl text-xl font-medium flex flex-col items-center justify-center gap-2 transition-transform hover:scale-105"
+              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border border-white/10 text-white rounded-lg text-sm font-medium flex flex-col items-center justify-center gap-1 transition-transform hover:scale-105 hover:bg-background/20"
               onClick={navigateToRescuers}
             >
-              <Shield className="h-8 w-8" />
+              <Shield className="h-5 w-5" />
               <span>Спасители</span>
             </Button>
             
             {/* Button 2: Доброволци */}
             <Button 
-              className="w-[130px] h-[130px] bg-[#9b30ff] hover:bg-[#8a20ee] text-white rounded-xl text-xl font-medium flex flex-col items-center justify-center gap-2 transition-transform hover:scale-105"
+              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border border-white/10 text-white rounded-lg text-sm font-medium flex flex-col items-center justify-center gap-1 transition-transform hover:scale-105 hover:bg-background/20"
               onClick={navigateToVolunteers}
             >
-              <Users className="h-8 w-8" />
+              <Users className="h-5 w-5" />
               <span>Доброволци</span>
             </Button>
             
             {/* Button 3: Placeholder */}
             <Button 
-              className="w-[130px] h-[130px] bg-[#1961c3] hover:bg-[#1450a8] text-white rounded-xl text-xl font-medium flex flex-col items-center justify-center gap-2 transition-transform hover:scale-105 opacity-70 cursor-not-allowed"
+              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border border-white/10 text-white rounded-lg text-sm font-medium flex flex-col items-center justify-center gap-1 transition-transform hover:scale-105 hover:bg-background/20 opacity-70 cursor-not-allowed"
               disabled
             >
-              <Award className="h-8 w-8" />
+              <Award className="h-5 w-5" />
               <span>Бутон 3</span>
             </Button>
             
             {/* Button 4: Placeholder */}
             <Button 
-              className="w-[130px] h-[130px] bg-[#0a833d] hover:bg-[#096c32] text-white rounded-xl text-xl font-medium flex flex-col items-center justify-center gap-2 transition-transform hover:scale-105 opacity-70 cursor-not-allowed"
+              className="w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border border-white/10 text-white rounded-lg text-sm font-medium flex flex-col items-center justify-center gap-1 transition-transform hover:scale-105 hover:bg-background/20 opacity-70 cursor-not-allowed"
               disabled
             >
-              <Star className="h-8 w-8" />
+              <Star className="h-5 w-5" />
               <span>Бутон 4</span>
             </Button>
           </div>
