@@ -181,13 +181,8 @@ const HeroSection = () => {
               </Button>
             )}
             
-            <Button 
-              variant="outline" 
-              className="border-2 border-spasi-red/50 bg-soft-purple/10 hover:bg-soft-purple/20 py-3 px-6 rounded-lg text-sm font-medium flex items-center gap-2 relative group"
-            >
-              <Bell className="h-4 w-4 text-primary opacity-70" />
-              <span>Абонирай се за известия</span>
-            </Button>
+            {/* OneSignal Custom Link Button Container */}
+            <div className="onesignal-customlink-container"></div>
           </div>
         </div>
       </div>
