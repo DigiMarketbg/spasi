@@ -9,22 +9,11 @@ interface LogoProps {
 const Logo = ({ className }: LogoProps) => {
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      <div className="w-8 h-8 bg-spasi-red rounded-full flex items-center justify-center relative">
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width="24" 
-          height="24" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="white" 
-          strokeWidth="2" 
-          strokeLinecap="round" 
-          strokeLinejoin="round" 
-          className="absolute"
-        >
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-        </svg>
-      </div>
+      <img 
+        src="/lovable-uploads/2b23da05-1088-41a2-800e-5cda238a09d9.png" 
+        alt="Spasi.bg Logo" 
+        className="w-8 h-8 object-contain"
+      />
       <span className="font-bold text-2xl">Spasi.bg</span>
     </div>
   );

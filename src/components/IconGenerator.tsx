@@ -9,7 +9,7 @@ const IconGenerator: React.FC = () => {
 
   useEffect(() => {
     const logo = new Image();
-    logo.src = '/lovable-uploads/66c5ffcb-2582-4cc4-b8bd-559a4c324a98.png'; // Use the uploaded logo
+    logo.src = '/lovable-uploads/2b23da05-1088-41a2-800e-5cda238a09d9.png'; // Use the newly uploaded logo
     logo.onload = () => {
       // Generate 192x192 icon
       if (canvasRef192.current) {
