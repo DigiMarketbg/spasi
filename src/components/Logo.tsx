@@ -13,11 +13,11 @@ const Logo = ({ className }: LogoProps) => {
   return (
     <div className={cn('flex items-center gap-2', className)}>
       {theme === 'light' ? (
-        // Light mode logo - using the uploaded image
+        // Light mode logo - using the new uploaded image
         <img 
-          src="/lovable-uploads/4305b4b6-107f-4b5a-8712-374b86ed2bc1.png" 
+          src="/lovable-uploads/fa43aecf-68b6-4f4a-b076-d80dca8d25b4.png" 
           alt="Spasi.bg Logo" 
-          className="h-8" 
+          className="h-10" 
         />
       ) : (
         // Dark mode logo - using the existing heart icon
