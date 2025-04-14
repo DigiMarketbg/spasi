@@ -69,22 +69,28 @@ export const uploadSignalImage = async (file: File): Promise<string | null> => {
     return null;
   }
   
-  // Generate a unique filename to avoid collisions
-  const timestamp = new Date().getTime();
-  const randomString = Math.random().toString(36).substring(2, 10);
-  const fileExt = file.name.split('.').pop();
-  const fileName = `signal_${timestamp}_${randomString}.${fileExt}`;
-  const filePath = fileName;
-  
-  console.log(`Attempting to upload file: ${fileName} of type ${file.type} and size ${file.size} bytes`);
-  
-  const imageUrl = await uploadFile('signals', filePath, file);
-  
-  if (!imageUrl) {
-    console.error("Failed to upload image, null URL returned");
-  } else {
-    console.log("Image successfully uploaded:", imageUrl);
+  try {
+    // Generate a unique filename to avoid collisions
+    const timestamp = new Date().getTime();
+    const randomString = Math.random().toString(36).substring(2, 10);
+    const fileExt = file.name.split('.').pop();
+    const fileName = `signal_${timestamp}_${randomString}.${fileExt}`;
+    const filePath = fileName;
+    
+    console.log(`Attempting to upload file: ${fileName} of type ${file.type} and size ${file.size} bytes`);
+    
+    const imageUrl = await uploadFile('signals', filePath, file);
+    
+    if (!imageUrl) {
+      console.error("Failed to upload image, null URL returned");
+      throw new Error("Image upload failed");
+    } else {
+      console.log("Image successfully uploaded:", imageUrl);
+    }
+    
+    return imageUrl;
+  } catch (error) {
+    console.error("Error in uploadSignalImage:", error);
+    throw new Error("Неуспешно качване на изображението. Моля, опитайте отново.");
   }
-  
-  return imageUrl;
 };
