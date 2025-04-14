@@ -1,5 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 export const ensureStorageBucket = async (bucketName: string): Promise<boolean> => {
   try {
@@ -19,7 +20,7 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
       console.log(`Bucket '${bucketName}' does not exist, creating...`);
       const { error: createError } = await supabase.storage.createBucket(bucketName, {
         public: true,
-        fileSizeLimit: 20 * 1024 * 1024 // 20MB limit
+        fileSizeLimit: 5 * 1024 * 1024 // 5MB limit
       });
       
       if (createError) {
@@ -41,7 +42,6 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
 
 export const uploadFile = async (
   bucketName: string, 
-  filePath: string, 
   file: File,
   onProgress?: (progress: number) => void
 ): Promise<string | null> => {
@@ -49,15 +49,39 @@ export const uploadFile = async (
     console.log(`Starting upload process for file to bucket '${bucketName}'...`);
     console.log(`File details: name=${file.name}, type=${file.type}, size=${file.size} bytes`);
     
-    // Ensure bucket exists
-    const bucketReady = await ensureStorageBucket(bucketName);
-    if (!bucketReady) {
-      console.error(`Failed to ensure bucket ${bucketName} exists`);
-      throw new Error(`Failed to ensure bucket ${bucketName} exists`);
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      const errorMsg = 'Please upload only images';
+      console.error(errorMsg);
+      toast({ 
+        title: "Error",
+        description: errorMsg,
+        variant: "destructive"
+      });
+      return null;
     }
     
-    // Upload file with better error handling
-    console.log(`Uploading file '${filePath}' to bucket '${bucketName}'...`);
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      const errorMsg = 'Maximum file size: 5MB';
+      console.error(errorMsg);
+      toast({ 
+        title: "Error",
+        description: errorMsg,
+        variant: "destructive"
+      });
+      return null;
+    }
+    
+    // Ensure bucket exists
+    await ensureStorageBucket(bucketName);
+    
+    // Generate unique filename
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+    const filePath = fileName;
+    
+    console.log(`Uploading file with generated name '${filePath}' to bucket '${bucketName}'...`);
     
     // Simulate progress if onProgress callback is provided
     let progressInterval: number | undefined;
@@ -71,6 +95,7 @@ export const uploadFile = async (
       }, 300);
     }
     
+    // Upload file
     const { error, data } = await supabase.storage
       .from(bucketName)
       .upload(filePath, file, {

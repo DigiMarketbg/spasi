@@ -45,9 +45,9 @@ const ImageUpload = ({
       return;
     }
     
-    // Validate file size (max 20MB)
-    if (file.size > 20 * 1024 * 1024) {
-      setError("Размерът на файла трябва да е по-малък от 20MB");
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Размерът на файла трябва да е по-малък от 5MB");
       return;
     }
     
@@ -75,7 +75,7 @@ const ImageUpload = ({
             className={`flex flex-col items-center gap-2 p-4 border-2 ${isUploading ? 'border-primary/50' : 'border-dashed border-muted-foreground/50'} rounded-lg hover:bg-accent/20 transition-colors cursor-pointer`}
           >
             <Camera className="h-8 w-8 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Качете снимка (до 20MB)</span>
+            <span className="text-sm text-muted-foreground">Качете снимка (до 5MB)</span>
             <Input
               id="image"
               ref={fileInputRef}

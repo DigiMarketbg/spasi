@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Signal } from "@/types/signal";
 import { uploadFile } from "./storage";
@@ -73,26 +72,11 @@ export const uploadSignalImage = async (
   }
   
   try {
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      throw new Error("Моля, качете валиден файл с изображение");
-    }
+    // All validation now happens in the uploadFile function
+    console.log(`Preparing to upload file: ${file.name} of type ${file.type} and size ${file.size} bytes`);
     
-    // Validate file size (max 20MB)
-    if (file.size > 20 * 1024 * 1024) {
-      throw new Error("Размерът на файла трябва да е по-малък от 20MB");
-    }
-    
-    // Generate a unique filename to avoid collisions
-    const timestamp = new Date().getTime();
-    const randomString = Math.random().toString(36).substring(2, 10);
-    const fileExt = file.name.split('.').pop();
-    const fileName = `signal_${timestamp}_${randomString}.${fileExt}`;
-    
-    console.log(`Preparing to upload file: ${fileName} of type ${file.type} and size ${file.size} bytes`);
-    
-    // Use the improved uploadFile function with progress tracking
-    const imageUrl = await uploadFile('signals', fileName, file, onProgress);
+    // Use the improved uploadFile function
+    const imageUrl = await uploadFile('signals', file, onProgress);
     
     if (!imageUrl) {
       console.error("Failed to upload image, null URL returned");
