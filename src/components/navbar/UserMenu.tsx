@@ -43,7 +43,7 @@ const UserMenu = ({ displayName, onSignOut, isAdmin = false }: UserMenuProps) =>
           </>
         )}
         
-        <DropdownMenuItem onClick={onSignOut}>
+        <DropdownMenuItem onClick={onSignOut} className="text-destructive focus:text-destructive">
           <LogOut className="mr-2 h-4 w-4" />
           <span>Изход</span>
         </DropdownMenuItem>
