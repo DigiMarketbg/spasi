@@ -40,6 +40,27 @@ const MovingElements = () => {
         <Phone className="h-12 w-12 text-primary" />
       </div>
       
+      {/* Floating Spasi.bg text at different positions */}
+      <div className="absolute top-[15%] right-[30%] animate-float opacity-15"
+           style={{ animationDelay: '1.2s' }}>
+        <span className="text-2xl font-bold text-spasi-red">Spasi.bg</span>
+      </div>
+      
+      <div className="absolute bottom-[25%] right-[25%] animate-float opacity-15"
+           style={{ animationDelay: '2.2s' }}>
+        <span className="text-2xl font-bold text-primary">Spasi.bg</span>
+      </div>
+      
+      <div className="absolute top-[40%] left-[15%] animate-float opacity-15"
+           style={{ animationDelay: '1.8s' }}>
+        <span className="text-2xl font-bold text-secondary">Spasi.bg</span>
+      </div>
+      
+      <div className="absolute bottom-[15%] left-[30%] animate-float opacity-15"
+           style={{ animationDelay: '3s' }}>
+        <span className="text-xl font-bold text-spasi-red">Spasi.bg</span>
+      </div>
+      
       {/* Pulsing circles */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] opacity-10">
         <div className="absolute inset-0 rounded-full border-2 border-spasi-red animate-ping" style={{ animationDuration: '3s' }}></div>
