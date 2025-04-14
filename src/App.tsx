@@ -22,6 +22,7 @@ import Blog from "./pages/Blog";
 import BlogPostDetail from "./pages/BlogPostDetail";
 import AdminBlog from "./pages/AdminBlog";
 import AdminVideos from "./pages/AdminVideos";
+import AdminPartners from "./pages/AdminPartners";
 import Videos from "./pages/Videos";
 import Donations from "./pages/Donations";
 import Contact from "./pages/Contact";
@@ -48,6 +49,7 @@ const App = () => (
               <Route path="/admin/volunteers" element={<AdminVolunteers />} />
               <Route path="/admin/blog" element={<AdminBlog />} />
               <Route path="/admin/videos" element={<AdminVideos />} />
+              <Route path="/admin/partners" element={<AdminPartners />} />
               <Route path="/signals" element={<Signals />} />
               <Route path="/signal/:id" element={<SignalDetailPublic />} />
               <Route path="/blog" element={<Blog />} />

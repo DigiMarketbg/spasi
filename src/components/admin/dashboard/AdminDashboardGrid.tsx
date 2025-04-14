@@ -61,13 +61,13 @@ const AdminDashboardGrid = ({ unreadMessagesCount, pendingRequestsCount }: Props
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </Link>
           
-          <div className="flex items-center justify-between text-sm p-2 rounded-md hover:bg-muted transition-colors">
+          <Link to="/admin/partners" className="flex items-center justify-between text-sm p-2 rounded-md hover:bg-muted transition-colors">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
               <span>Партньори</span>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          </div>
+          </Link>
         </div>
       </div>
     </div>
