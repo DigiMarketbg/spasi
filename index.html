@@ -18,6 +18,18 @@
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
+    <!-- PWA related meta tags -->
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Спаси БГ" />
+    
+    <!-- Manifest link for PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Apple touch icons -->
+    <link rel="apple-touch-icon" href="/apple-icon-180.png" />
+    
     <!-- Updated favicon to use the uploaded image -->
     <link rel="icon" href="/lovable-uploads/9ebf9964-e102-4d6e-866b-63884dc1f10f.png" type="image/png">
   </head>
@@ -26,6 +38,19 @@
     <div id="root"></div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+        .then(function(reg) {
+          console.log('Service worker registered.', reg);
+        }).catch(function(error) {
+          console.log('Service worker registration failed:', error);
+        });
+      }
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
