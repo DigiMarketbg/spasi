@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { AlertCircle, Shield, Clock, HeartPulse, MapPin, Phone } from 'lucide-react';
 
@@ -37,53 +38,6 @@ const MovingElements = () => {
       <div className="absolute top-[60%] left-[20%] animate-float opacity-20"
            style={{ animationDelay: '2.5s' }}>
         <Phone className="h-12 w-12 text-primary" />
-      </div>
-      
-      {/* Expanded Floating Spasi.bg text at multiple positions */}
-      <div className="absolute top-[10%] left-[5%] animate-float opacity-10"
-           style={{ animationDelay: '0.5s' }}>
-        <span className="text-xl font-bold text-secondary">Spasi.bg</span>
-      </div>
-      
-      <div className="absolute top-[15%] right-[30%] animate-float opacity-15"
-           style={{ animationDelay: '1.2s' }}>
-        <span className="text-2xl font-bold text-spasi-red">Spasi.bg</span>
-      </div>
-      
-      <div className="absolute bottom-[25%] right-[25%] animate-float opacity-15"
-           style={{ animationDelay: '2.2s' }}>
-        <span className="text-2xl font-bold text-primary">Spasi.bg</span>
-      </div>
-      
-      <div className="absolute top-[40%] left-[15%] animate-float opacity-15"
-           style={{ animationDelay: '1.8s' }}>
-        <span className="text-2xl font-bold text-secondary">Spasi.bg</span>
-      </div>
-      
-      <div className="absolute bottom-[15%] left-[30%] animate-float opacity-15"
-           style={{ animationDelay: '3s' }}>
-        <span className="text-xl font-bold text-spasi-red">Spasi.bg</span>
-      </div>
-      
-      {/* New additional Spasi.bg text elements */}
-      <div className="absolute top-[5%] right-[10%] animate-float opacity-10"
-           style={{ animationDelay: '0.7s' }}>
-        <span className="text-lg font-bold text-primary">Spasi.bg</span>
-      </div>
-      
-      <div className="absolute bottom-[40%] right-[5%] animate-float opacity-12"
-           style={{ animationDelay: '2.5s' }}>
-        <span className="text-xl font-bold text-secondary">Spasi.bg</span>
-      </div>
-      
-      <div className="absolute top-[60%] left-[40%] animate-float opacity-10"
-           style={{ animationDelay: '1.5s' }}>
-        <span className="text-lg font-bold text-spasi-red">Spasi.bg</span>
-      </div>
-      
-      <div className="absolute bottom-[10%] right-[15%] animate-float opacity-12"
-           style={{ animationDelay: '2.8s' }}>
-        <span className="text-xl font-bold text-primary">Spasi.bg</span>
       </div>
 
       {/* Pulsing circles */}
