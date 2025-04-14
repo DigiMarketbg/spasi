@@ -28,7 +28,7 @@ const Signals = () => {
       <Navbar />
       
       <main className="flex-grow container mx-auto px-4 py-8 md:py-16 mt-4 md:mt-8">
-        <div className="text-center mb-8 md:mb-12">
+        <div className="text-center mb-8 md:mb-12 mt-16 md:mt-0 mobile:mt-24">
           <h1 className="text-2xl md:text-4xl font-bold mb-2 md:mb-4">Всички сигнали</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm md:text-base">
             Прегледайте всички одобрени сигнали, подадени от наши потребители. Използвайте филтрите, за да намерите по-лесно това, което търсите.
