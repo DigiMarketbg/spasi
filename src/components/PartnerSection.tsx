@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import ParticleBackground from './ParticleBackground';
 import { useNavigate } from 'react-router-dom';
+import Image from '@/components/ui/image'; // Assuming you have an Image component
 
 const PartnerSection = () => {
   const navigate = useNavigate();
@@ -21,6 +22,17 @@ const PartnerSection = () => {
             да поддържаме и развиваме платформата.
           </p>
           
+          {/* Partner Logo Section */}
+          <div className="flex justify-center mb-8">
+            <div className="bg-black/50 p-4 rounded-lg inline-block">
+              <img 
+                src="/lovable-uploads/f1e019f9-3126-4389-b433-2928fac89dcf.png" 
+                alt="Отстъпки Partner Logo" 
+                className="h-16 w-auto object-contain" 
+              />
+            </div>
+          </div>
+          
           <div className="flex justify-center">
             <Button 
               className="bg-green-600 hover:bg-green-700 text-white py-6 px-8 rounded-lg text-base font-medium flex items-center gap-2"
@@ -37,3 +49,4 @@ const PartnerSection = () => {
 };
 
 export default PartnerSection;
+
