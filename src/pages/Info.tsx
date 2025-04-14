@@ -11,9 +11,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from '@/components/ui/collapsible';
+import { Button } from '@/components/ui/button';
+import { ChevronDown, Mail } from 'lucide-react';
 
 const Info = () => {
   const currentDate = format(new Date(), 'dd.MM.yyyy', { locale: bg });
+  const [isContactOpen, setIsContactOpen] = useState(false);
   
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -23,10 +31,29 @@ const Info = () => {
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">Информация</h1>
           
-          <div className="mb-10">
-            <h2 className="text-2xl font-semibold mb-6 text-center">Свържете се с нас</h2>
-            <ContactForm />
-          </div>
+          <Collapsible
+            open={isContactOpen}
+            onOpenChange={setIsContactOpen}
+            className="mb-10 glass p-6 md:p-8 rounded-xl"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold flex items-center gap-2">
+                <Mail className="h-5 w-5" />
+                Свържете се с нас
+              </h2>
+              <CollapsibleTrigger asChild>
+                <Button variant="outline" size="sm" className="w-9 p-0">
+                  <ChevronDown 
+                    className={`h-4 w-4 transition-transform duration-200 ${isContactOpen ? 'transform rotate-180' : ''}`} 
+                  />
+                  <span className="sr-only">Toggle</span>
+                </Button>
+              </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent className="mt-6">
+              <ContactForm />
+            </CollapsibleContent>
+          </Collapsible>
           
           <div className="glass p-6 md:p-8 rounded-xl mb-8">
             <p className="text-muted-foreground mb-6">
