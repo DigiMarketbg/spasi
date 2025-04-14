@@ -11,22 +11,22 @@ const Logo = ({ className }: LogoProps) => {
   const { theme } = useTheme();
   
   return (
-    <div className={cn('flex items-center gap-2', className)}>
+    <div className={cn('flex items-center gap-3', className)}>
       {theme === 'light' ? (
-        // Light mode logo - using the new uploaded image
+        // Light mode logo
         <img 
           src="/lovable-uploads/fa43aecf-68b6-4f4a-b076-d80dca8d25b4.png" 
           alt="Spasi.bg Logo" 
-          className="h-10" 
+          className="h-12 w-auto" 
         />
       ) : (
-        // Dark mode logo - using the existing heart icon
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-spasi-red rounded-full flex items-center justify-center relative">
+        // Dark mode logo
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-spasi-red rounded-full flex items-center justify-center relative">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
-              width="24" 
-              height="24" 
+              width="28" 
+              height="28" 
               viewBox="0 0 24 24" 
               fill="none" 
               stroke="white" 
