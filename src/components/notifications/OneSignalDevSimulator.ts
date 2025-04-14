@@ -58,6 +58,26 @@ export const setupDevSimulation = (): void => {
       return true;
     },
     
+    // Add the new V16 method - showSlidedownPrompt
+    showSlidedownPrompt: async () => {
+      console.log('DEV: Showing simulated slidedown prompt');
+      localStorage.setItem('onesignal_subscribed', 'true');
+      if (window.OneSignal._eventListeners['subscriptionChange']) {
+        window.OneSignal._triggerEvent('subscriptionChange', true);
+      }
+      return true;
+    },
+    
+    // Add the category slidedown method
+    showCategorySlidedown: async () => {
+      console.log('DEV: Showing simulated category slidedown');
+      localStorage.setItem('onesignal_subscribed', 'true');
+      if (window.OneSignal._eventListeners['subscriptionChange']) {
+        window.OneSignal._triggerEvent('subscriptionChange', true);
+      }
+      return true;
+    },
+    
     setSubscription: async (value: boolean) => {
       console.log(`DEV: Setting subscription to ${value}`);
       localStorage.setItem('onesignal_subscribed', value ? 'true' : 'false');
@@ -103,6 +123,8 @@ declare global {
       _triggerEvent: (event: string, data: any) => void;
       getUserId: () => Promise<string>;
       showNativePrompt: () => Promise<boolean>;
+      showSlidedownPrompt: () => Promise<boolean>;
+      showCategorySlidedown: () => Promise<boolean>;
       setSubscription: (value: boolean) => Promise<boolean>;
       push: (callback: Function | any[]) => void;
     };

@@ -12,7 +12,8 @@ export const isDevelopmentEnvironment = (): boolean => {
 
 // Check if we're on the production spasi.bg domain
 export const isProductionDomain = (): boolean => {
-  return window.location.hostname === 'spasi.bg';
+  return window.location.hostname === 'spasi.bg' || 
+         window.location.hostname === 'www.spasi.bg';
 };
 
 // Save OneSignal subscription to database

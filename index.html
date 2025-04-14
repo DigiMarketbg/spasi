@@ -49,6 +49,26 @@
             },
             allowLocalhostAsSecureOrigin: true,
           });
+          
+          // IMPORTANT: For OneSignal v16, we need to manually check and show
+          // the slidedown prompt to subscribe users
+          console.log('OneSignal initialized, checking subscription status');
+          const isPushEnabled = await OneSignal.isPushNotificationsEnabled();
+          if (!isPushEnabled) {
+            console.log('User not subscribed, showing subscription slidedown in 3 seconds');
+            // Wait 3 seconds to ensure app is fully loaded
+            setTimeout(async () => {
+              // Show the slidedown prompt
+              try {
+                await OneSignal.showSlidedownPrompt();
+                console.log('Slidedown prompt shown');
+              } catch (error) {
+                console.error('Error showing slidedown prompt:', error);
+              }
+            }, 3000);
+          } else {
+            console.log('User already subscribed to notifications');
+          }
         });
       } else {
         console.log('OneSignal initialization skipped in development environment');

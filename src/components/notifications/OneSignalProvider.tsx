@@ -120,7 +120,10 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
     }
     
     try {
-      await window.OneSignal.showNativePrompt();
+      // Important change: use showSlidedownPrompt instead of showNativePrompt
+      await window.OneSignal.showSlidedownPrompt();
+      
+      // We need to check again after prompt
       const isSubscribed = await window.OneSignal.isPushNotificationsEnabled();
       
       if (isSubscribed) {
