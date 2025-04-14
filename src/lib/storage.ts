@@ -14,20 +14,11 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
     
     const bucketExists = buckets.some(bucket => bucket.name === bucketName);
     
-    // Create bucket if it doesn't exist
+    // If bucket doesn't exist, we'll assume it was created via SQL and continue
     if (!bucketExists) {
-      console.log(`Bucket '${bucketName}' does not exist, creating...`);
-      const { error: createError } = await supabase.storage.createBucket(bucketName, {
-        public: true,
-        fileSizeLimit: 10 * 1024 * 1024 // Increased to 10MB limit
-      });
-      
-      if (createError) {
-        console.error('Error creating bucket:', createError);
-        return false;
-      }
-      
-      console.log(`Bucket ${bucketName} created successfully`);
+      console.log(`Bucket '${bucketName}' doesn't appear in the list, but may exist with restricted permissions`);
+      // We'll proceed assuming the bucket exists but isn't visible to the client due to permissions
+      return true;
     } else {
       console.log(`Bucket '${bucketName}' already exists.`);
     }
@@ -50,8 +41,8 @@ export const uploadFile = async (
     // Ensure bucket exists
     const bucketReady = await ensureStorageBucket(bucketName);
     if (!bucketReady) {
-      console.error(`Failed to ensure bucket ${bucketName} exists`);
-      throw new Error(`Failed to ensure bucket ${bucketName} exists`);
+      console.error(`Failed to ensure bucket ${bucketName} exists, but will try upload anyway`);
+      // Continue anyway as the bucket likely exists but may not be visible due to permissions
     }
     
     // Upload file with better error handling and retry logic
@@ -68,7 +59,6 @@ export const uploadFile = async (
     if (error) {
       console.error('Upload error details:', error);
       console.error('Error message:', error.message);
-      // Safe access to optional properties - removes TypeScript errors
       console.error('Error name:', error.name);
       console.error('Error stack:', error.stack);
       throw new Error(`Error uploading file: ${error.message}`);

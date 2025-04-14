@@ -44,7 +44,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
     try {
       setIsLoading(true);
       
-      // Perform immediate check for file
+      // Check for file
       const hasFile = fileInputRef.current?.files && fileInputRef.current.files.length > 0;
       
       // Debug logging
@@ -56,7 +56,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
       });
       
       // If we don't have a logo (neither an existing one nor a new upload), show an error
-      if (!initialData?.logo_url && !hasFile && !previewImage) {
+      if (!initialData?.logo_url && !hasFile) {
         toast({
           title: 'Грешка',
           description: 'Моля, качете лого за партньора',
@@ -85,11 +85,11 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
             throw new Error('Error uploading logo');
           }
           console.log("File upload successful, URL:", logoUrl);
-        } catch (uploadError) {
+        } catch (uploadError: any) {
           console.error("File upload error:", uploadError);
           toast({
             title: 'Грешка при качване',
-            description: 'Възникна проблем при качването на логото. Моля, опитайте отново.',
+            description: uploadError.message || 'Възникна проблем при качването на логото. Моля, опитайте отново.',
             variant: 'destructive',
           });
           setIsLoading(false);
@@ -113,11 +113,11 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
           fileInputRef.current.value = '';
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting partner:', error);
       toast({
         title: 'Грешка',
-        description: 'Възникна грешка при запазване на партньора',
+        description: error.message || 'Възникна грешка при запазване на партньора',
         variant: 'destructive',
       });
     } finally {
@@ -154,11 +154,6 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
     }
   };
 
-  // Calculate logoRequired status - this is used to enable/disable submit button
-  const hasExistingLogo = !!initialData?.logo_url;
-  const hasFileSelected = fileInputRef.current?.files && fileInputRef.current.files.length > 0;
-  const logoRequired = !hasExistingLogo && !hasFileSelected && !previewImage;
-
   return (
     <Card>
       <CardContent className="pt-6">
@@ -194,7 +189,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
             
             <FormItem>
               <FormLabel>
-                Лого {logoRequired && <span className="text-destructive">*</span>}
+                Лого {!initialData?.logo_url && <span className="text-destructive">*</span>}
               </FormLabel>
               <FormControl>
                 <Input 
@@ -219,26 +214,11 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
               <p className="text-xs text-muted-foreground mt-1">
                 Препоръчителен размер: 200x80 пиксела (поддържат се всички размери)
               </p>
-              {logoRequired && (
-                <p className="text-xs text-destructive mt-1">
-                  Моля, качете лого за партньора
-                </p>
-              )}
             </FormItem>
             
             <Button 
               type="submit" 
-              disabled={isLoading || logoRequired}
-              onClick={() => {
-                if (logoRequired) {
-                  console.log("Submit button clicked but disabled due to logoRequired:", {
-                    hasExistingLogo,
-                    hasSelectedFile,
-                    hasFileSelected,
-                    hasPreviewImage: !!previewImage
-                  });
-                }
-              }}
+              disabled={isLoading || (!initialData?.logo_url && !hasSelectedFile)}
             >
               {isLoading ? 'Запазване...' : submitLabel}
             </Button>
