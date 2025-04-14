@@ -4,7 +4,6 @@ import { toast } from "@/hooks/use-toast";
 
 export const ensureStorageBucket = async (bucketName: string): Promise<boolean> => {
   try {
-    // Check if bucket exists
     console.log(`Checking if bucket '${bucketName}' exists...`);
     const { data: buckets, error: listError } = await supabase.storage.listBuckets();
     
@@ -15,12 +14,11 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
     
     const bucketExists = buckets.some(bucket => bucket.name === bucketName);
     
-    // Create bucket if it doesn't exist
     if (!bucketExists) {
       console.log(`Bucket '${bucketName}' does not exist, creating...`);
       const { error: createError } = await supabase.storage.createBucket(bucketName, {
         public: true,
-        fileSizeLimit: 5 * 1024 * 1024 // 5MB limit
+        fileSizeLimit: 20 * 1024 * 1024 // 20MB limit
       });
       
       if (createError) {
@@ -47,11 +45,11 @@ export const uploadFile = async (
 ): Promise<string | null> => {
   try {
     console.log(`Starting upload process for file to bucket '${bucketName}'...`);
-    console.log(`File details: name=${file.name}, type=${file.type}, size=${file.size} bytes`);
     
     // Validate file type
-    if (!file.type.startsWith('image/')) {
-      const errorMsg = 'Please upload only images';
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (!allowedTypes.includes(file.type)) {
+      const errorMsg = 'Please upload only image files (JPEG, PNG, GIF, WebP, SVG)';
       console.error(errorMsg);
       toast({ 
         title: "Error",
@@ -61,9 +59,9 @@ export const uploadFile = async (
       return null;
     }
     
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      const errorMsg = 'Maximum file size: 5MB';
+    // Validate file size (max 20MB)
+    if (file.size > 20 * 1024 * 1024) {
+      const errorMsg = 'Maximum file size: 20MB';
       console.error(errorMsg);
       toast({ 
         title: "Error",
@@ -100,14 +98,14 @@ export const uploadFile = async (
       .from(bucketName)
       .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: true, // Overwrite existing files with same name
-        contentType: file.type // Explicitly set content type from file
+        upsert: true,
+        contentType: file.type
       });
     
     // Clear progress interval
     if (progressInterval) {
       clearInterval(progressInterval);
-      onProgress && onProgress(100); // Set to 100% when done
+      onProgress && onProgress(100);
     }
     
     if (error) {
