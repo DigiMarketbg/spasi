@@ -4,11 +4,10 @@ import React, { useEffect, useRef } from 'react';
 const IconGenerator: React.FC = () => {
   const canvasRef192 = useRef<HTMLCanvasElement>(null);
   const canvasRef512 = useRef<HTMLCanvasElement>(null);
-  const logoRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     const logo = new Image();
-    logo.src = '/lovable-uploads/6ae889da-fa60-4bae-9811-a9f6c34c7166.png'; // Use the newly uploaded logo
+    logo.src = '/lovable-uploads/6ae889da-fa60-4bae-9811-a9f6c34c7166.png'; // Use the uploaded logo
     logo.onload = () => {
       // Generate 192x192 icon
       if (canvasRef192.current) {
@@ -60,7 +59,6 @@ const IconGenerator: React.FC = () => {
     <div style={{ display: 'none' }}>
       <canvas ref={canvasRef192} width="192" height="192"></canvas>
       <canvas ref={canvasRef512} width="512" height="512"></canvas>
-      <img ref={logoRef} alt="Logo reference" />
     </div>
   );
 };
