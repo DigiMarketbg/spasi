@@ -1,3 +1,4 @@
+
 import { cn } from '@/lib/utils';
 
 // Color definitions for signals by category
@@ -42,8 +43,8 @@ export const categoryTranslations: { [key: string]: string } = {
 export const cardStyles = {
   container: (className?: string) => cn(
     "bg-gradient-to-br from-primary/90 to-primary/80 text-white p-4 sm:p-5 rounded-xl h-full flex flex-col justify-between",
-    "border border-white/10 shadow-lg backdrop-blur-sm",
-    "transition-all duration-300 hover:shadow-xl hover:-translate-y-1 active:scale-[0.98]",
+    "backdrop-blur-sm",
+    "transition-all duration-300 hover:-translate-y-1 active:scale-[0.98]",
     className
   ),
   badge: "mb-3 text-white border-white/50 bg-white/20 backdrop-blur-sm",

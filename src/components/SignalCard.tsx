@@ -64,9 +64,14 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
     ? "from-green-50/90 to-green-50/80 border-green-200 dark:from-green-900/20 dark:to-green-900/10 dark:border-green-900/30" 
     : "";
 
+  // Add theme-specific styling
+  const themeStyles = theme === 'dark'
+    ? "bg-slate-800/40 shadow-lg dark:border-white/5" // Dark mode: subtle gray background
+    : "shadow-md hover:shadow-lg border border-border/30"; // Light mode: shadow and subtle border
+
   return (
     <div 
-      className={`${cardStyles.container(className)} ${resolvedStyles}`}
+      className={`${cardStyles.container(className)} ${resolvedStyles} ${themeStyles} transition-all duration-300`}
     >
       <div className="flex flex-col h-full">
         <div className="flex items-center gap-2 mb-3">
