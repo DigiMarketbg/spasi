@@ -42,6 +42,20 @@ const SignalsTable: React.FC<SignalsTableProps> = ({
   onToggleResolution,
   onDelete
 }) => {
+  // Handler for delete button click
+  const handleDelete = async (id: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent row click from triggering
+    
+    // Confirm deletion
+    if (window.confirm('Сигурни ли сте, че искате да изтриете този сигнал?')) {
+      try {
+        await onDelete(id);
+      } catch (error) {
+        console.error('Error in handleDelete:', error);
+      }
+    }
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -102,7 +116,7 @@ const SignalsTable: React.FC<SignalsTableProps> = ({
                 <Button 
                   size="sm" 
                   variant="destructive"
-                  onClick={() => onDelete(signal.id)}
+                  onClick={(e) => handleDelete(signal.id, e)}
                 >
                   <Trash2 className="h-4 w-4 mr-1" />
                   Изтрий

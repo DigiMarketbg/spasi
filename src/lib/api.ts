@@ -34,13 +34,34 @@ export const deleteSignal = async (id: string): Promise<void> => {
     throw new Error("ID is required");
   }
 
-  const { error } = await supabase
-    .from("signals")
-    .delete()
-    .eq("id", id);
+  console.log("Attempting to delete signal with ID:", id);
 
-  if (error) {
-    console.error("Error deleting signal:", error);
-    throw new Error("Error deleting signal");
+  try {
+    // First delete any reports associated with this signal to avoid foreign key constraints
+    const { error: reportsError } = await supabase
+      .from("reports")
+      .delete()
+      .eq("signal_id", id);
+
+    if (reportsError) {
+      console.error("Error deleting associated reports:", reportsError);
+      // Continue with signal deletion even if report deletion fails
+    }
+
+    // Then delete the signal
+    const { error } = await supabase
+      .from("signals")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error deleting signal:", error);
+      throw new Error(`Error deleting signal: ${error.message}`);
+    }
+
+    console.log("Signal successfully deleted");
+  } catch (error: any) {
+    console.error("Exception during signal deletion:", error);
+    throw new Error(`Exception during signal deletion: ${error.message}`);
   }
 };
