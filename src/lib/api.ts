@@ -1,6 +1,8 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Signal } from "@/types/signal";
 import { uploadFile } from "./storage";
+import { toast } from "@/hooks/use-toast";
 
 // Get a single signal by ID
 export const getSignalById = async (id: string): Promise<Signal> => {
@@ -88,6 +90,14 @@ export const uploadSignalImage = async (
     return imageUrl;
   } catch (error: any) {
     console.error("Error in uploadSignalImage:", error);
+    
+    // Show a toast notification for the error
+    toast({
+      variant: "destructive",
+      title: "Грешка при подаване на сигнал",
+      description: error.message || "Неуспешно качване на изображението. Моля, опитайте отново."
+    });
+    
     throw new Error(error.message || "Неуспешно качване на изображението. Моля, опитайте отново.");
   }
 };

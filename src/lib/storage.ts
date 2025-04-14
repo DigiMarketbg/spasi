@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
+// Instead of trying to create the bucket, we'll just check if it exists
 export const ensureStorageBucket = async (bucketName: string): Promise<boolean> => {
   try {
     console.log(`Checking if bucket '${bucketName}' exists...`);
@@ -15,26 +16,16 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
     const bucketExists = buckets.some(bucket => bucket.name === bucketName);
     
     if (!bucketExists) {
-      console.log(`Bucket '${bucketName}' does not exist, creating...`);
-      const { error: createError } = await supabase.storage.createBucket(bucketName, {
-        public: true,
-        fileSizeLimit: 20 * 1024 * 1024 // 20MB limit
-      });
-      
-      if (createError) {
-        console.error('Error creating bucket:', createError);
-        throw new Error(`Failed to create bucket: ${createError.message}`);
-      }
-      
-      console.log(`Bucket ${bucketName} created successfully`);
+      console.log(`Bucket '${bucketName}' does not exist. It should be created from the Supabase dashboard.`);
+      throw new Error(`Bucket ${bucketName} does not exist. Please contact the administrator.`);
     } else {
-      console.log(`Bucket '${bucketName}' already exists.`);
+      console.log(`Bucket '${bucketName}' exists.`);
     }
     
     return true;
   } catch (error) {
     console.error('Error ensuring bucket exists:', error);
-    throw new Error(`Failed to ensure bucket ${bucketName} exists: ${error instanceof Error ? error.message : String(error)}`);
+    throw error;
   }
 };
 
@@ -71,7 +62,7 @@ export const uploadFile = async (
       return null;
     }
     
-    // Ensure bucket exists
+    // Check if bucket exists instead of trying to create it
     await ensureStorageBucket(bucketName);
     
     // Generate unique filename
