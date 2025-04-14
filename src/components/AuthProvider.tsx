@@ -11,6 +11,7 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   isAdmin: boolean;
+  isModerator: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,6 +22,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isModerator, setIsModerator] = useState(false);
 
   // Fetch user profile data
   const fetchProfile = async (userId: string) => {
@@ -38,6 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       setProfile(data);
       setIsAdmin(data?.is_admin === true);
+      setIsModerator(data?.role === 'moderator' || data?.role === 'admin');
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -58,6 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } else {
           setProfile(null);
           setIsAdmin(false);
+          setIsModerator(false);
         }
         
         setLoading(false);
@@ -90,6 +94,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     loading,
     signOut,
     isAdmin,
+    isModerator,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

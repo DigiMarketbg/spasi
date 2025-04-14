@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import UserActions from './UserActions';
+import { Tables } from '@/integrations/supabase/types';
 
 interface UserData {
   id: string;
@@ -17,6 +18,7 @@ interface UserData {
   email: string | null;
   created_at: string | null;
   is_admin: boolean;
+  role?: Tables<'profiles'>['role'];
 }
 
 interface UsersListProps {
@@ -33,26 +35,31 @@ const UsersList: React.FC<UsersListProps> = ({ users, onRefresh, formatDate }) =
           <TableHead>Име</TableHead>
           <TableHead>Имейл</TableHead>
           <TableHead>Регистриран на</TableHead>
-          <TableHead>Статус</TableHead>
+          <TableHead>Роля</TableHead>
           <TableHead>Действия</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {users.map((user) => (
           <TableRow key={user.id}>
-            <TableCell className="font-medium">{user.full_name || 'Няма име'}</TableCell>
-            <TableCell>{user.email || 'Няма имейл'}</TableCell>
+            <TableCell className="font-medium">{user.full_name || 'Неизвестно'}</TableCell>
+            <TableCell>{user.email || 'Неизвестно'}</TableCell>
             <TableCell>{formatDate(user.created_at)}</TableCell>
             <TableCell>
-              <Badge variant={user.is_admin ? "default" : "outline"}>
-                {user.is_admin ? 'Администратор' : 'Потребител'}
-              </Badge>
+              {user.is_admin ? (
+                <Badge>Администратор</Badge>
+              ) : user.role === 'moderator' ? (
+                <Badge variant="secondary">Модератор</Badge>
+              ) : (
+                <Badge variant="outline">Потребител</Badge>
+              )}
             </TableCell>
             <TableCell>
               <UserActions 
                 userId={user.id} 
                 isAdmin={user.is_admin} 
-                onRefresh={onRefresh}
+                role={user.role}
+                onRefresh={onRefresh} 
               />
             </TableCell>
           </TableRow>

@@ -3,15 +3,18 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { Tables } from '@/integrations/supabase/types';
 
 interface UserActionsProps {
   userId: string;
   isAdmin: boolean;
+  role?: Tables<'profiles'>['role'];
   onRefresh: () => void;
 }
 
-const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, onRefresh }) => {
+const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefresh }) => {
   const { toast } = useToast();
+  const isModerator = role === 'moderator';
 
   const toggleUserAdminStatus = async () => {
     try {
@@ -40,14 +43,53 @@ const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, onRefresh })
     }
   };
 
+  const toggleModeratorStatus = async () => {
+    const newRole = isModerator ? 'user' : 'moderator';
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Успешно",
+        description: isModerator
+          ? "Модераторските права на потребителя са премахнати."
+          : "Потребителят е направен модератор.",
+      });
+
+      // Trigger refresh of users data
+      onRefresh();
+    } catch (error: any) {
+      toast({
+        title: "Грешка",
+        description: error.message || "Възникна проблем при обновяването на потребителя.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <Button 
-      size="sm" 
-      variant={isAdmin ? "destructive" : "default"}
-      onClick={toggleUserAdminStatus}
-    >
-      {isAdmin ? 'Премахни админ права' : 'Направи администратор'}
-    </Button>
+    <div className="flex flex-col gap-2">
+      <Button 
+        size="sm" 
+        variant={isAdmin ? "destructive" : "default"}
+        onClick={toggleUserAdminStatus}
+      >
+        {isAdmin ? 'Премахни админ права' : 'Направи администратор'}
+      </Button>
+      
+      <Button 
+        size="sm" 
+        variant={isModerator ? "destructive" : "secondary"}
+        onClick={toggleModeratorStatus}
+      >
+        {isModerator ? 'Премахни модератор права' : 'Направи модератор'}
+      </Button>
+    </div>
   );
 };
 

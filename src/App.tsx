@@ -12,6 +12,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import SubmitSignal from "./pages/SubmitSignal";
 import Admin from "./pages/Admin";
+import Moderator from "./pages/Moderator";
 import SignalDetail from "./pages/SignalDetail";
 import NotFound from "./pages/NotFound";
 import Volunteers from "./pages/Volunteers";
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/submit-signal" element={<SubmitSignal />} />
               <Route path="/volunteers" element={<Volunteers />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/moderator" element={<Moderator />} />
               <Route path="/admin/signals/:id" element={<SignalDetail />} />
               <Route path="/admin/volunteers" element={<AdminVolunteers />} />
               <Route path="/admin/blog" element={<AdminBlog />} />
