@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Signal } from "@/types/signal";
 import { uploadFile } from "./storage";
@@ -73,7 +74,19 @@ export const uploadSignalImage = async (
   }
   
   try {
-    // All validation now happens in the uploadFile function
+    // Check if user is authenticated first
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) {
+      const errorMsg = 'User must be logged in to upload files';
+      console.error(errorMsg);
+      toast({ 
+        title: "Authentication Error",
+        description: errorMsg,
+        variant: "destructive"
+      });
+      return null;
+    }
+    
     console.log(`Preparing to upload file: ${file.name} of type ${file.type} and size ${file.size} bytes`);
     
     // Use the improved uploadFile function
@@ -91,9 +104,9 @@ export const uploadSignalImage = async (
     
     // Show a toast notification for the error
     toast({
-      variant: "default",
-      title: "Сигналът ще бъде изпратен без изображение",
-      description: "Не можахме да качим изображението, но сигналът ви все още ще бъде подаден."
+      variant: "destructive",
+      title: "Upload Failed",
+      description: error.message || "Unable to upload image. Your signal will be submitted without an image."
     });
     
     return null;

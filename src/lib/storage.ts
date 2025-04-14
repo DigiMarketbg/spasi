@@ -15,7 +15,12 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
     const bucketExists = buckets.some(bucket => bucket.name === bucketName);
     
     if (!bucketExists) {
-      console.log(`Bucket '${bucketName}' does not exist.`);
+      console.error(`Bucket '${bucketName}' does not exist.`);
+      toast({ 
+        title: "Storage Error",
+        description: `Storage bucket '${bucketName}' does not exist. Please contact the administrator.`,
+        variant: "destructive"
+      });
       return false;
     } else {
       console.log(`Bucket '${bucketName}' exists.`);
@@ -33,7 +38,25 @@ export const uploadFile = async (
   onProgress?: (progress: number) => void
 ): Promise<string | null> => {
   try {
+    if (!file) {
+      console.log("No file provided for upload");
+      return null;
+    }
+
     console.log(`Starting upload process for file to bucket '${bucketName}'...`);
+    
+    // Check if user is authenticated
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) {
+      const errorMsg = 'User must be logged in to upload files';
+      console.error(errorMsg);
+      toast({ 
+        title: "Authentication Error",
+        description: errorMsg,
+        variant: "destructive"
+      });
+      return null;
+    }
     
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
@@ -48,9 +71,9 @@ export const uploadFile = async (
       return null;
     }
     
-    // Validate file size (max 20MB)
-    if (file.size > 20 * 1024 * 1024) {
-      const errorMsg = 'Maximum file size: 20MB';
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      const errorMsg = 'Maximum file size: 5MB';
       console.error(errorMsg);
       toast({ 
         title: "Error",
@@ -63,11 +86,10 @@ export const uploadFile = async (
     // Check if bucket exists
     const bucketExists = await ensureStorageBucket(bucketName);
     if (!bucketExists) {
-      // If bucket doesn't exist, we'll return null but not throw an error
-      console.log(`Bucket '${bucketName}' doesn't exist, proceeding without image upload.`);
+      console.error(`Bucket '${bucketName}' doesn't exist.`);
       toast({ 
-        title: "Notice",
-        description: "Image upload is currently unavailable. Your signal will be submitted without an image.",
+        title: "Storage Error",
+        description: "Storage service is unavailable. Your signal will be submitted without an image.",
         variant: "default"
       });
       return null;
@@ -109,11 +131,19 @@ export const uploadFile = async (
     
     if (error) {
       console.error('Upload error details:', error);
-      toast({
-        title: "Upload Failed",
-        description: "Unable to upload image. Your signal will be submitted without an image.",
-        variant: "default"
-      });
+      if (error.message.includes('Permission denied')) {
+        toast({
+          title: "Permission Denied",
+          description: "You don't have permission to upload files. Please make sure you're logged in.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Upload Failed",
+          description: error.message || "Unable to upload image. Your signal will be submitted without an image.",
+          variant: "destructive"
+        });
+      }
       return null;
     }
     
@@ -126,12 +156,12 @@ export const uploadFile = async (
       
     console.log('File uploaded successfully, URL:', urlData.publicUrl);
     return urlData.publicUrl;
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error uploading file to ${bucketName}:`, error);
     toast({
       title: "Upload Failed",
-      description: "Unable to upload image. Your signal will be submitted without an image.",
-      variant: "default"
+      description: error.message || "Unable to upload image. Your signal will be submitted without an image.",
+      variant: "destructive"
     });
     return null;
   }
