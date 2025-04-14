@@ -1,6 +1,6 @@
 
 // Cache name - update version to force refresh
-const CACHE_NAME = 'spasi-bg-v4';
+const CACHE_NAME = 'spasi-bg-v5';
 
 // Files to cache
 const urlsToCache = [
@@ -48,47 +48,107 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Optimized fetch event with network-first strategy for API calls
-// and cache-first strategy for static assets
+// Enhanced fetch strategy - stale-while-revalidate for most resources
 self.addEventListener('fetch', (event) => {
   // Skip cross-origin requests
   if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }
   
-  // For images and static assets, try cache first then network
+  // For HTML requests - network first with cache fallback
+  if (event.request.mode === 'navigate' || 
+      event.request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Clone the response to store in cache
+          const clonedResponse = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, clonedResponse);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request)
+            .then(cachedResponse => {
+              return cachedResponse || caches.match('/');
+            });
+        })
+    );
+    return;
+  }
+  
+  // For images and static assets - Cache first, then network (stale-while-revalidate)
   if (
     event.request.url.match(/\.(jpeg|jpg|png|gif|svg|webp|ico)$/) ||
     event.request.url.includes('/lovable-uploads/')
   ) {
     event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        
-        return fetch(event.request).then((response) => {
-          // Don't cache if not a valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          
-          // Clone the response since it can only be consumed once
-          const responseToCache = response.clone();
-          
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-          
-          return response;
-        });
-      })
+      caches.match(event.request)
+        .then(cachedResponse => {
+          // Return cached response immediately
+          const fetchPromise = fetch(event.request)
+            .then(networkResponse => {
+              // Update cache with new response
+              caches.open(CACHE_NAME)
+                .then(cache => {
+                  cache.put(event.request, networkResponse.clone());
+                });
+              return networkResponse;
+            })
+            .catch(error => {
+              console.log('Fetch failed:', error);
+              // Return cached response as fallback
+              return cachedResponse;
+            });
+            
+          return cachedResponse || fetchPromise;
+        })
     );
-  } else {
-    // Network first approach for other requests
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(event.request);
+    return;
+  }
+  
+  // For all other requests - stale-while-revalidate
+  event.respondWith(
+    caches.match(event.request)
+      .then(cachedResponse => {
+        const fetchPromise = fetch(event.request)
+          .then(networkResponse => {
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, networkResponse.clone());
+              });
+            return networkResponse;
+          });
+            
+        return cachedResponse || fetchPromise;
+      })
+  );
+});
+
+// Function to clear all caches - can be called to force refreshes after deployment
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+  
+  if (event.data && event.data.action === 'clearCaches') {
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            return caches.delete(cacheName);
+          })
+        );
+      }).then(() => {
+        console.log('All caches cleared successfully');
+        // Notify the client that caches have been cleared
+        if (event.source) {
+          event.source.postMessage({
+            action: 'cachesCleared',
+            success: true
+          });
+        }
       })
     );
   }

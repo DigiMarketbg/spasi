@@ -24,9 +24,43 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Спаси БГ" />
     
+    <!-- Critical CSS inlined for faster rendering -->
+    <style>
+      /* Lightweight initial loader */
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      #loading-spinner {
+        position: fixed; 
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f5f5f5;
+      }
+      
+      @media (prefers-color-scheme: dark) {
+        #loading-spinner {
+          background-color: #0f0f0f;
+        }
+      }
+    </style>
+    
     <!-- Preload critical assets -->
-    <link rel="preload" href="/lovable-uploads/8db7f922-f5d9-4a9a-a53a-f93967d704dd.png" as="image" />
-    <link rel="preload" href="/lovable-uploads/67305523-c36e-48e8-b434-fbcbd7931232.png" as="image" />
+    <link rel="preload" href="/lovable-uploads/8db7f922-f5d9-4a9a-a53a-f93967d704dd.png" as="image" type="image/png" />
+    <link rel="preload" href="/lovable-uploads/67305523-c36e-48e8-b434-fbcbd7931232.png" as="image" type="image/png" />
+    <link rel="preload" href="/lovable-uploads/9ebf9964-e102-4d6e-866b-63884dc1f10f.png" as="image" type="image/png" />
+    
+    <!-- Preload core CSS & JS -->
+    <link rel="preload" href="/src/index.css" as="style" />
+    <link rel="preload" href="/src/main.tsx" as="script" type="text/javascript" crossorigin />
     
     <!-- Manifest link for PWA -->
     <link rel="manifest" href="/manifest.json" />
@@ -39,23 +73,67 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Initial loading indicator to improve perceived performance -->
+      <div id="loading-spinner">
+        <img src="/lovable-uploads/9ebf9964-e102-4d6e-866b-63884dc1f10f.png" alt="Зареждане..." width="48" height="48" />
+      </div>
+    </div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     
-    <!-- Service Worker Registration -->
+    <!-- Service Worker Registration with instant updates -->
     <script>
       if ('serviceWorker' in navigator) {
-        // Register service worker as soon as possible
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js')
+        // Register service worker immediately
+        navigator.serviceWorker.register('/sw.js')
           .then(function(reg) {
             console.log('Service worker registered.', reg);
+            
+            // Check for service worker updates on page load
+            reg.update();
+            
+            // Listen for control changes that indicate a new service worker has activated
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+              console.log('New service worker activated');
+            });
           }).catch(function(error) {
             console.log('Service worker registration failed:', error);
           });
-        });
+          
+        // Function to request the service worker to clear caches
+        window.clearCaches = function() {
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+              action: 'clearCaches'
+            });
+          }
+        };
+        
+        // Function to force refresh the page after a new deployment
+        window.forceRefresh = function() {
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+              action: 'skipWaiting'
+            });
+            window.location.reload();
+          }
+        };
       }
+      
+      // Remove loading spinner once the React app has loaded
+      window.addEventListener('load', function() {
+        const loadingSpinner = document.getElementById('loading-spinner');
+        if (loadingSpinner) {
+          setTimeout(() => {
+            loadingSpinner.style.opacity = '0';
+            loadingSpinner.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => {
+              loadingSpinner.remove();
+            }, 300);
+          }, 200);
+        }
+      });
     </script>
     
     <script type="module" src="/src/main.tsx"></script>
