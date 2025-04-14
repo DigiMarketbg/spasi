@@ -1,0 +1,102 @@
+
+import React from 'react';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent } from '@/components/ui/card';
+
+interface Rescuer {
+  id: string;
+  name: string;
+  city: string;
+  help_description: string;
+  help_date: string;
+  image_url?: string;
+  created_at: string;
+}
+
+const Rescuers = () => {
+  const { data: rescuers = [], isLoading } = useQuery({
+    queryKey: ['rescuers'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('rescuers')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('bg-BG');
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      
+      <main className="flex-grow mt-16 px-4 py-12">
+        <div className="container mx-auto">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-3xl font-bold mb-2">Спасители</h1>
+            <p className="text-muted-foreground mb-8">
+              Тук отбелязваме хората, които са направили разлика. Благодарим на всички, които помагат и спасяват!
+            </p>
+            
+            {isLoading ? (
+              <div className="flex justify-center items-center min-h-[200px]">
+                <p>Зареждане...</p>
+              </div>
+            ) : rescuers.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-muted-foreground">Все още няма добавени спасители</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {rescuers.map((rescuer) => (
+                  <Card key={rescuer.id}>
+                    <CardContent className="p-6">
+                      <div className="flex flex-col md:flex-row gap-6">
+                        {rescuer.image_url && (
+                          <div className="flex-shrink-0">
+                            <div className="w-full md:w-48 h-48 rounded-md overflow-hidden">
+                              <img 
+                                src={rescuer.image_url} 
+                                alt={rescuer.name} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="flex-grow">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="text-xl font-semibold">{rescuer.name}</h3>
+                              <p className="text-sm text-muted-foreground">{rescuer.city} • {formatDate(rescuer.help_date)}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4">
+                            <p className="whitespace-pre-line">{rescuer.help_description}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+      
+      <Footer />
+    </div>
+  );
+};
+
+export default Rescuers;

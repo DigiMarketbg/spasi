@@ -24,10 +24,12 @@ import BlogPostDetail from "./pages/BlogPostDetail";
 import AdminBlog from "./pages/AdminBlog";
 import AdminVideos from "./pages/AdminVideos";
 import AdminPartners from "./pages/AdminPartners";
+import AdminRescuers from "./pages/AdminRescuers";
 import Videos from "./pages/Videos";
 import Donations from "./pages/Donations";
 import Contact from "./pages/Contact";
 import Info from "./pages/Info";
+import Rescuers from "./pages/Rescuers";
 
 const queryClient = new QueryClient();
 
@@ -45,10 +47,12 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/submit-signal" element={<SubmitSignal />} />
               <Route path="/volunteers" element={<Volunteers />} />
+              <Route path="/rescuers" element={<Rescuers />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/moderator" element={<Moderator />} />
               <Route path="/admin/signals/:id" element={<SignalDetail />} />
               <Route path="/admin/volunteers" element={<AdminVolunteers />} />
+              <Route path="/admin/rescuers" element={<AdminRescuers />} />
               <Route path="/admin/blog" element={<AdminBlog />} />
               <Route path="/admin/videos" element={<AdminVideos />} />
               <Route path="/admin/partners" element={<AdminPartners />} />

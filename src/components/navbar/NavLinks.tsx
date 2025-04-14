@@ -1,53 +1,48 @@
 
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
-const links = [
-  { href: "/", label: "Начало" },
-  { href: "/signals", label: "Сигнали" },
-  { href: "/blog", label: "Блог" },
-  { href: "/volunteers", label: "Доброволци" },
-  { href: "/donations", label: "Дарения" },
-  { href: "/contact", label: "Контакти" },
-  { href: "/info", label: "Инфо" },
-];
-
-interface NavLinksProps {
-  mobile?: boolean;
-  onClick?: () => void;
-  className?: string; // Added className prop
-}
-
-export default function NavLinks({ mobile, onClick, className }: NavLinksProps) {
+const NavLinks = () => {
   const location = useLocation();
-
+  
+  const isActive = (path: string) => {
+    // Special case for home page
+    if (path === '/' && location.pathname === '/') {
+      return true;
+    }
+    
+    // For other pages, check if the current path includes the given path
+    return path !== '/' && location.pathname.includes(path);
+  };
+  
+  const links = [
+    { path: '/', label: 'Начало' },
+    { path: '/signals', label: 'Сигнали' },
+    { path: '/volunteers', label: 'Доброволци' },
+    { path: '/rescuers', label: 'Спасители' },
+    { path: '/blog', label: 'Блог' },
+    { path: '/videos', label: 'Видео' },
+    { path: '/contact', label: 'Контакти' },
+    { path: '/info', label: 'Информация' }
+  ];
+  
   return (
-    <div
-      className={cn(
-        "flex items-center gap-1 md:gap-2",
-        mobile && "flex-col w-full items-start gap-0",
-        className // Apply the className prop
-      )}
-    >
-      {links.map((link) => (
+    <>
+      {links.map(link => (
         <Link
-          key={link.href}
-          to={link.href}
-          className={cn(
-            "transition-colors font-medium",
-            mobile
-              ? "py-3 w-full hover:bg-accent px-4 rounded-md"
-              : "hover:text-foreground px-3 py-2",
-            location.pathname === link.href
-              ? "text-foreground"
-              : "text-muted-foreground"
-          )}
-          onClick={onClick}
+          key={link.path}
+          to={link.path}
+          className={`text-sm font-medium transition-colors hover:text-primary ${
+            isActive(link.path) 
+              ? 'text-primary font-bold' 
+              : 'text-muted-foreground'
+          }`}
         >
           {link.label}
         </Link>
       ))}
-    </div>
+    </>
   );
-}
+};
+
+export default NavLinks;

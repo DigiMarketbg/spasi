@@ -221,6 +221,36 @@ export type Database = {
           },
         ]
       }
+      rescuers: {
+        Row: {
+          city: string
+          created_at: string
+          help_date: string
+          help_description: string
+          id: string
+          image_url: string | null
+          name: string
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          help_date: string
+          help_description: string
+          id?: string
+          image_url?: string | null
+          name: string
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          help_date?: string
+          help_description?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
       signals: {
         Row: {
           category: string
