@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -14,7 +15,7 @@ export default defineConfig(({ mode }) => ({
     }
   },
   plugins: [
-    react(), // Removed fastRefresh option
+    react(),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
@@ -33,7 +34,7 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@/components/ui'],
+          ui: ['@/components/ui/button', '@/components/ui/card', '@/components/ui/toast'],
           // Separate core functionality into chunks
           auth: ['@/components/AuthProvider'],
           theme: ['@/components/ThemeProvider']
