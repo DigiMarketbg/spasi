@@ -49,8 +49,9 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
       // If we have a new file, upload it
       let logoUrl = initialData?.logo_url;
       
-      if (data.logo_file && data.logo_file.length > 0) {
-        const file = data.logo_file[0];
+      if (fileInputRef.current?.files && fileInputRef.current.files.length > 0) {
+        const file = fileInputRef.current.files[0];
+        console.log("Uploading file:", file.name, file.type, file.size);
         
         // Generate a unique filename
         const fileExt = file.name.split('.').pop();
@@ -65,7 +66,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
       }
       
       // If we don't have a logo (neither an existing one nor a new upload), show an error
-      if (!logoUrl && !previewImage) {
+      if (!logoUrl && !hasSelectedFile && !previewImage) {
         toast({
           title: 'Грешка',
           description: 'Моля, качете лого за партньора',
@@ -78,7 +79,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
       // Submit the data to the parent component
       await onSubmit({
         company_name: data.company_name,
-        logo_url: logoUrl || previewImage as string,
+        logo_url: logoUrl || (previewImage as string),
         website_url: data.website_url || undefined,
       });
       
@@ -108,16 +109,20 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
     
     if (files && files.length > 0) {
       const file = files[0];
+      console.log("Selected file:", file.name, file.type, file.size);
+      
+      // Always set hasSelectedFile when file is selected
       setHasSelectedFile(true);
       
       // Create a preview of the image
       const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewImage(reader.result as string);
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          console.log("Image preview created");
+          setPreviewImage(event.target.result as string);
+        }
       };
       reader.readAsDataURL(file);
-      
-      console.log("File selected:", file.name, "hasSelectedFile set to:", true);
     } else {
       // Reset if file selection is canceled and no initial data
       if (!initialData?.logo_url) {
@@ -128,23 +133,20 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
     }
   };
 
-  // Manually reset file input when form is reset
+  // Logo required validation logic - using direct fileInput check
+  const logoRequired = !initialData?.logo_url && !hasSelectedFile && !previewImage && 
+    !(fileInputRef.current?.files && fileInputRef.current.files.length > 0);
+
+  // Debug state on every render
   useEffect(() => {
-    const subscription = form.watch(() => {
-      // We can detect form reset here if needed
+    console.log("Form state:", { 
+      hasInitialLogo: !!initialData?.logo_url, 
+      hasPreviewImage: !!previewImage, 
+      hasSelectedFile,
+      fileInputHasFiles: fileInputRef.current?.files && fileInputRef.current.files.length > 0,
+      logoRequired
     });
-    return () => subscription.unsubscribe();
-  }, [form]);
-
-  // Logo required validation logic - consider both previewImage and hasSelectedFile
-  const logoRequired = !initialData?.logo_url && !previewImage && !hasSelectedFile;
-
-  console.log("Form state:", { 
-    hasInitialLogo: !!initialData?.logo_url, 
-    hasPreviewImage: !!previewImage, 
-    hasSelectedFile, 
-    logoRequired 
-  });
+  }, [initialData?.logo_url, previewImage, hasSelectedFile, logoRequired]);
 
   return (
     <Card>
@@ -189,10 +191,10 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
                   accept="image/*"
                   onChange={handleImageChange}
                   ref={fileInputRef}
-                  {...form.register('logo_file')}
+                  // Don't use React Hook Form for the file input
+                  className="cursor-pointer"
                 />
               </FormControl>
-              <FormMessage />
               
               {previewImage && (
                 <div className="mt-2 bg-black/50 p-4 rounded-lg inline-block">
@@ -214,7 +216,21 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
               )}
             </FormItem>
             
-            <Button type="submit" disabled={isLoading || logoRequired}>
+            <Button 
+              type="submit" 
+              disabled={isLoading || logoRequired}
+              onClick={() => {
+                // Log details when button is clicked to help debug
+                if (logoRequired) {
+                  console.log("Submit button clicked but disabled due to logoRequired:", {
+                    hasInitialLogo: !!initialData?.logo_url,
+                    hasSelectedFile,
+                    hasPreviewImage: !!previewImage,
+                    fileInputHasFiles: fileInputRef.current?.files && fileInputRef.current.files.length > 0
+                  });
+                }
+              }}
+            >
               {isLoading ? 'Запазване...' : submitLabel}
             </Button>
           </form>
