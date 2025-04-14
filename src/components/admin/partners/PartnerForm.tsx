@@ -18,9 +18,7 @@ const partnerFormSchema = z.object({
   website_url: z.string().url({ message: 'Моля, въведете валиден URL' }).optional().or(z.literal('')),
 });
 
-type PartnerFormData = z.infer<typeof partnerFormSchema> & { 
-  logo_file?: FileList 
-};
+type PartnerFormData = z.infer<typeof partnerFormSchema>;
 
 type PartnerFormProps = {
   onSubmit: (data: { company_name: string, logo_url: string, website_url?: string }) => Promise<void>;
@@ -46,27 +44,19 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
     try {
       setIsLoading(true);
       
-      // If we have a new file, upload it
-      let logoUrl = initialData?.logo_url;
+      // Perform immediate check for file
+      const hasFile = fileInputRef.current?.files && fileInputRef.current.files.length > 0;
       
-      if (fileInputRef.current?.files && fileInputRef.current.files.length > 0) {
-        const file = fileInputRef.current.files[0];
-        console.log("Uploading file:", file.name, file.type, file.size);
-        
-        // Generate a unique filename
-        const fileExt = file.name.split('.').pop();
-        const fileName = `partner_${Date.now()}.${fileExt}`;
-        
-        // Upload to the 'partners' bucket
-        logoUrl = await uploadFile('partners', fileName, file);
-        
-        if (!logoUrl) {
-          throw new Error('Грешка при качване на логото');
-        }
-      }
+      // Debug logging
+      console.log("Submit with file status:", {
+        hasFile,
+        hasSelectedFile,
+        hasPreviewImage: !!previewImage,
+        initialLogoUrl: initialData?.logo_url
+      });
       
       // If we don't have a logo (neither an existing one nor a new upload), show an error
-      if (!logoUrl && !hasSelectedFile && !previewImage) {
+      if (!initialData?.logo_url && !hasFile && !previewImage) {
         toast({
           title: 'Грешка',
           description: 'Моля, качете лого за партньора',
@@ -74,6 +64,37 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
         });
         setIsLoading(false);
         return;
+      }
+      
+      // If we have a new file, upload it
+      let logoUrl = initialData?.logo_url;
+      
+      if (hasFile) {
+        const file = fileInputRef.current!.files![0];
+        console.log("Uploading file:", file.name, file.type, file.size);
+        
+        // Generate a unique filename
+        const fileExt = file.name.split('.').pop();
+        const fileName = `partner_${Date.now()}.${fileExt}`;
+        
+        try {
+          // Upload to the 'partners' bucket
+          logoUrl = await uploadFile('partners', fileName, file);
+          
+          if (!logoUrl) {
+            throw new Error('Error uploading logo');
+          }
+          console.log("File upload successful, URL:", logoUrl);
+        } catch (uploadError) {
+          console.error("File upload error:", uploadError);
+          toast({
+            title: 'Грешка при качване',
+            description: 'Възникна проблем при качването на логото. Моля, опитайте отново.',
+            variant: 'destructive',
+          });
+          setIsLoading(false);
+          return;
+        }
       }
       
       // Submit the data to the parent component
@@ -133,20 +154,10 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
     }
   };
 
-  // Logo required validation logic - using direct fileInput check
-  const logoRequired = !initialData?.logo_url && !hasSelectedFile && !previewImage && 
-    !(fileInputRef.current?.files && fileInputRef.current.files.length > 0);
-
-  // Debug state on every render
-  useEffect(() => {
-    console.log("Form state:", { 
-      hasInitialLogo: !!initialData?.logo_url, 
-      hasPreviewImage: !!previewImage, 
-      hasSelectedFile,
-      fileInputHasFiles: fileInputRef.current?.files && fileInputRef.current.files.length > 0,
-      logoRequired
-    });
-  }, [initialData?.logo_url, previewImage, hasSelectedFile, logoRequired]);
+  // Calculate logoRequired status - this is used to enable/disable submit button
+  const hasExistingLogo = !!initialData?.logo_url;
+  const hasFileSelected = fileInputRef.current?.files && fileInputRef.current.files.length > 0;
+  const logoRequired = !hasExistingLogo && !hasFileSelected && !previewImage;
 
   return (
     <Card>
@@ -191,7 +202,6 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
                   accept="image/*"
                   onChange={handleImageChange}
                   ref={fileInputRef}
-                  // Don't use React Hook Form for the file input
                   className="cursor-pointer"
                 />
               </FormControl>
@@ -207,7 +217,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
               )}
               
               <p className="text-xs text-muted-foreground mt-1">
-                Препоръчителен размер: 200x80 пиксела
+                Препоръчителен размер: 200x80 пиксела (поддържат се всички размери)
               </p>
               {logoRequired && (
                 <p className="text-xs text-destructive mt-1">
@@ -220,13 +230,12 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
               type="submit" 
               disabled={isLoading || logoRequired}
               onClick={() => {
-                // Log details when button is clicked to help debug
                 if (logoRequired) {
                   console.log("Submit button clicked but disabled due to logoRequired:", {
-                    hasInitialLogo: !!initialData?.logo_url,
+                    hasExistingLogo,
                     hasSelectedFile,
-                    hasPreviewImage: !!previewImage,
-                    fileInputHasFiles: fileInputRef.current?.files && fileInputRef.current.files.length > 0
+                    hasFileSelected,
+                    hasPreviewImage: !!previewImage
                   });
                 }
               }}

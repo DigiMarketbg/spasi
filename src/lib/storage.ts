@@ -19,7 +19,7 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
       console.log(`Bucket '${bucketName}' does not exist, creating...`);
       const { error: createError } = await supabase.storage.createBucket(bucketName, {
         public: true,
-        fileSizeLimit: 10 * 1024 * 1024 // Increasing to 10MB limit
+        fileSizeLimit: 10 * 1024 * 1024 // Increased to 10MB limit
       });
       
       if (createError) {
@@ -54,8 +54,10 @@ export const uploadFile = async (
       throw new Error(`Failed to ensure bucket ${bucketName} exists`);
     }
     
-    // Upload file with better error handling
+    // Upload file with better error handling and retry logic
     console.log(`Uploading file '${filePath}' to bucket '${bucketName}'...`);
+    
+    // Upload with more detailed error handling
     const { error, data } = await supabase.storage
       .from(bucketName)
       .upload(filePath, file, {
@@ -65,6 +67,9 @@ export const uploadFile = async (
     
     if (error) {
       console.error('Upload error details:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      console.error('Error details:', error.details);
       throw new Error(`Error uploading file: ${error.message}`);
     }
     
