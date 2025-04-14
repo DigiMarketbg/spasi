@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ExternalLink, Phone, Calendar, MapPin, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -58,7 +57,7 @@ const SignalContent: React.FC<SignalContentProps> = ({
     >
       <div className={detailCardStyles.section}>
         {/* Status and Category badges */}
-        <div className="mb-4 flex flex-wrap gap-2">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           <Badge variant="outline" className={detailCardStyles.badge}>
             <div className="flex items-center">
               {getCategoryIcon(signal.category)}
@@ -67,7 +66,7 @@ const SignalContent: React.FC<SignalContentProps> = ({
           </Badge>
           
           {signal.is_resolved && (
-            <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border-green-300 dark:border-green-800/60">
+            <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border-green-300 dark:border-green-800/60 flex items-center">
               <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
               <span>Решен сигнал</span>
             </Badge>

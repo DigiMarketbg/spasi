@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Eye, MapPin, Calendar, Phone, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -70,24 +69,27 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
       className={`${cardStyles.container(className)} ${resolvedStyles}`}
     >
       <div className="flex flex-col h-full">
-        {signal.isResolved && (
-          <div className="absolute -top-2 -right-2 z-10">
-            <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border-green-300 dark:border-green-800/60 flex items-center px-2 py-1">
+        <div className="flex items-center gap-2 mb-3">
+          <Badge 
+            variant="outline"
+            className={cardStyles.badge}
+          >
+            <div className="flex items-center">
+              {getCategoryIcon(signal.category)}
+              <span>{translatedCategory}</span>
+            </div>
+          </Badge>
+          
+          {signal.isResolved && (
+            <Badge 
+              variant="outline" 
+              className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border-green-300 dark:border-green-800/60 flex items-center"
+            >
               <CheckCircle className="h-3.5 w-3.5 mr-1" />
               <span>Решен</span>
             </Badge>
-          </div>
-        )}
-        
-        <Badge 
-          variant="outline"
-          className={cardStyles.badge}
-        >
-          <div className="flex items-center">
-            {getCategoryIcon(signal.category)}
-            <span>{translatedCategory}</span>
-          </div>
-        </Badge>
+          )}
+        </div>
         
         <h3 className={cardStyles.title}>{signal.title}</h3>
         
