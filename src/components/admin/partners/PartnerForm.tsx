@@ -63,7 +63,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
       }
       
       // If we don't have a logo (neither an existing one nor a new upload), show an error
-      if (!logoUrl) {
+      if (!logoUrl && !previewImage) {
         toast({
           title: 'Грешка',
           description: 'Моля, качете лого за партньора',
@@ -76,7 +76,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
       // Submit the data to the parent component
       await onSubmit({
         company_name: data.company_name,
-        logo_url: logoUrl,
+        logo_url: logoUrl || previewImage as string, // Use previewImage as fallback
         website_url: data.website_url || undefined,
       });
       
@@ -143,7 +143,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
             />
             
             <FormItem>
-              <FormLabel>Лого {!initialData && <span className="text-destructive">*</span>}</FormLabel>
+              <FormLabel>Лого {!initialData && !previewImage && <span className="text-destructive">*</span>}</FormLabel>
               <FormControl>
                 <Input 
                   type="file" 
