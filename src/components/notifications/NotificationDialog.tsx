@@ -17,7 +17,13 @@ const NotificationDialog = () => {
   const { isSubscribed, isPushSupported, isInitialized, subscribe } = useOneSignal();
   
   useEffect(() => {
-    // Only show if notifications are supported and user is not already subscribed
+    console.log('NotificationDialog Mount:', {
+      isInitialized,
+      isPushSupported,
+      isSubscribed
+    });
+    
+    // Don't show if notifications are not supported or user is already subscribed
     if (!isPushSupported || isSubscribed || !isInitialized) {
       return;
     }
@@ -30,6 +36,7 @@ const NotificationDialog = () => {
     
     // Show dialog after 5 seconds
     const timer = setTimeout(() => {
+      console.log('Showing notification dialog');
       setOpen(true);
       // Mark as shown
       localStorage.setItem('notification_dialog_shown', 'true');
@@ -39,6 +46,7 @@ const NotificationDialog = () => {
   }, [isPushSupported, isSubscribed, isInitialized]);
   
   const handleSubscribe = async () => {
+    console.log('Subscribing to notifications');
     await subscribe();
     setOpen(false);
   };
@@ -47,10 +55,16 @@ const NotificationDialog = () => {
     setOpen(false);
   };
   
-  // Don't render anything if notifications are not supported or already subscribed
-  if (!isPushSupported || isSubscribed || !isInitialized) {
+  if (!isInitialized) {
+    console.log('OneSignal not initialized yet');
     return null;
   }
+  
+  console.log('Rendering NotificationDialog:', {
+    isPushSupported,
+    isSubscribed,
+    open
+  });
   
   return (
     <Dialog open={open} onOpenChange={setOpen}>

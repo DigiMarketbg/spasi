@@ -37,11 +37,26 @@
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "35af33cb-8ab8-4d90-b789-17fb5c45542b",
+      
+      // Only initialize OneSignal if we're on the production domain
+      if (window.location.hostname === 'spasi.bg') {
+        OneSignalDeferred.push(async function(OneSignal) {
+          await OneSignal.init({
+            appId: "35af33cb-8ab8-4d90-b789-17fb5c45542b",
+          });
         });
-      });
+      } else {
+        console.log('OneSignal initialization skipped in development environment');
+        // Set a global stub for development environments
+        window.OneSignal = {
+          // Stub methods that our code expects to use
+          push: (callback) => {
+            if (typeof callback === 'function') {
+              callback();
+            }
+          }
+        };
+      }
     </script>
 
     <style>
