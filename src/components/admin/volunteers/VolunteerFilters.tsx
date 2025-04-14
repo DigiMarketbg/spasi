@@ -56,7 +56,7 @@ const VolunteerFilters: React.FC<VolunteerFiltersProps> = ({
             <SelectValue placeholder="Филтър по град" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Всички градове</SelectItem>
+            <SelectItem value="all">Всички градове</SelectItem>
             {BULGARIAN_CITIES.map(city => (
               <SelectItem key={city} value={city}>{city}</SelectItem>
             ))}
@@ -76,7 +76,7 @@ const VolunteerFilters: React.FC<VolunteerFiltersProps> = ({
             <SelectValue placeholder="Филтър по статус" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Всички</SelectItem>
+            <SelectItem value="all">Всички</SelectItem>
             <SelectItem value="approved">Одобрени</SelectItem>
             <SelectItem value="pending">Чакащи</SelectItem>
           </SelectContent>

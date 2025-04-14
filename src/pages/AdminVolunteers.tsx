@@ -20,8 +20,8 @@ const AdminVolunteers = () => {
   
   // Filters
   const [search, setSearch] = useState('');
-  const [cityFilter, setCityFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [cityFilter, setCityFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
   
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,7 +54,7 @@ const AdminVolunteers = () => {
         query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
       }
       
-      if (cityFilter) {
+      if (cityFilter !== 'all') {
         query = query.eq('city', cityFilter);
       }
       
