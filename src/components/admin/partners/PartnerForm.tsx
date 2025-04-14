@@ -12,6 +12,7 @@ import { uploadFile } from '@/lib/storage';
 import { useState } from 'react';
 import { Partner } from '@/types/partner';
 
+// Create a schema that requires logo for new partners
 const partnerFormSchema = z.object({
   company_name: z.string().min(2, { message: 'Името трябва да съдържа поне 2 символа' }),
   website_url: z.string().url({ message: 'Моля, въведете валиден URL' }).optional().or(z.literal('')),
@@ -68,6 +69,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
           description: 'Моля, качете лого за партньора',
           variant: 'destructive',
         });
+        setIsLoading(false);
         return;
       }
       
@@ -141,7 +143,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
             />
             
             <FormItem>
-              <FormLabel>Лого</FormLabel>
+              <FormLabel>Лого {!initialData && <span className="text-destructive">*</span>}</FormLabel>
               <FormControl>
                 <Input 
                   type="file" 
@@ -165,6 +167,11 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
               <p className="text-xs text-muted-foreground mt-1">
                 Препоръчителен размер: 200x80 пиксела
               </p>
+              {!initialData && !previewImage && (
+                <p className="text-xs text-destructive mt-1">
+                  Моля, качете лого за партньора
+                </p>
+              )}
             </FormItem>
             
             <Button type="submit" disabled={isLoading}>
