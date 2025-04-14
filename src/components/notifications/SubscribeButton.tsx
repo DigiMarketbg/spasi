@@ -7,12 +7,14 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 interface SubscribeButtonProps extends Omit<ButtonProps, 'onClick'> {
   showText?: boolean;
+  id?: string;
 }
 
 const SubscribeButton = ({ 
   showText = true, 
   variant = "outline",
   className,
+  id = "subscribeBtn",
   ...props 
 }: SubscribeButtonProps) => {
   const { isSubscribed, isPushSupported, isInitialized, subscribe, unsubscribe } = useOneSignal();
@@ -37,6 +39,7 @@ const SubscribeButton = ({
             variant={variant}
             onClick={handleClick}
             className={className}
+            id={id}
             {...props}
           >
             {isSubscribed ? (

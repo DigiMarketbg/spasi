@@ -48,7 +48,7 @@ const NotificationDialog = () => {
   }, [isPushSupported, isSubscribed, isInitialized]);
   
   const handleSubscribe = async () => {
-    console.log('Subscribing to notifications');
+    console.log('Dialog: Subscribing to notifications');
     await subscribe();
     setOpen(false);
   };
@@ -99,6 +99,7 @@ const NotificationDialog = () => {
           <Button 
             className="bg-spasi-red hover:bg-spasi-red/90 text-white"
             onClick={handleSubscribe}
+            id="dialogSubscribeBtn"
           >
             Абониране за известия
           </Button>

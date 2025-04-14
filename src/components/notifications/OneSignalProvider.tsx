@@ -101,6 +101,8 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
 
   // Subscribe to push notifications
   const subscribe = async () => {
+    console.log('Subscribe function called');
+    
     if (isDevEnvironment) {
       console.log('DEV: Simulating subscription to push notifications');
       setIsSubscribed(true);
@@ -120,22 +122,34 @@ export const OneSignalProvider = ({ children }: { children: React.ReactNode }) =
     }
     
     try {
-      // Important change: use showSlidedownPrompt instead of showNativePrompt
-      await window.OneSignal.showSlidedownPrompt();
+      console.log('Showing OneSignal slidedown prompt...');
       
-      // We need to check again after prompt
-      const isSubscribed = await window.OneSignal.isPushNotificationsEnabled();
+      // This is the specific implementation for the button click
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      window.OneSignalDeferred.push(async function(OneSignal) {
+        // Show the slidedown prompt directly
+        await OneSignal.showSlidedownPrompt();
+        console.log('Slidedown prompt shown via button click');
+      });
       
-      if (isSubscribed) {
-        setIsSubscribed(true);
-        const playerId = await window.OneSignal.getUserId();
-        await saveSubscriptionToDatabase(playerId, user?.id, false);
-        
-        toast({
-          title: 'Абонирани сте успешно',
-          description: 'Ще получавате известия за нови сигнали',
-        });
-      }
+      // Check subscription status after a short delay
+      setTimeout(async () => {
+        try {
+          const isSubscribed = await window.OneSignal.isPushNotificationsEnabled();
+          if (isSubscribed) {
+            setIsSubscribed(true);
+            const playerId = await window.OneSignal.getUserId();
+            await saveSubscriptionToDatabase(playerId, user?.id, false);
+            
+            toast({
+              title: 'Абонирани сте успешно',
+              description: 'Ще получавате известия за нови сигнали',
+            });
+          }
+        } catch (error) {
+          console.error('Error checking subscription status after prompt:', error);
+        }
+      }, 2000);
     } catch (error) {
       console.error('Error subscribing to push notifications:', error);
       

@@ -73,6 +73,43 @@
       } else {
         console.log('OneSignal initialization skipped in development environment');
       }
+      
+      // Add event listener for any subscribe button click
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('Setting up subscription button event listeners');
+        
+        // We need to use a mutation observer to detect dynamically added buttons
+        const observer = new MutationObserver((mutations) => {
+          const subscribeBtn = document.getElementById('subscribeBtn');
+          const dialogSubscribeBtn = document.getElementById('dialogSubscribeBtn');
+          
+          // Check if our buttons exist and don't have listeners yet
+          if (subscribeBtn && !subscribeBtn.getAttribute('data-listener')) {
+            console.log('Adding event listener to subscribe button');
+            subscribeBtn.addEventListener('click', () => {
+              console.log('Subscribe button clicked');
+              OneSignalDeferred.push(async function(OneSignal) {
+                await OneSignal.showSlidedownPrompt();
+              });
+            });
+            subscribeBtn.setAttribute('data-listener', 'true');
+          }
+          
+          if (dialogSubscribeBtn && !dialogSubscribeBtn.getAttribute('data-listener')) {
+            console.log('Adding event listener to dialog subscribe button');
+            dialogSubscribeBtn.addEventListener('click', () => {
+              console.log('Dialog subscribe button clicked');
+              OneSignalDeferred.push(async function(OneSignal) {
+                await OneSignal.showSlidedownPrompt();
+              });
+            });
+            dialogSubscribeBtn.setAttribute('data-listener', 'true');
+          }
+        });
+        
+        // Start observing the document with the configured parameters
+        observer.observe(document.body, { childList: true, subtree: true });
+      });
     </script>
 
     <style>
