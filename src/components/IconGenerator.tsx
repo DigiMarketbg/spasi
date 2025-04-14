@@ -1,7 +1,6 @@
 
 import React, { useEffect, useRef } from 'react';
 
-// This component is for generating PWA icons from our logo
 const IconGenerator: React.FC = () => {
   const canvasRef192 = useRef<HTMLCanvasElement>(null);
   const canvasRef512 = useRef<HTMLCanvasElement>(null);
@@ -9,7 +8,7 @@ const IconGenerator: React.FC = () => {
 
   useEffect(() => {
     const logo = new Image();
-    logo.src = '/lovable-uploads/2b23da05-1088-41a2-800e-5cda238a09d9.png'; // Use the newly uploaded logo
+    logo.src = '/lovable-uploads/bc9443eb-ca60-4fc3-aae9-b7b06e43b393.png'; // Use the newly uploaded logo
     logo.onload = () => {
       // Generate 192x192 icon
       if (canvasRef192.current) {
