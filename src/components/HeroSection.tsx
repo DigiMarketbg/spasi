@@ -181,11 +181,15 @@ const HeroSection = () => {
               </Button>
             )}
             
-            <SubscribeButton 
-              variant="outline" 
-              className="border-2 border-spasi-red/50 bg-soft-purple/10 hover:bg-soft-purple/20 py-3 px-6 rounded-lg text-sm font-medium"
-              showText={true}
-            />
+            <div className="relative">
+              {/* OneSignal custom link container */}
+              <div className="onesignal-customlink-container absolute inset-0 z-10 opacity-0"></div>
+              <SubscribeButton 
+                variant="outline" 
+                className="border-2 border-spasi-red/50 bg-soft-purple/10 hover:bg-soft-purple/20 py-3 px-6 rounded-lg text-sm font-medium"
+                showText={true}
+              />
+            </div>
           </div>
         </div>
       </div>

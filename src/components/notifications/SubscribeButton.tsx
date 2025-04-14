@@ -52,25 +52,29 @@ const SubscribeButton = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button 
-            variant={variant}
-            onClick={handleClick}
-            className={className}
-            id={id}
-            {...props}
-          >
-            {isSubscribed ? (
-              <>
-                <BellOff className="h-4 w-4 mr-2" />
-                {showText && <span>Отписване от известия</span>}
-              </>
-            ) : (
-              <>
-                <Bell className="h-4 w-4 mr-2" />
-                {showText && <span>Абониране за известия</span>}
-              </>
-            )}
-          </Button>
+          <div className="relative">
+            {/* OneSignal custom link container - това е специален div, който OneSignal използва за абониране */}
+            <div className="onesignal-customlink-container absolute inset-0 z-10 opacity-0"></div>
+            <Button 
+              variant={variant}
+              onClick={handleClick}
+              className={className}
+              id={id}
+              {...props}
+            >
+              {isSubscribed ? (
+                <>
+                  <BellOff className="h-4 w-4 mr-2" />
+                  {showText && <span>Отписване от известия</span>}
+                </>
+              ) : (
+                <>
+                  <Bell className="h-4 w-4 mr-2" />
+                  {showText && <span>Абониране за известия</span>}
+                </>
+              )}
+            </Button>
+          </div>
         </TooltipTrigger>
         <TooltipContent>
           {isSubscribed 

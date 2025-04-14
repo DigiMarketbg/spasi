@@ -43,7 +43,9 @@ const App = () => (
               <NotificationDialog />
               {/* Добавяме SubscribeButton към основния App компонент за тестване */}
               <div className="fixed bottom-4 right-4 z-50">
-                <SubscribeButton />
+                <div className="onesignal-customlink-container">
+                  <SubscribeButton />
+                </div>
               </div>
               <Routes>
                 <Route path="/" element={<Index />} />
