@@ -258,31 +258,29 @@ const HeroSection = () => {
             </Button>
           </div>
           
-          {/* Нови бутони */}
+          {/* Нови бутони със същия дизайн като на снимката */}
           <div className="flex flex-wrap gap-4 justify-center mt-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
             {/* Бутон 1: Спасители */}
             <Button 
-              className="bg-spasi-red/80 hover:bg-spasi-red text-white py-5 px-6 rounded-lg text-base font-medium flex items-center gap-2 relative group overflow-hidden"
+              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-3 px-5 rounded-lg text-base font-medium flex items-center gap-2 group shadow-lg transition-all duration-300 border-none"
               onClick={navigateToRescuers}
             >
-              <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
               <Medal className="h-5 w-5 relative z-10" />
               <span className="relative z-10">Спасители</span>
             </Button>
             
             {/* Бутон 2: Доброволци */}
             <Button 
-              className="bg-purple-600 hover:bg-purple-700 text-white py-5 px-6 rounded-lg text-base font-medium flex items-center gap-2 relative group overflow-hidden"
+              className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white py-3 px-5 rounded-lg text-base font-medium flex items-center gap-2 group shadow-lg transition-all duration-300 border-none"
               onClick={navigateToVolunteers}
             >
-              <span className="absolute inset-0 w-0 bg-white/20 transition-all duration-300 ease-out group-hover:w-full"></span>
               <UserPlus className="h-5 w-5 relative z-10" />
               <span className="relative z-10">Доброволци</span>
             </Button>
             
             {/* Бутон 3: Празен */}
             <Button 
-              className="bg-blue-600 hover:bg-blue-700 text-white py-5 px-6 rounded-lg text-base font-medium flex items-center gap-2 relative group overflow-hidden opacity-70 cursor-not-allowed"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-3 px-5 rounded-lg text-base font-medium flex items-center gap-2 group shadow-lg transition-all duration-300 border-none opacity-70 cursor-not-allowed"
               disabled
             >
               <span className="relative z-10">Бутон 3</span>
@@ -290,7 +288,7 @@ const HeroSection = () => {
             
             {/* Бутон 4: Празен */}
             <Button 
-              className="bg-green-600 hover:bg-green-700 text-white py-5 px-6 rounded-lg text-base font-medium flex items-center gap-2 relative group overflow-hidden opacity-70 cursor-not-allowed"
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-5 rounded-lg text-base font-medium flex items-center gap-2 group shadow-lg transition-all duration-300 border-none opacity-70 cursor-not-allowed"
               disabled
             >
               <span className="relative z-10">Бутон 4</span>
