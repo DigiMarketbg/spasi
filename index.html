@@ -118,16 +118,20 @@
                 return;
               }
               
-              // Импортиране на Supabase клиент
-              const { supabase } = await import('/src/integrations/supabase/client.js');
+              // Използваме директно глобалния supabase клиент вместо да импортираме файл
+              // Това решава проблема с пътя и осигурява съвместимост с TypeScript
+              if (!window.supabase) {
+                console.error("❌ Supabase клиентът не е достъпен");
+                return;
+              }
               
               // Опитваме се да вземем текущия потребител, ако е логнат
-              const { data: userData } = await supabase.auth.getUser();
+              const { data: userData } = await window.supabase.auth.getUser();
               const userId = userData?.user?.id || null;
               
               console.log("🔔 Записване на push абонат:", { playerId, userId });
               
-              const { error } = await supabase
+              const { error } = await window.supabase
                 .from('push_subscribers')
                 .insert([{
                   user_id: userId,
