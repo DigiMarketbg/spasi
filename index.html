@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bg">
   <head>
@@ -100,6 +101,50 @@
           console.log('Service worker registration failed:', error);
         });
       }
+    </script>
+    
+    <!-- OneSignal subscription tracking with Supabase integration -->
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        // След като потребителят се абонира, записваме player_id в Supabase
+        OneSignal.on('subscriptionChange', async function(isSubscribed) {
+          if (isSubscribed) {
+            try {
+              const playerId = await OneSignal.getUserId();
+              // Внимаваме за undefined или null стойности
+              if (!playerId) {
+                console.error("❌ Не можем да получим OneSignal playerId");
+                return;
+              }
+              
+              // Импортиране на Supabase клиент
+              const { supabase } = await import('/src/integrations/supabase/client.js');
+              
+              // Опитваме се да вземем текущия потребител, ако е логнат
+              const { data: userData } = await supabase.auth.getUser();
+              const userId = userData?.user?.id || null;
+              
+              console.log("🔔 Записване на push абонат:", { playerId, userId });
+              
+              const { error } = await supabase
+                .from('push_subscribers')
+                .insert([{
+                  user_id: userId,
+                  player_id: playerId
+                }]);
+              
+              if (error) {
+                console.error("❌ Грешка при запис на push абонат:", error);
+              } else {
+                console.log("✅ Push абонатът е записан успешно:", playerId);
+              }
+            } catch (err) {
+              console.error("❌ Грешка при обработка на абонамент:", err);
+            }
+          }
+        });
+      });
     </script>
     
     <script type="module" src="/src/main.tsx"></script>
