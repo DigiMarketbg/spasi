@@ -26,25 +26,37 @@ const Moderator = () => {
     queryFn: async () => {
       if (!user || !isModerator) return [];
       
-      const { data, error } = await supabase
+      // First, get all signals
+      const { data: signalsData, error: signalsError } = await supabase
         .from('signals')
-        .select(`
-          *,
-          profiles:user_id (
-            full_name,
-            email
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (signalsError) throw signalsError;
       
-      // Format the data to match the structure expected by SignalsManagement
-      return data.map(signal => ({
-        ...signal,
-        user_full_name: signal.profiles?.full_name,
-        user_email: signal.profiles?.email
-      }));
+      if (!signalsData || signalsData.length === 0) {
+        return [];
+      }
+      
+      // Then, get all profiles to join manually
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, email');
+        
+      if (profilesError) throw profilesError;
+      
+      // Join the data manually
+      const enrichedSignals = signalsData.map(signal => {
+        const userProfile = profilesData?.find(profile => profile.id === signal.user_id);
+        
+        return {
+          ...signal,
+          user_full_name: userProfile?.full_name || 'Неизвестен',
+          user_email: userProfile?.email || 'Неизвестен имейл'
+        };
+      });
+      
+      return enrichedSignals;
     },
     enabled: !!user && isModerator
   });
