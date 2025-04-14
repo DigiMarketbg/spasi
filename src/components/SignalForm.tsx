@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { uploadFile } from '@/lib/storage';
+import { uploadSignalImage } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 
 const signalCategories = [
@@ -68,6 +68,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -90,8 +91,8 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
     
     const file = files[0];
     
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Файлът трябва да е по-малък от 5MB");
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Файлът трябва да е по-малък от 10MB");
       return;
     }
     
@@ -102,6 +103,9 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
     reader.readAsDataURL(file);
     setImageFile(file);
     setError(null);
+    
+    // Log file details for debugging
+    console.log(`Selected file: ${file.name}, type: ${file.type}, size: ${file.size} bytes`);
   };
 
   const onSubmit = async (data: FormValues) => {
@@ -112,6 +116,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
 
     setIsSubmitting(true);
     setError(null);
+    setUploadProgress(0);
 
     try {
       let imageUrl = null;
@@ -119,22 +124,40 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       // Качване на изображение, ако има такова
       if (imageFile) {
         setIsUploading(true);
+        console.log("Starting image upload process...");
         
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-        const filePath = `${fileName}`;
+        // Simulate progress for better UX
+        const progressInterval = setInterval(() => {
+          setUploadProgress(prev => {
+            const newProgress = prev + 10;
+            return newProgress > 90 ? 90 : newProgress;
+          });
+        }, 500);
         
-        imageUrl = await uploadFile('signals', filePath, imageFile);
+        imageUrl = await uploadSignalImage(imageFile);
         
+        clearInterval(progressInterval);
+        setUploadProgress(100);
         setIsUploading(false);
         
         if (!imageUrl) {
-          throw new Error("Неуспешно качване на изображението");
+          console.error("Image upload failed - null URL returned");
+          throw new Error("Неуспешно качване на изображението. Моля, опитайте отново.");
         }
+        
+        console.log("Image uploaded successfully:", imageUrl);
       }
       
       // Запазване на сигнала в базата данни
-      const { error } = await supabase.from('signals').insert({
+      console.log("Saving signal to database with data:", {
+        user_id: user.id,
+        category: data.category,
+        title: data.title,
+        city: data.city,
+        imageUrl: imageUrl
+      });
+      
+      const { error: signalError } = await supabase.from('signals').insert({
         user_id: user.id,
         category: data.category,
         title: data.title,
@@ -147,8 +170,9 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         is_resolved: false
       });
       
-      if (error) {
-        throw error;
+      if (signalError) {
+        console.error("Database error when saving signal:", signalError);
+        throw signalError;
       }
       
       // Нулиране на формуляра
@@ -178,9 +202,11 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
     } finally {
       setIsSubmitting(false);
       setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
+  
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -190,6 +216,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
           </Alert>
         )}
         
+        {/* Category field */}
         <FormField
           control={form.control}
           name="category"
@@ -221,6 +248,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
           )}
         />
         
+        {/* Title field */}
         <FormField
           control={form.control}
           name="title"
@@ -239,6 +267,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
           )}
         />
         
+        {/* City field */}
         <FormField
           control={form.control}
           name="city"
@@ -260,6 +289,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
           )}
         />
         
+        {/* Description field */}
         <FormField
           control={form.control}
           name="description"
@@ -281,6 +311,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
           )}
         />
         
+        {/* Phone field */}
         <FormField
           control={form.control}
           name="phone"
@@ -305,6 +336,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
           )}
         />
         
+        {/* Link field */}
         <FormField
           control={form.control}
           name="link"
@@ -329,12 +361,13 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
           )}
         />
         
+        {/* Image upload section with improved UI */}
         <div className="space-y-3">
           <FormLabel htmlFor="image">Снимка (по избор)</FormLabel>
           <div className="flex flex-col gap-4">
             <label className="flex flex-col items-center gap-2 p-4 border-2 border-dashed border-muted-foreground/50 rounded-lg hover:bg-accent/20 transition-colors cursor-pointer">
               <Camera className="h-8 w-8 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Качете снимка (до 5MB)</span>
+              <span className="text-sm text-muted-foreground">Качете снимка (до 10MB)</span>
               <Input
                 id="image"
                 type="file"
@@ -367,6 +400,15 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
                 </Button>
               </div>
             )}
+            
+            {isUploading && (
+              <div className="w-full bg-muted rounded-full h-2.5 mt-2">
+                <div 
+                  className="bg-primary h-2.5 rounded-full transition-all duration-300" 
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+            )}
           </div>
         </div>
         
@@ -377,7 +419,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         >
           {isSubmitting || isUploading ? (
             <span className="flex items-center gap-2">
-              <Upload className="h-4 w-4 animate-spin" />
+              <Upload className={`h-4 w-4 ${isUploading ? "animate-pulse" : "animate-spin"}`} />
               {isUploading ? "Качване на изображение..." : "Изпращане..."}
             </span>
           ) : (

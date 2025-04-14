@@ -62,13 +62,29 @@ export const deleteSignal = async (id: string): Promise<void> => {
   console.log("Signal successfully deleted");
 };
 
-// Upload an image for a signal
+// Upload an image for a signal with improved error handling
 export const uploadSignalImage = async (file: File): Promise<string | null> => {
-  if (!file) return null;
+  if (!file) {
+    console.log("No file provided for upload");
+    return null;
+  }
   
+  // Generate a unique filename to avoid collisions
+  const timestamp = new Date().getTime();
+  const randomString = Math.random().toString(36).substring(2, 10);
   const fileExt = file.name.split('.').pop();
-  const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-  const filePath = `${fileName}`;
+  const fileName = `signal_${timestamp}_${randomString}.${fileExt}`;
+  const filePath = fileName;
   
-  return await uploadFile('signals', filePath, file);
+  console.log(`Attempting to upload file: ${fileName} of type ${file.type} and size ${file.size} bytes`);
+  
+  const imageUrl = await uploadFile('signals', filePath, file);
+  
+  if (!imageUrl) {
+    console.error("Failed to upload image, null URL returned");
+  } else {
+    console.log("Image successfully uploaded:", imageUrl);
+  }
+  
+  return imageUrl;
 };
