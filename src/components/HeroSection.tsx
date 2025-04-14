@@ -30,7 +30,7 @@ const HeroSection = () => {
               <Input 
                 type="text" 
                 placeholder="Търсене по дума или град..." 
-                className="pr-10 py-6 text-lg rounded-lg"
+                className="pr-10 py-6 text-lg rounded-lg border-2 border-spasi-red focus:ring-2 focus:ring-spasi-red"
               />
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
             </div>
@@ -47,7 +47,7 @@ const HeroSection = () => {
             
             <Button 
               variant="outline" 
-              className="border-2 border-soft-purple/50 bg-soft-purple/10 hover:bg-soft-purple/20 py-3 px-6 rounded-lg text-sm font-medium flex items-center gap-2 relative group"
+              className="border-2 border-spasi-red/50 bg-soft-purple/10 hover:bg-soft-purple/20 py-3 px-6 rounded-lg text-sm font-medium flex items-center gap-2 relative group"
             >
               <Bell className="h-4 w-4 text-primary opacity-70" />
               <span>Абонирай се за известия</span>
@@ -60,4 +60,3 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
-
