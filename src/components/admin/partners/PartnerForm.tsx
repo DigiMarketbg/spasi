@@ -9,10 +9,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from '@/components/ui/use-toast';
 import { uploadFile } from '@/lib/storage';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Partner } from '@/types/partner';
 
-// Create a schema that requires logo for new partners
+// Create a schema for partner form validation
 const partnerFormSchema = z.object({
   company_name: z.string().min(2, { message: 'Името трябва да съдържа поне 2 символа' }),
   website_url: z.string().url({ message: 'Моля, въведете валиден URL' }).optional().or(z.literal('')),
@@ -31,6 +31,7 @@ type PartnerFormProps = {
 const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: PartnerFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(initialData?.logo_url || null);
+  const [hasSelectedFile, setHasSelectedFile] = useState(false);
 
   const form = useForm<PartnerFormData>({
     resolver: zodResolver(partnerFormSchema),
@@ -76,7 +77,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
       // Submit the data to the parent component
       await onSubmit({
         company_name: data.company_name,
-        logo_url: logoUrl || previewImage as string, // Use previewImage as fallback
+        logo_url: logoUrl || previewImage as string,
         website_url: data.website_url || undefined,
       });
       
@@ -84,6 +85,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
       if (!initialData) {
         form.reset();
         setPreviewImage(null);
+        setHasSelectedFile(false);
       }
     } catch (error) {
       console.error('Error submitting partner:', error);
@@ -101,13 +103,38 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
+      setHasSelectedFile(true);
       const reader = new FileReader();
       reader.onload = () => {
         setPreviewImage(reader.result as string);
       };
       reader.readAsDataURL(file);
+    } else {
+      // Reset if file selection is canceled
+      if (!initialData?.logo_url) {
+        setPreviewImage(null);
+        setHasSelectedFile(false);
+      }
     }
   };
+
+  // Monitor file input to detect when user clears the selection
+  useEffect(() => {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) {
+      const checkFileState = () => {
+        if (fileInput.files && fileInput.files.length === 0 && !initialData?.logo_url) {
+          setPreviewImage(null);
+          setHasSelectedFile(false);
+        }
+      };
+      
+      fileInput.addEventListener('change', checkFileState);
+      return () => fileInput.removeEventListener('change', checkFileState);
+    }
+  }, [initialData]);
+
+  const logoRequired = !initialData?.logo_url && !previewImage;
 
   return (
     <Card>
@@ -143,7 +170,9 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
             />
             
             <FormItem>
-              <FormLabel>Лого {!initialData && !previewImage && <span className="text-destructive">*</span>}</FormLabel>
+              <FormLabel>
+                Лого {logoRequired && <span className="text-destructive">*</span>}
+              </FormLabel>
               <FormControl>
                 <Input 
                   type="file" 
@@ -167,7 +196,7 @@ const PartnerForm = ({ onSubmit, initialData, submitLabel = 'Запази' }: Pa
               <p className="text-xs text-muted-foreground mt-1">
                 Препоръчителен размер: 200x80 пиксела
               </p>
-              {!initialData && !previewImage && (
+              {logoRequired && (
                 <p className="text-xs text-destructive mt-1">
                   Моля, качете лого за партньора
                 </p>
