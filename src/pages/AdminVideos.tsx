@@ -18,15 +18,8 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-
-interface Video {
-  id: string;
-  title: string;
-  description?: string;
-  youtube_url: string;
-  is_published: boolean;
-  created_at: string;
-}
+import { Video } from '@/types/video';
+import { getVideos, addVideo, updateVideo, deleteVideo } from '@/lib/api';
 
 const AdminVideos = () => {
   const { user, isAdmin } = useAuth();
@@ -44,34 +37,12 @@ const AdminVideos = () => {
     is_published: false
   });
 
-  // Check admin access
-  if (!user || !isAdmin) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-grow flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Достъпът отказан</h1>
-            <p className="mb-6">Трябва да сте администратор, за да видите тази страница.</p>
-            <Button onClick={() => navigate('/')}>Към началната страница</Button>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   // Fetch videos data
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const { data, error } = await supabase
-          .from('videos')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        setVideos(data || []);
+        const fetchedVideos = await getVideos();
+        setVideos(fetchedVideos);
       } catch (error) {
         console.error('Error fetching videos:', error);
         toast.error('Грешка при зареждане на видеата');
@@ -90,40 +61,29 @@ const AdminVideos = () => {
     try {
       if (selectedVideo) {
         // Update existing video
-        const { error } = await supabase
-          .from('videos')
-          .update({
-            title: formData.title,
-            description: formData.description,
-            youtube_url: formData.youtube_url,
-            is_published: formData.is_published
-          })
-          .eq('id', selectedVideo.id);
+        await updateVideo(selectedVideo.id, {
+          title: formData.title,
+          description: formData.description,
+          youtube_url: formData.youtube_url,
+          is_published: formData.is_published
+        });
           
-        if (error) throw error;
         toast.success('Видеото е успешно обновено');
       } else {
         // Create new video
-        const { error } = await supabase
-          .from('videos')
-          .insert([{
-            title: formData.title,
-            description: formData.description,
-            youtube_url: formData.youtube_url,
-            is_published: formData.is_published
-          }]);
+        await addVideo({
+          title: formData.title,
+          description: formData.description,
+          youtube_url: formData.youtube_url,
+          is_published: formData.is_published
+        });
           
-        if (error) throw error;
         toast.success('Видеото е успешно добавено');
       }
       
       // Refresh videos list
-      const { data } = await supabase
-        .from('videos')
-        .select('*')
-        .order('created_at', { ascending: false });
-        
-      setVideos(data || []);
+      const refreshedVideos = await getVideos();
+      setVideos(refreshedVideos);
       setIsDialogOpen(false);
       resetForm();
       
@@ -137,12 +97,7 @@ const AdminVideos = () => {
   const handleDelete = async (id: string) => {
     if (confirm('Сигурни ли сте, че искате да изтриете това видео?')) {
       try {
-        const { error } = await supabase
-          .from('videos')
-          .delete()
-          .eq('id', id);
-          
-        if (error) throw error;
+        await deleteVideo(id);
         
         // Update videos list
         setVideos(videos.filter(video => video.id !== id));
@@ -190,6 +145,23 @@ const AdminVideos = () => {
     const match = url.match(regExp);
     return (match && match[2].length === 11) ? match[2] : null;
   };
+
+  // Check admin access - render early return before any conditional hooks
+  if (!user || !isAdmin) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Достъпът отказан</h1>
+            <p className="mb-6">Трябва да сте администратор, за да видите тази страница.</p>
+            <Button onClick={() => navigate('/')}>Към началната страница</Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
