@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FormLabel } from '@/components/ui/form';
@@ -22,6 +22,7 @@ const ImageUpload = ({
   onImageRemove 
 }: ImageUploadProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleClick = () => {
     if (fileInputRef.current) {
@@ -29,10 +30,45 @@ const ImageUpload = ({
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    
+    if (!files || files.length === 0) {
+      return;
+    }
+    
+    const file = files[0];
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError("Моля, качете валиден файл с изображение");
+      return;
+    }
+    
+    // Validate file size (max 20MB)
+    if (file.size > 20 * 1024 * 1024) {
+      setError("Размерът на файла трябва да е по-малък от 20MB");
+      return;
+    }
+    
+    // Reset error if validation passes
+    setError(null);
+    
+    // Pass the file to parent component
+    onImageChange(e);
+  };
+
   return (
     <div className="space-y-3">
       <FormLabel htmlFor="image">Снимка (по избор)</FormLabel>
       <div className="flex flex-col gap-4">
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        
         {!imagePreview && (
           <div 
             onClick={handleClick}
@@ -46,7 +82,7 @@ const ImageUpload = ({
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={onImageChange}
+              onChange={handleFileChange}
               disabled={isUploading}
             />
           </div>

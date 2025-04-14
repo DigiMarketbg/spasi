@@ -19,12 +19,12 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
       console.log(`Bucket '${bucketName}' does not exist, creating...`);
       const { error: createError } = await supabase.storage.createBucket(bucketName, {
         public: true,
-        fileSizeLimit: 20 * 1024 * 1024 // Increasing to 20MB limit
+        fileSizeLimit: 20 * 1024 * 1024 // 20MB limit
       });
       
       if (createError) {
         console.error('Error creating bucket:', createError);
-        return false;
+        throw new Error(`Failed to create bucket: ${createError.message}`);
       }
       
       console.log(`Bucket ${bucketName} created successfully`);
@@ -35,7 +35,7 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
     return true;
   } catch (error) {
     console.error('Error ensuring bucket exists:', error);
-    return false;
+    throw new Error(`Failed to ensure bucket ${bucketName} exists: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
