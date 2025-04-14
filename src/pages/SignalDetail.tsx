@@ -1,3 +1,4 @@
+
 // Import necessary modules and components
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -97,8 +98,12 @@ const SignalDetail = () => {
               Обратно
             </Button>
             {user?.role === 'admin' && (
-              <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.isLoading}>
-                {deleteMutation.isLoading ? (
+              <Button 
+                variant="destructive" 
+                onClick={handleDelete} 
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? (
                   "Изтриване..."
                 ) : (
                   <>
