@@ -6,7 +6,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import { Form } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { uploadSignalImage } from '@/lib/api';
 
 // Import form schema and components
 import { formSchema, FormValues } from './signal-form/FormSchema';
@@ -16,7 +15,6 @@ import CityField from './signal-form/CityField';
 import DescriptionField from './signal-form/DescriptionField';
 import PhoneField from './signal-form/PhoneField';
 import LinkField from './signal-form/LinkField';
-import ImageUpload from './signal-form/ImageUpload';
 import SubmitButton from './signal-form/SubmitButton';
 import ErrorAlert from './signal-form/ErrorAlert';
 
@@ -29,10 +27,6 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -46,28 +40,6 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
     },
   });
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    
-    if (!files || files.length === 0) {
-      return;
-    }
-    
-    const file = files[0];
-    
-    // File validation is now handled in the ImageUpload component
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-    setImageFile(file);
-    setError(null);
-    
-    // Log file details for debugging
-    console.log(`Selected file: ${file.name}, type: ${file.type}, size: ${file.size} bytes`);
-  };
-
   const onSubmit = async (data: FormValues) => {
     if (!user) {
       setError("Трябва да сте влезли в профила си, за да подадете сигнал");
@@ -76,29 +48,12 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
 
     setIsSubmitting(true);
     setError(null);
-    setUploadProgress(0);
 
     try {
+      // Extract image URL from link if it looks like an image
       let imageUrl = null;
-      
-      // Upload image if there is one
-      if (imageFile) {
-        setIsUploading(true);
-        console.log("Starting image upload process...");
-        
-        try {
-          imageUrl = await uploadSignalImage(imageFile, (progress) => {
-            setUploadProgress(progress);
-          });
-          
-          console.log("Image upload result:", imageUrl ? "Success" : "Not uploaded");
-        } catch (uploadError: any) {
-          console.error("Error during image upload:", uploadError);
-          // Continue with signal submission without the image
-          imageUrl = null;
-        } finally {
-          setIsUploading(false);
-        }
+      if (data.link && isImageUrl(data.link)) {
+        imageUrl = data.link;
       }
       
       // Save signal to database
@@ -130,8 +85,6 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       
       // Reset form
       form.reset();
-      setImageFile(null);
-      setImagePreview(null);
       
       // Show success message
       toast({
@@ -154,13 +107,23 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       });
     } finally {
       setIsSubmitting(false);
-      setUploadProgress(0);
     }
   };
 
-  const handleImageRemove = () => {
-    setImageFile(null);
-    setImagePreview(null);
+  // Helper function to detect if a URL is an image
+  const isImageUrl = (url: string): boolean => {
+    try {
+      // Check if URL ends with common image extensions
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'];
+      const lowercaseUrl = url.toLowerCase();
+      
+      return imageExtensions.some(ext => lowercaseUrl.endsWith(ext)) || 
+             lowercaseUrl.includes('imgur.com') ||
+             lowercaseUrl.includes('ibb.co') ||
+             lowercaseUrl.includes('postimg.cc');
+    } catch (e) {
+      return false;
+    }
   };
   
   return (
@@ -174,17 +137,8 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         <PhoneField control={form.control} />
         <LinkField control={form.control} />
         
-        <ImageUpload 
-          imagePreview={imagePreview}
-          isUploading={isUploading}
-          uploadProgress={uploadProgress}
-          onImageChange={handleImageChange}
-          onImageRemove={handleImageRemove}
-        />
-        
         <SubmitButton 
-          isSubmitting={isSubmitting} 
-          isUploading={isUploading} 
+          isSubmitting={isSubmitting}
         />
       </form>
     </Form>

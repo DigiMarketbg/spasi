@@ -17,7 +17,10 @@ export const formSchema = z.object({
   description: z.string()
     .min(20, { message: "Описанието трябва да е поне 20 символа" })
     .max(2000, { message: "Описанието не може да надвишава 2000 символа" }),
-  link: z.string().url({ message: "Моля, въведете валиден URL адрес" }).optional().or(z.literal('')),
+  link: z.string()
+    .url({ message: "Моля, въведете валиден URL адрес" })
+    .optional()
+    .or(z.literal('')),
   phone: z.string()
     .regex(phoneRegex, { message: "Невалиден телефонен номер. Пример: 0888123456 или +359888123456" })
     .optional()

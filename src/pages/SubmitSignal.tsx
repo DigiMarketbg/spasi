@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -6,7 +5,7 @@ import Footer from '@/components/Footer';
 import SignalForm from '@/components/SignalForm';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/components/AuthProvider';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Image } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -101,6 +100,14 @@ const SubmitSignal = () => {
                   Подаването на сигнал е бърз начин да помогнеш на някого. 
                   Сигналите се преглеждат от нашия екип преди да бъдат публикувани.
                 </p>
+                
+                <Alert className="mb-6 border-blue-500 bg-blue-50 dark:bg-blue-950/20">
+                  <Image className="h-4 w-4 text-blue-500" />
+                  <AlertDescription className="text-blue-800 dark:text-blue-300">
+                    За да добавите снимка към сигнала, моля използвайте директен линк към изображение. 
+                    Можете да качите снимка на безплатни услуги като imgur.com, postimg.cc или други и да копирате линка.
+                  </AlertDescription>
+                </Alert>
                 
                 <SignalForm onSuccess={handleFormSuccess} />
               </div>
