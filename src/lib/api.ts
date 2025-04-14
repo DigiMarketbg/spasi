@@ -62,24 +62,37 @@ export const deleteSignal = async (id: string): Promise<void> => {
   console.log("Signal successfully deleted");
 };
 
-// Upload an image for a signal with improved error handling
-export const uploadSignalImage = async (file: File): Promise<string | null> => {
+// Upload an image for a signal with improved error handling and progress tracking
+export const uploadSignalImage = async (
+  file: File, 
+  onProgress?: (progress: number) => void
+): Promise<string | null> => {
   if (!file) {
     console.log("No file provided for upload");
     return null;
   }
   
   try {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      throw new Error("Моля, качете валиден файл с изображение");
+    }
+    
+    // Validate file size (max 20MB)
+    if (file.size > 20 * 1024 * 1024) {
+      throw new Error("Размерът на файла трябва да е по-малък от 20MB");
+    }
+    
     // Generate a unique filename to avoid collisions
     const timestamp = new Date().getTime();
     const randomString = Math.random().toString(36).substring(2, 10);
     const fileExt = file.name.split('.').pop();
     const fileName = `signal_${timestamp}_${randomString}.${fileExt}`;
-    const filePath = fileName;
     
-    console.log(`Attempting to upload file: ${fileName} of type ${file.type} and size ${file.size} bytes`);
+    console.log(`Preparing to upload file: ${fileName} of type ${file.type} and size ${file.size} bytes`);
     
-    const imageUrl = await uploadFile('signals', filePath, file);
+    // Use the improved uploadFile function with progress tracking
+    const imageUrl = await uploadFile('signals', fileName, file, onProgress);
     
     if (!imageUrl) {
       console.error("Failed to upload image, null URL returned");
@@ -89,8 +102,8 @@ export const uploadSignalImage = async (file: File): Promise<string | null> => {
     }
     
     return imageUrl;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in uploadSignalImage:", error);
-    throw new Error("Неуспешно качване на изображението. Моля, опитайте отново.");
+    throw new Error(error.message || "Неуспешно качване на изображението. Моля, опитайте отново.");
   }
 };

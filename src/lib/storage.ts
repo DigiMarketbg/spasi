@@ -19,7 +19,7 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
       console.log(`Bucket '${bucketName}' does not exist, creating...`);
       const { error: createError } = await supabase.storage.createBucket(bucketName, {
         public: true,
-        fileSizeLimit: 10 * 1024 * 1024 // Increasing to 10MB limit
+        fileSizeLimit: 20 * 1024 * 1024 // Increasing to 20MB limit
       });
       
       if (createError) {
@@ -42,10 +42,12 @@ export const ensureStorageBucket = async (bucketName: string): Promise<boolean> 
 export const uploadFile = async (
   bucketName: string, 
   filePath: string, 
-  file: File
+  file: File,
+  onProgress?: (progress: number) => void
 ): Promise<string | null> => {
   try {
     console.log(`Starting upload process for file to bucket '${bucketName}'...`);
+    console.log(`File details: name=${file.name}, type=${file.type}, size=${file.size} bytes`);
     
     // Ensure bucket exists
     const bucketReady = await ensureStorageBucket(bucketName);
@@ -56,12 +58,32 @@ export const uploadFile = async (
     
     // Upload file with better error handling
     console.log(`Uploading file '${filePath}' to bucket '${bucketName}'...`);
+    
+    // Simulate progress if onProgress callback is provided
+    let progressInterval: number | undefined;
+    if (onProgress) {
+      let progress = 0;
+      progressInterval = window.setInterval(() => {
+        progress += 5;
+        if (progress < 95) {
+          onProgress(progress);
+        }
+      }, 300);
+    }
+    
     const { error, data } = await supabase.storage
       .from(bucketName)
       .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: true // Changed to true to overwrite existing files with same name
+        upsert: true, // Overwrite existing files with same name
+        contentType: file.type // Explicitly set content type from file
       });
+    
+    // Clear progress interval
+    if (progressInterval) {
+      clearInterval(progressInterval);
+      onProgress && onProgress(100); // Set to 100% when done
+    }
     
     if (error) {
       console.error('Upload error details:', error);
