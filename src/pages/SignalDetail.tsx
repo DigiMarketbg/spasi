@@ -41,29 +41,31 @@ const SignalDetail = () => {
 
   // Define the delete mutation using the useMutation hook
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteSignal(id),
+    mutationFn: deleteSignal,
     onSuccess: () => {
       toast({
         title: "Успешно изтриване!",
         description: "Сигналът беше успешно изтрит.",
       });
+      queryClient.invalidateQueries({ queryKey: ['signals'] });
       navigate('/admin');
     },
     onError: (error: any) => {
+      console.error("Delete error:", error);
       toast({
         variant: "destructive",
         title: "Грешка при изтриване!",
         description: error.message || "Възникна грешка при изтриването на сигнала. Моля, опитайте пак.",
       });
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['signals'] });
-    },
   });
 
   // Function to handle the delete action
   const handleDelete = async () => {
-    await deleteMutation.mutateAsync(id as string);
+    if (id) {
+      console.log("Handling delete for signal ID:", id);
+      await deleteMutation.mutateAsync(id);
+    }
     setIsDeleteDialogOpen(false);
   };
 

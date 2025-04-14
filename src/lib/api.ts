@@ -34,6 +34,8 @@ export const deleteSignal = async (id: string): Promise<void> => {
     throw new Error("ID is required");
   }
   
+  console.log("Attempting to delete signal with ID:", id);
+  
   // First, delete any reports associated with this signal
   const { error: reportsError } = await supabase
     .from("reports")
@@ -55,4 +57,6 @@ export const deleteSignal = async (id: string): Promise<void> => {
     console.error("Error deleting signal:", error);
     throw new Error(`Error deleting signal: ${error.message}`);
   }
+  
+  console.log("Signal successfully deleted");
 };
