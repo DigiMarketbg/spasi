@@ -21,6 +21,10 @@ export const formSchema = z.object({
     .url({ message: "Моля, въведете валиден URL адрес" })
     .optional()
     .or(z.literal('')),
+  imageUrl: z.string()
+    .url({ message: "Моля, въведете валиден URL адрес на изображение" })
+    .optional()
+    .or(z.literal('')),
   phone: z.string()
     .regex(phoneRegex, { message: "Невалиден телефонен номер. Пример: 0888123456 или +359888123456" })
     .optional()

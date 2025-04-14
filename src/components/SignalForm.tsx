@@ -15,6 +15,7 @@ import CityField from './signal-form/CityField';
 import DescriptionField from './signal-form/DescriptionField';
 import PhoneField from './signal-form/PhoneField';
 import LinkField from './signal-form/LinkField';
+import ImageUrlField from './signal-form/ImageUrlField';
 import SubmitButton from './signal-form/SubmitButton';
 import ErrorAlert from './signal-form/ErrorAlert';
 
@@ -36,6 +37,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       city: '',
       description: '',
       link: '',
+      imageUrl: '',
       phone: '',
     },
   });
@@ -50,19 +52,13 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
     setError(null);
 
     try {
-      // Extract image URL from link if it looks like an image
-      let imageUrl = null;
-      if (data.link && isImageUrl(data.link)) {
-        imageUrl = data.link;
-      }
-      
       // Save signal to database
       console.log("Saving signal to database with data:", {
         user_id: user.id,
         category: data.category,
         title: data.title,
         city: data.city,
-        imageUrl: imageUrl
+        imageUrl: data.imageUrl
       });
       
       const { error: signalError } = await supabase.from('signals').insert({
@@ -72,7 +68,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         description: data.description,
         city: data.city,
         link: data.link || null,
-        image_url: imageUrl,
+        image_url: data.imageUrl || null,
         phone: data.phone || null,
         is_approved: false,
         is_resolved: false
@@ -109,22 +105,6 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
       setIsSubmitting(false);
     }
   };
-
-  // Helper function to detect if a URL is an image
-  const isImageUrl = (url: string): boolean => {
-    try {
-      // Check if URL ends with common image extensions
-      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'];
-      const lowercaseUrl = url.toLowerCase();
-      
-      return imageExtensions.some(ext => lowercaseUrl.endsWith(ext)) || 
-             lowercaseUrl.includes('imgur.com') ||
-             lowercaseUrl.includes('ibb.co') ||
-             lowercaseUrl.includes('postimg.cc');
-    } catch (e) {
-      return false;
-    }
-  };
   
   return (
     <Form {...form}>
@@ -136,6 +116,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
         <DescriptionField control={form.control} />
         <PhoneField control={form.control} />
         <LinkField control={form.control} />
+        <ImageUrlField control={form.control} />
         
         <SubmitButton 
           isSubmitting={isSubmitting}
