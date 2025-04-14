@@ -3,10 +3,22 @@ import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 import MessagesTable from './contact-messages/MessagesTable';
 import MessageDetailDialog from './contact-messages/MessageDetailDialog';
 import EmptyState from './contact-messages/EmptyState';
 import LoadingState from './contact-messages/LoadingState';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ContactMessagesProps {
   messages: any[];
@@ -23,6 +35,8 @@ const ContactMessagesManagement = ({
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [isDeleteAllDialogOpen, setIsDeleteAllDialogOpen] = useState(false);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
 
   const handleViewDetails = async (message: any) => {
     setSelectedMessage(message);
@@ -106,10 +120,76 @@ const ContactMessagesManagement = ({
       setProcessingId(null);
     }
   };
+  
+  const handleDeleteAllMessages = async () => {
+    try {
+      setIsDeletingAll(true);
+      
+      const { error } = await supabase
+        .from('contact_messages' as any)
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all rows
+        
+      if (error) throw error;
+      
+      toast({
+        title: 'Успешно',
+        description: 'Всички съобщения бяха изтрити успешно.',
+      });
+      
+      // Close any open dialogs
+      setIsDeleteAllDialogOpen(false);
+      setIsDetailOpen(false);
+      setSelectedMessage(null);
+      
+      onRefresh();
+    } catch (error: any) {
+      console.error('Error deleting all messages:', error);
+      toast({
+        title: 'Грешка',
+        description: 'Възникна проблем при изтриването на съобщенията.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDeletingAll(false);
+    }
+  };
 
   return (
     <div>
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex justify-between">
+        <AlertDialog open={isDeleteAllDialogOpen} onOpenChange={setIsDeleteAllDialogOpen}>
+          <AlertDialogTrigger asChild>
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              className="flex items-center gap-1"
+              disabled={messages.length === 0 || isDeletingAll}
+            >
+              <Trash2 className="h-4 w-4" />
+              Изтрий всички съобщения
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Изтриване на всички съобщения</AlertDialogTitle>
+              <AlertDialogDescription>
+                Сигурни ли сте, че искате да изтриете ВСИЧКИ съобщения? Това действие не може да бъде отменено и ще изтрие всички {messages.length} съобщения.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Отказ</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleDeleteAllMessages} 
+                className="bg-red-600 hover:bg-red-700"
+                disabled={isDeletingAll}
+              >
+                {isDeletingAll ? 'Изтриване...' : 'Изтрий всички'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        
         <Button onClick={onRefresh} variant="outline" size="sm">
           Обнови
         </Button>
