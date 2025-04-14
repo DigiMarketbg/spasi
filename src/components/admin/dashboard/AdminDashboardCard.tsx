@@ -32,7 +32,9 @@ const AdminDashboardCard = ({
             </span>
           )}
         </CardTitle>
-        <Icon className="h-6 w-6 text-muted-foreground" />
+        <div className="p-2 bg-primary/10 rounded-full">
+          <Icon className="h-6 w-6 text-primary" />
+        </div>
       </CardHeader>
       <CardContent>
         <CardDescription>

@@ -1,8 +1,10 @@
+
 import React from 'react';
-import { ExternalLink, Phone, Calendar, MapPin } from 'lucide-react';
+import { ExternalLink, Phone, Calendar, MapPin, Leaf, Building, AlertTriangle, HandHelp, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { categoryTranslations, detailCardStyles } from '@/lib/card-styles';
+
 interface SignalContentProps {
   signal: {
     title: string;
@@ -16,12 +18,31 @@ interface SignalContentProps {
   };
   formatDate: (dateString: string) => string;
 }
+
+// Helper function to get the appropriate icon based on category
+const getCategoryIcon = (category: string) => {
+  switch(category) {
+    case 'Екология':
+      return <Leaf className="h-5 w-5 mr-2" />;
+    case 'Инфраструктура':
+      return <Building className="h-5 w-5 mr-2" />;
+    case 'Бедствие':
+      return <AlertTriangle className="h-5 w-5 mr-2" />;
+    case 'Хора в беда':
+    case 'help':
+      return <HandHelp className="h-5 w-5 mr-2" />;
+    default:
+      return <HelpCircle className="h-5 w-5 mr-2" />;
+  }
+};
+
 const SignalContent: React.FC<SignalContentProps> = ({
   signal,
   formatDate
 }) => {
   // Translate category
   const translatedCategory = categoryTranslations[signal.category] || signal.category;
+  
   return <div style={{
     animationDelay: '0.2s'
   }} className="grid md:grid-cols-2 gap-6 animate-fade-in pt-4 sm:pt-6 py-0"> {/* Increased top padding for better spacing especially on mobile */}
@@ -29,7 +50,10 @@ const SignalContent: React.FC<SignalContentProps> = ({
         {/* Category badge moved to the top of the content section */}
         <div className="mb-4">
           <Badge variant="outline" className={detailCardStyles.badge}>
-            {translatedCategory}
+            <div className="flex items-center">
+              {getCategoryIcon(signal.category)}
+              <span>{translatedCategory}</span>
+            </div>
           </Badge>
         </div>
         
@@ -67,4 +91,5 @@ const SignalContent: React.FC<SignalContentProps> = ({
         </div> : null}
     </div>;
 };
+
 export default SignalContent;

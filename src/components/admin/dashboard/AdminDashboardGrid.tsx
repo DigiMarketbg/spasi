@@ -32,6 +32,7 @@ const AdminDashboardGrid = ({ unreadMessagesCount, pendingRequestsCount }: Admin
         title="Сигнали"
         description="Преглед и управление на всички подадени сигнали."
         icon={Bell}
+        onClick={() => navigate('/admin/signals')}
       />
       
       <AdminDashboardCard
@@ -39,6 +40,7 @@ const AdminDashboardGrid = ({ unreadMessagesCount, pendingRequestsCount }: Admin
         description="Преглед на съобщения от контактната форма."
         icon={MessageCircle}
         badge={unreadMessagesCount}
+        onClick={() => navigate('/admin/messages')}
       />
     </div>
   );

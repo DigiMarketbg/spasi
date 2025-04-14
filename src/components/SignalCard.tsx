@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Eye, MapPin, Calendar, Phone } from 'lucide-react';
+import { Eye, MapPin, Calendar, Phone, Leaf, Building, AlertTriangle, HandHelp, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -24,6 +24,23 @@ interface SignalCardProps {
   className?: string;
 }
 
+// Helper function to get the appropriate icon based on category
+const getCategoryIcon = (category: string) => {
+  switch(category) {
+    case 'Екология':
+      return <Leaf className="h-5 w-5 mr-2" />;
+    case 'Инфраструктура':
+      return <Building className="h-5 w-5 mr-2" />;
+    case 'Бедствие':
+      return <AlertTriangle className="h-5 w-5 mr-2" />;
+    case 'Хора в беда':
+    case 'help':
+      return <HandHelp className="h-5 w-5 mr-2" />;
+    default:
+      return <HelpCircle className="h-5 w-5 mr-2" />;
+  }
+};
+
 const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
@@ -46,7 +63,10 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
           variant="outline"
           className={cardStyles.badge}
         >
-          {translatedCategory}
+          <div className="flex items-center">
+            {getCategoryIcon(signal.category)}
+            <span>{translatedCategory}</span>
+          </div>
         </Badge>
         
         <h3 className={cardStyles.title}>{signal.title}</h3>
