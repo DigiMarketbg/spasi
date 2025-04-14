@@ -37,7 +37,7 @@ const MobileNavBar = () => {
     {
       name: 'Инфо',
       icon: Info, 
-      path: '/blog',
+      path: '/info', // Fixed path from '/blog' to '/info'
     },
     {
       name: user ? 'Профил' : 'Вход',
