@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { bg } from 'date-fns/locale';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ContactForm from '@/components/ContactForm';
 import { 
   Accordion,
   AccordionContent,
@@ -21,6 +22,11 @@ const Info = () => {
       <main className="flex-grow mt-20 container mx-auto px-4 py-10">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">Информация</h1>
+          
+          <div className="mb-10">
+            <h2 className="text-2xl font-semibold mb-6 text-center">Свържете се с нас</h2>
+            <ContactForm />
+          </div>
           
           <div className="glass p-6 md:p-8 rounded-xl mb-8">
             <p className="text-muted-foreground mb-6">
