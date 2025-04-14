@@ -159,6 +159,33 @@ export type Database = {
         }
         Relationships: []
       }
+      push_subscribers: {
+        Row: {
+          category: string[] | null
+          city: string | null
+          created_at: string
+          id: string
+          player_id: string
+          user_id: string | null
+        }
+        Insert: {
+          category?: string[] | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          player_id: string
+          user_id?: string | null
+        }
+        Update: {
+          category?: string[] | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          player_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       reports: {
         Row: {
           created_at: string

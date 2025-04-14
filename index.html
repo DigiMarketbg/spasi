@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bg">
   <head>
@@ -31,6 +32,17 @@
     
     <!-- Updated favicon to use the uploaded image -->
     <link rel="icon" href="/lovable-uploads/9ebf9964-e102-4d6e-866b-63884dc1f10f.png" type="image/png">
+
+    <!-- OneSignal Web Push SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "35af33cb-8ab8-4d90-b789-17fb5c45542b",
+        });
+      });
+    </script>
 
     <style>
       @media (display-mode: standalone) {
