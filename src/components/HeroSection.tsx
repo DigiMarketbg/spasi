@@ -144,15 +144,16 @@ const HeroSection = () => {
     navigate('/volunteers');
   };
 
-  // Style for feature buttons based on theme
+  // Updated style for feature buttons based on theme
   const featureButtonStyle = theme === 'light' 
-    ? "w-[80px] h-[80px] bg-spasi-red/10 backdrop-blur-sm border-2 border-spasi-red text-spasi-red rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-spasi-red/20"
+    ? "w-[80px] h-[80px] bg-spasi-red/10 backdrop-blur-sm border-2 border-spasi-red text-black rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-spasi-red/20"
     : "w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20";
 
   const disabledFeatureButtonStyle = theme === 'light'
-    ? "w-[80px] h-[80px] bg-spasi-red/5 backdrop-blur-sm border-2 border-spasi-red/30 text-spasi-red/50 rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform opacity-70 cursor-not-allowed"
+    ? "w-[80px] h-[80px] bg-spasi-red/5 backdrop-blur-sm border-2 border-spasi-red/30 text-black/50 rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform opacity-70 cursor-not-allowed"
     : "w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20 opacity-70 cursor-not-allowed";
 
+  // Rest of the component remains the same
   return (
     <section className="relative py-20 px-4 md:px-6 lg:px-8 overflow-hidden min-h-[80vh] flex items-center">
       <ParticleBackground count={80} />
