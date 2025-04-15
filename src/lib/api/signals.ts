@@ -2,6 +2,30 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Signal } from "@/types/signal";
 
+// Get all signals with proper sorting
+export const fetchAllSignals = async (): Promise<Signal[]> => {
+  console.log("Fetching all signals...");
+  
+  const { data, error } = await supabase
+    .from("signals")
+    .select(`
+      *,
+      profiles:user_id (
+        full_name,
+        email
+      )
+    `)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching signals:", error);
+    throw new Error("Error fetching signals");
+  }
+
+  console.log("Successfully fetched signals:", data);
+  return data as Signal[];
+};
+
 // Get a single signal by ID
 export const getSignalById = async (id: string): Promise<Signal> => {
   if (!id) {
@@ -59,4 +83,27 @@ export const deleteSignal = async (id: string): Promise<void> => {
   }
   
   console.log("Signal successfully deleted");
+};
+
+// Update a signal's status
+export const updateSignalStatus = async (
+  id: string, 
+  newStatus: 'approved' | 'rejected'
+): Promise<void> => {
+  console.log(`Updating signal ${id} to status ${newStatus}`);
+  
+  const { error } = await supabase
+    .from('signals')
+    .update({ 
+      status: newStatus, 
+      is_approved: newStatus === 'approved' 
+    })
+    .eq('id', id);
+
+  if (error) {
+    console.error("Error updating signal status:", error);
+    throw error;
+  }
+  
+  console.log("Signal status updated successfully");
 };

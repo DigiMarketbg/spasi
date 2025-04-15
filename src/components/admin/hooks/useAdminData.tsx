@@ -1,7 +1,7 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { fetchAllSignals } from '@/lib/api/signals';
 
 export interface SignalData {
   id: string;
@@ -14,6 +14,7 @@ export interface SignalData {
   user_id: string;
   user_full_name?: string;
   user_email?: string;
+  status: string;
 }
 
 export interface UserData {
@@ -61,23 +62,13 @@ export const useAdminData = (isAdmin: boolean, user: any) => {
   const [loadingContactMessages, setLoadingContactMessages] = useState(true);
 
   // Fetch signals data with better error handling
-  const fetchSignals = async () => {
+  const fetchSignals = useCallback(async () => {
     setLoadingSignals(true);
     try {
       console.log("Fetching signals...");
       
-      // First, get all signals
-      const { data: signalsData, error: signalsError } = await supabase
-        .from('signals')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (signalsError) {
-        console.error('Error fetching signals:', signalsError);
-        throw signalsError;
-      }
-      
-      console.log("Signals data received:", signalsData);
+      // Using our dedicated function to fetch all signals
+      const signalsData = await fetchAllSignals();
       
       if (!signalsData || signalsData.length === 0) {
         setSignals([]);
@@ -85,32 +76,21 @@ export const useAdminData = (isAdmin: boolean, user: any) => {
         return;
       }
       
-      // Then, get all profiles to join manually
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('*');
-        
-      if (profilesError) {
-        console.error('Error fetching profiles:', profilesError);
-      }
-      
-      console.log("Profiles data received:", profilesData);
-      
-      // Join the data manually
+      // Process the signals for display
       const enrichedSignals = signalsData.map(signal => {
-        const userProfile = profilesData?.find(profile => profile.id === signal.user_id);
-        
         return {
           id: signal.id,
           title: signal.title,
           category: signal.category,
           city: signal.city,
+          description: signal.description,
           created_at: signal.created_at,
           is_approved: signal.is_approved,
           is_resolved: signal.is_resolved,
+          status: signal.status,
           user_id: signal.user_id,
-          user_full_name: userProfile?.full_name || 'Неизвестен',
-          user_email: userProfile?.email || 'Неизвестен имейл'
+          user_full_name: signal.profiles?.full_name || 'Неизвестен',
+          user_email: signal.profiles?.email || 'Неизвестен имейл'
         };
       });
       
@@ -126,7 +106,7 @@ export const useAdminData = (isAdmin: boolean, user: any) => {
     } finally {
       setLoadingSignals(false);
     }
-  };
+  }, [toast]);
 
   // Fetch users data
   const fetchUsers = async () => {
@@ -211,7 +191,7 @@ export const useAdminData = (isAdmin: boolean, user: any) => {
       fetchPartnerRequests();
       fetchContactMessages();
     }
-  }, [user, isAdmin]);
+  }, [user, isAdmin, fetchSignals]);
 
   // Calculate unread count
   const unreadCount = contactMessages.filter(msg => !msg.is_read).length;

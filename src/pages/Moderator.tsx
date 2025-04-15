@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -11,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
+import { fetchAllSignals } from '@/lib/api/signals';
 
 const Moderator = () => {
   const { user, profile } = useAuth();
@@ -36,37 +36,29 @@ const Moderator = () => {
     queryFn: async () => {
       if (!user || !isModerator) return [];
       
-      // First, get all signals
-      const { data: signalsData, error: signalsError } = await supabase
-        .from('signals')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (signalsError) throw signalsError;
-      
-      if (!signalsData || signalsData.length === 0) {
+      try {
+        // Get all signals using our dedicated function
+        const signalsData = await fetchAllSignals();
+        
+        if (!signalsData || signalsData.length === 0) {
+          return [];
+        }
+        
+        // Process the data for display
+        const enrichedSignals = signalsData.map(signal => {
+          return {
+            ...signal,
+            user_full_name: signal.profiles?.full_name || 'Неизвестен',
+            user_email: signal.profiles?.email || 'Неизвестен имейл'
+          };
+        });
+        
+        console.log("Successfully processed signals for moderator view:", enrichedSignals);
+        return enrichedSignals;
+      } catch (error) {
+        console.error("Error fetching signals for moderator:", error);
         return [];
       }
-      
-      // Then, get all profiles to join manually
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, full_name, email');
-        
-      if (profilesError) throw profilesError;
-      
-      // Join the data manually
-      const enrichedSignals = signalsData.map(signal => {
-        const userProfile = profilesData?.find(profile => profile.id === signal.user_id);
-        
-        return {
-          ...signal,
-          user_full_name: userProfile?.full_name || 'Неизвестен',
-          user_email: userProfile?.email || 'Неизвестен имейл'
-        };
-      });
-      
-      return enrichedSignals;
     },
     enabled: !!user && isModerator
   });
