@@ -10,12 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export interface SignalData {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   category: string;
   city: string;
   status: string;
@@ -29,16 +30,53 @@ interface SignalsTableProps {
   signals: SignalData[];
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
+  processingId?: string | null;
+  loading?: boolean;
 }
 
 const SignalsTable: React.FC<SignalsTableProps> = ({
   signals,
   onApprove,
-  onReject
+  onReject,
+  processingId = null,
+  loading = false
 }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString('bg-BG');
   };
+
+  if (loading) {
+    return (
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Заглавие</TableHead>
+              <TableHead>Категория</TableHead>
+              <TableHead>Град</TableHead>
+              <TableHead>Подал</TableHead>
+              <TableHead>Дата</TableHead>
+              <TableHead>Статус</TableHead>
+              <TableHead>Действия</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Array(3).fill(0).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                <TableCell><Skeleton className="h-5 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-5 w-36" /></TableCell>
+                <TableCell><Skeleton className="h-5 w-36" /></TableCell>
+                <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-9 w-32" /></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
 
   if (signals.length === 0) {
     return (
@@ -89,19 +127,30 @@ const SignalsTable: React.FC<SignalsTableProps> = ({
               <TableCell>
                 {signal.status === 'pending' && (
                   <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      onClick={() => onApprove(signal.id)}
-                    >
-                      Одобри
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="destructive"
-                      onClick={() => onReject(signal.id)}
-                    >
-                      Отхвърли
-                    </Button>
+                    {processingId === signal.id ? (
+                      <Button size="sm" disabled>
+                        <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                        Обработка...
+                      </Button>
+                    ) : (
+                      <>
+                        <Button 
+                          size="sm" 
+                          onClick={() => onApprove(signal.id)}
+                          disabled={!!processingId}
+                        >
+                          Одобри
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="destructive"
+                          onClick={() => onReject(signal.id)}
+                          disabled={!!processingId}
+                        >
+                          Отхвърли
+                        </Button>
+                      </>
+                    )}
                   </div>
                 )}
               </TableCell>

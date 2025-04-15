@@ -13,11 +13,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
 import { fetchAllSignals } from '@/lib/api/signals';
 import { Signal } from '@/types/signal';
+import { Toaster } from '@/components/ui/sonner';
+import { toast } from 'sonner';
+import ErrorAlert from '@/components/signal-form/ErrorAlert';
 
 const Moderator = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [refreshKey, setRefreshKey] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   
   // Check if the user is a moderator or admin
   const isModerator = profile?.role === 'moderator' || profile?.role === 'admin';
@@ -26,12 +30,14 @@ const Moderator = () => {
   const handleRefresh = useCallback(() => {
     console.log("Triggering refresh in Moderator page, current key:", refreshKey);
     setRefreshKey(prev => prev + 1);
+    setError(null); // Clear errors on refresh
   }, [refreshKey]);
   
   // Fetch signals for moderators
   const { 
     data: signals = [], 
     isLoading: loadingSignals,
+    error: signalsError,
     refetch: refetchSignals
   } = useQuery({
     queryKey: ['moderator-signals', refreshKey],
@@ -57,13 +63,26 @@ const Moderator = () => {
         
         console.log("Successfully processed signals for moderator view:", enrichedSignals);
         return enrichedSignals;
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching signals for moderator:", error);
+        setError(`Грешка при зареждане на сигналите: ${error.message || error}`);
         return [];
       }
     },
-    enabled: !!user && isModerator
+    enabled: !!user && isModerator,
+    onError: (err: any) => {
+      setError(`Грешка при зареждане на сигналите: ${err.message || 'Неизвестна грешка'}`);
+    }
   });
+
+  // Display toast for errors
+  useEffect(() => {
+    if (signalsError) {
+      toast.error('Възникна проблем при зареждането на сигналите', {
+        description: 'Моля, опитайте отново чрез бутона за обновяване',
+      });
+    }
+  }, [signalsError]);
 
   // If not logged in or not a moderator
   if (!user || !isModerator) {
@@ -85,10 +104,24 @@ const Moderator = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      <Toaster />
       
       <main className="flex-grow mt-16 px-4 py-12">
         <div className="container mx-auto">
           <h1 className="text-3xl font-bold mb-8">Модераторски панел</h1>
+          
+          {error && (
+            <div className="mb-6">
+              <ErrorAlert error={error} />
+              <Button 
+                onClick={handleRefresh} 
+                variant="outline" 
+                className="mt-2"
+              >
+                Опитай отново
+              </Button>
+            </div>
+          )}
           
           <Tabs defaultValue="signals" className="w-full">
             <TabsList className="mb-6">

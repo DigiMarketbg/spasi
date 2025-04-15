@@ -6,24 +6,62 @@ import { Signal } from "@/types/signal";
 export const fetchAllSignals = async (): Promise<Signal[]> => {
   console.log("Fetching all signals...");
   
-  const { data, error } = await supabase
-    .from("signals")
-    .select(`
-      *,
-      profiles:user_id (
-        full_name,
-        email
-      )
-    `)
-    .order("created_at", { ascending: false });
+  try {
+    // First check if we can join with profiles
+    const { data: testData, error: testError } = await supabase
+      .from("signals")
+      .select("*")
+      .limit(1);
+      
+    if (testError) {
+      console.error("Error testing signals table:", testError);
+      throw new Error("Error fetching signals");
+    }
+    
+    // Main query - check if the table has user_id column before trying to join
+    const hasUserIdColumn = testData && testData.length > 0 && 'user_id' in testData[0];
+    
+    let query;
+    if (hasUserIdColumn) {
+      // If user_id exists, try to join with profiles
+      query = supabase
+        .from("signals")
+        .select(`
+          *,
+          profiles:user_id (
+            full_name,
+            email
+          )
+        `)
+        .order("created_at", { ascending: false });
+    } else {
+      // Fallback to just getting signals without the join
+      query = supabase
+        .from("signals")
+        .select("*")
+        .order("created_at", { ascending: false });
+    }
+    
+    const { data, error } = await query;
+    
+    if (error) {
+      console.error("Error fetching signals:", error);
+      throw new Error("Error fetching signals");
+    }
 
-  if (error) {
-    console.error("Error fetching signals:", error);
+    console.log("Successfully fetched signals:", data);
+    
+    // Ensure all signals have a profiles object, even if empty
+    const processedData = data.map(signal => ({
+      ...signal,
+      profiles: signal.profiles || { full_name: null, email: null }
+    }));
+    
+    return processedData as Signal[];
+  } catch (error) {
+    console.error("Error in fetchAllSignals:", error);
     throw new Error("Error fetching signals");
   }
-
-  console.log("Successfully fetched signals:", data);
-  return data as Signal[];
 };
 
 // Get a single signal by ID
@@ -32,24 +70,27 @@ export const getSignalById = async (id: string): Promise<Signal> => {
     throw new Error("ID is required");
   }
 
-  const { data, error } = await supabase
-    .from("signals")
-    .select(`
-      *,
-      profiles:user_id (
-        full_name,
-        email
-      )
-    `)
-    .eq("id", id)
-    .single();
+  try {
+    // Try first with the join
+    const { data, error } = await supabase
+      .from("signals")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-  if (error) {
-    console.error("Error fetching signal:", error);
+    if (error) {
+      console.error("Error fetching signal:", error);
+      throw new Error("Error fetching signal details");
+    }
+
+    return {
+      ...data,
+      profiles: data.profiles || { full_name: null, email: null }
+    } as Signal;
+  } catch (error) {
+    console.error("Error in getSignalById:", error);
     throw new Error("Error fetching signal details");
   }
-
-  return data as Signal;
 };
 
 // Delete a signal by ID

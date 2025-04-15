@@ -6,13 +6,16 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import SignalsTable from './signals/SignalsTable';
 import SignalFilters from './signals/SignalFilters';
-import { RefreshCcw } from 'lucide-react';
+import { RefreshCcw, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import { updateSignalStatus } from '@/lib/api/signals';
 
 const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh }) => {
-  const { toast } = useToast();
+  const { toast: hookToast } = useToast();
   const navigate = useNavigate();
   const [signals, setSignals] = useState(initialSignals || []);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   // Pagination and filter states
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,15 +37,10 @@ const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh 
     setIsRefreshing(true);
     try {
       await onRefresh();
-      toast({
-        title: "Обновено",
-        description: "Сигналите са обновени успешно."
-      });
+      toast.success("Сигналите са обновени успешно");
     } catch (error) {
-      toast({
-        title: "Грешка",
-        description: "Възникна проблем при обновяването на сигналите.",
-        variant: "destructive"
+      toast.error("Грешка", {
+        description: "Възникна проблем при обновяването на сигналите."
       });
     } finally {
       setIsRefreshing(false);
@@ -50,17 +48,10 @@ const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh 
   };
 
   // Toggle signal status
-  const updateSignalStatus = async (id: string, newStatus: 'approved' | 'rejected') => {
+  const updateSignalStatusHandler = async (id: string, newStatus: 'approved' | 'rejected') => {
+    setProcessingId(id);
     try {
-      const { error } = await supabase
-        .from('signals')
-        .update({ 
-          status: newStatus, 
-          is_approved: newStatus === 'approved' 
-        })
-        .eq('id', id);
-
-      if (error) throw error;
+      await updateSignalStatus(id, newStatus);
 
       // Update local state immediately
       setSignals(prevSignals => 
@@ -71,21 +62,40 @@ const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh 
         )
       );
 
-      toast({
-        title: "Успешно",
-        description: `Сигналът е ${newStatus === 'approved' ? 'одобрен' : 'отхвърлен'}.`
-      });
+      toast.success(`Сигналът е ${newStatus === 'approved' ? 'одобрен' : 'отхвърлен'} успешно`);
 
       // Also trigger the parent refresh
       onRefresh();
     } catch (error: any) {
-      toast({
-        title: "Грешка",
-        description: error.message,
-        variant: "destructive"
+      toast.error("Грешка", {
+        description: error.message || "Възникна проблем при промяната на статуса."
       });
+    } finally {
+      setProcessingId(null);
     }
   };
+
+  // Show empty state if no signals
+  if (!loadingSignals && signals.length === 0) {
+    return (
+      <div className="text-center py-16 bg-muted/30 rounded-lg border border-border">
+        <div className="mx-auto flex flex-col items-center">
+          <AlertCircle className="h-10 w-10 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-medium mb-2">Няма налични сигнали</h3>
+          <p className="text-muted-foreground mb-4">Все още няма създадени сигнали за преглед.</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleManualRefresh}
+            disabled={isRefreshing}
+          >
+            <RefreshCcw className={`h-4 w-4 mr-1 ${isRefreshing ? 'animate-spin' : ''}`} />
+            {isRefreshing ? 'Обновяване...' : 'Обнови'}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -119,8 +129,10 @@ const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh 
 
       <SignalsTable 
         signals={filteredSignals}
-        onApprove={(id) => updateSignalStatus(id, 'approved')}
-        onReject={(id) => updateSignalStatus(id, 'rejected')}
+        onApprove={(id) => updateSignalStatusHandler(id, 'approved')}
+        onReject={(id) => updateSignalStatusHandler(id, 'rejected')}
+        processingId={processingId}
+        loading={loadingSignals}
       />
     </div>
   );
