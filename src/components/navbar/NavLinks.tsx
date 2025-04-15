@@ -10,24 +10,16 @@ const NavLinks = ({ className }: NavLinksProps) => {
   const location = useLocation();
   
   const isActive = (path: string) => {
-    // Special case for home page
     if (path === '/' && location.pathname === '/') {
       return true;
     }
     
-    // For other pages, check if the current path includes the given path
     return path !== '/' && location.pathname.includes(path);
   };
   
   const links = [
     { path: '/', label: 'Начало' },
     { path: '/signals', label: 'Сигнали' },
-    { path: '/volunteers', label: 'Доброволци' },
-    { path: '/rescuers', label: 'Спасители' },
-    { path: '/witnesses', label: 'Свидетели' },
-    { path: '/blog', label: 'Блог' },
-    { path: '/videos', label: 'Видео' },
-    { path: '/contact', label: 'Контакти' },
     { path: '/info', label: 'Информация' }
   ];
   
