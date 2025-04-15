@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,9 +11,17 @@ interface DangerousAreasListProps {
   areas: DangerousArea[];
   isLoading: boolean;
   searchQuery: string;
+  isAdmin?: boolean;
+  onApprove?: (id: string) => Promise<void>;
 }
 
-const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasListProps) => {
+const DangerousAreasList = ({ 
+  areas, 
+  isLoading, 
+  searchQuery, 
+  isAdmin = false,
+  onApprove 
+}: DangerousAreasListProps) => {
   const [filteredAreas, setFilteredAreas] = useState<DangerousArea[]>([]);
   const isMobile = useIsMobile();
   
@@ -89,12 +98,20 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
           
           <CardContent className="p-6">
             <div className="flex flex-col gap-4">
-              <Badge 
-                variant="outline" 
-                className={`self-start ${getSeverityColor(area.severity)} ${area.severity === 'low' ? 'text-black' : 'text-white'} text-xs font-bold rounded-full shadow-sm px-3 py-1 mb-1`}
-              >
-                {getSeverityText(area.severity)} опасност
-              </Badge>
+              <div className="flex justify-between items-start">
+                <Badge 
+                  variant="outline" 
+                  className={`${getSeverityColor(area.severity)} ${area.severity === 'low' ? 'text-black' : 'text-white'} text-xs font-bold rounded-full shadow-sm px-3 py-1 mb-1`}
+                >
+                  {getSeverityText(area.severity)} опасност
+                </Badge>
+                
+                {isAdmin && area.is_approved === false && (
+                  <Badge variant="outline" className="bg-amber-500 text-white">
+                    Чака одобрение
+                  </Badge>
+                )}
+              </div>
               
               <div className="flex justify-between items-start">
                 <div>
@@ -125,17 +142,30 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
                   )}
                 </div>
                 
-                {area.map_link && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => window.open(area.map_link, '_blank')}
-                    className="text-primary hover:text-primary hover:bg-primary/10"
-                  >
-                    Виж на картата
-                    <ExternalLink className="h-3 w-3 ml-1" />
-                  </Button>
-                )}
+                <div className="flex items-center gap-2">
+                  {isAdmin && area.is_approved === false && onApprove && (
+                    <Button 
+                      variant="default" 
+                      size="sm" 
+                      onClick={() => onApprove(area.id)}
+                      className="text-white bg-green-600 hover:bg-green-700"
+                    >
+                      Одобри
+                    </Button>
+                  )}
+                  
+                  {area.map_link && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => window.open(area.map_link, '_blank')}
+                      className="text-primary hover:text-primary hover:bg-primary/10"
+                    >
+                      Виж на картата
+                      <ExternalLink className="h-3 w-3 ml-1" />
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>

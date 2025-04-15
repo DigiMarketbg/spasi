@@ -5,9 +5,11 @@ import { useAuth } from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SignalsManagement from '@/components/admin/SignalsManagement';
+import DangerousAreasManagement from '@/components/admin/DangerousAreasManagement';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Moderator = () => {
   const { user, profile } = useAuth();
@@ -86,12 +88,26 @@ const Moderator = () => {
         <div className="container mx-auto">
           <h1 className="text-3xl font-bold mb-8">Модераторски панел</h1>
           
-          {/* Signal Management */}
-          <SignalsManagement 
-            signals={signals}
-            loadingSignals={loadingSignals}
-            onRefresh={refetchSignals}
-          />
+          <Tabs defaultValue="signals" className="w-full">
+            <TabsList className="mb-6">
+              <TabsTrigger value="signals">Сигнали</TabsTrigger>
+              <TabsTrigger value="dangerous-areas">Опасни участъци</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="signals">
+              <SignalsManagement 
+                signals={signals}
+                loadingSignals={loadingSignals}
+                onRefresh={refetchSignals}
+              />
+            </TabsContent>
+            
+            <TabsContent value="dangerous-areas">
+              <DangerousAreasManagement 
+                onRefresh={() => {}} 
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
       

@@ -11,8 +11,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, AlertTriangle, Link as LinkIcon } from 'lucide-react';
+import { MapPin, AlertTriangle, Link as LinkIcon, Info } from 'lucide-react';
 import { addDangerousArea } from '@/lib/api/dangerous-areas';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const DangerousAreaForm = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const DangerousAreaForm = () => {
         reported_by_name: data.reported_by_name || null,
       });
       
-      toast.success('Опасният участък беше добавен успешно!');
+      toast.success('Опасният участък беше изпратен за одобрение и ще бъде публикуван след преглед от модератор.');
       navigate('/dangerous-areas');
     } catch (error) {
       console.error('Error submitting dangerous area:', error);
@@ -58,6 +59,13 @@ const DangerousAreaForm = () => {
   return (
     <Card className="border-none shadow-lg bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm">
       <CardContent className="p-6">
+        <Alert className="mb-6 border-amber-500 bg-amber-50 dark:bg-amber-950/20">
+          <Info className="h-4 w-4 text-amber-500" />
+          <AlertDescription className="text-amber-800 dark:text-amber-300">
+            Вашият сигнал за опасен участък ще бъде прегледан от модератор преди да бъде публикуван. Това е за да се избегне спам и невярна информация.
+          </AlertDescription>
+        </Alert>
+        
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Location */}
@@ -229,7 +237,7 @@ const DangerousAreaForm = () => {
                 'Изпращане...'
               ) : (
                 <>
-                  <AlertTriangle className="mr-2 h-4 w-4" /> Добави опасен участък
+                  <AlertTriangle className="mr-2 h-4 w-4" /> Изпрати за одобрение
                 </>
               )}
             </Button>
