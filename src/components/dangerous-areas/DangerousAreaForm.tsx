@@ -1,23 +1,26 @@
+
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
-import { dangerousAreaSchema } from '@/types/dangerous-area';
-import type { DangerousAreaFormValues } from '@/types/dangerous-area';
+import { useNavigate } from 'react-router-dom';
+import { dangerousAreaSchema, DangerousAreaFormValues } from '@/types/dangerous-area';
+import { addDangerousArea } from '@/lib/api/dangerous-areas';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, AlertTriangle, Link as LinkIcon, Info } from 'lucide-react';
-import { addDangerousArea } from '@/lib/api/dangerous-areas';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Loader2, AlertTriangle, MapPin } from 'lucide-react';
+import { toast } from 'sonner';
 
-const DangerousAreaForm = () => {
-  const navigate = useNavigate();
+interface DangerousAreaFormProps {
+  onSubmitSuccess?: () => void;
+}
+
+const DangerousAreaForm: React.FC<DangerousAreaFormProps> = ({ onSubmitSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
   
   const form = useForm<DangerousAreaFormValues>({
     resolver: zodResolver(dangerousAreaSchema),
@@ -30,91 +33,102 @@ const DangerousAreaForm = () => {
       reported_by_name: '',
     },
   });
-
+  
   const onSubmit = async (data: DangerousAreaFormValues) => {
     setIsSubmitting(true);
     
     try {
-      // Make sure we're sending an object that matches our expected type
-      await addDangerousArea({
-        location: data.location,
-        region: data.region || null,
-        description: data.description,
-        severity: data.severity,
-        map_link: data.map_link || null,
-        reported_by_name: data.reported_by_name || null,
+      await addDangerousArea(data);
+      
+      toast.success('Опасният участък е докладван успешно', {
+        description: 'Сигналът ще бъде прегледан от администратор преди публикуване',
       });
       
-      toast.success('Опасният участък беше изпратен за одобрение и ще бъде публикуван след преглед от модератор.');
-      navigate('/dangerous-areas');
+      if (onSubmitSuccess) {
+        onSubmitSuccess();
+      } else {
+        navigate('/dangerous-areas');
+      }
     } catch (error) {
       console.error('Error submitting dangerous area:', error);
-      toast.error('Възникна грешка при добавянето на опасен участък.');
+      toast.error('Възникна грешка', {
+        description: 'Не успяхме да регистрираме опасния участък. Моля, опитайте отново.',
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
-
   
   return (
-    <Card className="border-none shadow-lg bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm">
+    <Card className="border-none bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 shadow-lg">
       <CardContent className="p-6">
-        <Alert className="mb-6 border-amber-500 bg-amber-50 dark:bg-amber-950/20">
-          <Info className="h-4 w-4 text-amber-500" />
-          <AlertDescription className="text-amber-800 dark:text-amber-300">
-            Вашият сигнал за опасен участък ще бъде прегледан от модератор преди да бъде публикуван. Това е за да се избегне спам и невярна информация.
-          </AlertDescription>
-        </Alert>
-        
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Location */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Местоположение*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Въведете местоположение" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Посочете конкретното местоположение на опасния участък
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="region"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Регион</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Въведете регион" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Област или град
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
             <FormField
               control={form.control}
-              name="location"
+              name="severity"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Местоположение*</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                      <Input
-                        placeholder="Например: Път Е-79, км 45"
-                        className="pl-10"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
+                  <FormLabel>Степен на опасност*</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Изберете степен на опасност" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="low">Ниска</SelectItem>
+                      <SelectItem value="medium">Средна</SelectItem>
+                      <SelectItem value="high">Висока</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormDescription>
-                    Въведете точно местоположение на опасния участък
+                    Оценете колко опасен е участъкът
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             
-            {/* Region */}
-            <FormField
-              control={form.control}
-              name="region"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Област/Регион</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Например: София област"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Въведете област или регион на опасния участък
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {/* Description */}
             <FormField
               control={form.control}
               name="description"
@@ -122,91 +136,42 @@ const DangerousAreaForm = () => {
                 <FormItem>
                   <FormLabel>Описание*</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Опишете опасния участък и какви мерки за безопасност трябва да се вземат"
-                      className="min-h-[120px]"
-                      {...field}
+                    <Textarea 
+                      placeholder="Въведете подробно описание на опасния участък" 
+                      {...field} 
+                      rows={5}
                     />
                   </FormControl>
                   <FormDescription>
-                    Добавете подробно описание, за да могат хората да разберат опасността
+                    Подробно опишете опасността - какъв е пътят, какви опасности има, и др.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             
-            {/* Severity */}
-            <FormField
-              control={form.control}
-              name="severity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Степен на опасност*</FormLabel>
-                  <FormControl>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Изберете степен на опасност" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="low">
-                          <div className="flex items-center gap-2">
-                            <span className="h-3 w-3 rounded-full bg-yellow-500"></span>
-                            Ниска опасност
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="medium">
-                          <div className="flex items-center gap-2">
-                            <span className="h-3 w-3 rounded-full bg-orange-500"></span>
-                            Средна опасност
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="high">
-                          <div className="flex items-center gap-2">
-                            <span className="h-3 w-3 rounded-full bg-red-500"></span>
-                            Висока опасност
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormDescription>
-                    Изберете колко опасен е участъкът
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {/* Map Link */}
             <FormField
               control={form.control}
               name="map_link"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Линк към карта</FormLabel>
+                  <FormLabel className="flex items-center gap-1">
+                    <MapPin className="h-4 w-4" /> Връзка към карта
+                  </FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                      <Input
-                        placeholder="https://maps.google.com/..."
-                        className="pl-10"
-                        {...field}
-                      />
-                    </div>
+                    <Input 
+                      placeholder="Въведете линк към Google Maps или друга карта" 
+                      {...field} 
+                    />
                   </FormControl>
                   <FormDescription>
-                    Добавете линк към Google Maps или друга карта (незадължително)
+                    Добавете линк към точното местоположение в Google Maps
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             
-            {/* Reported By Name */}
             <FormField
               control={form.control}
               name="reported_by_name"
@@ -214,33 +179,37 @@ const DangerousAreaForm = () => {
                 <FormItem>
                   <FormLabel>Вашето име</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Име (незадължително)"
-                      {...field}
-                    />
+                    <Input placeholder="Въведете вашето име (незадължително)" {...field} />
                   </FormControl>
                   <FormDescription>
-                    Въведете вашето име, ако желаете (незадължително)
+                    Името ви ще бъде показано като докладвано от вас (незадължително)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             
-            {/* Submit Button */}
-            <Button 
-              type="submit" 
-              disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-destructive to-destructive/80 hover:from-destructive/90 hover:to-destructive/70 text-white"
-            >
-              {isSubmitting ? (
-                'Изпращане...'
-              ) : (
-                <>
-                  <AlertTriangle className="mr-2 h-4 w-4" /> Изпрати за одобрение
-                </>
-              )}
-            </Button>
+            <div className="pt-4 flex flex-col md:flex-row gap-3 justify-between">
+              <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                <p>
+                  <strong>Забележка:</strong> Всички доклади за опасни участъци се преглеждат от нашите администратори преди публикуване.
+                </p>
+              </div>
+              
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="min-w-[150px]"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Изпращане...
+                  </>
+                ) : 'Изпрати сигнал'}
+              </Button>
+            </div>
           </form>
         </Form>
       </CardContent>

@@ -1,14 +1,25 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useNavigate } from 'react-router-dom';
 import DangerousAreaForm from '@/components/dangerous-areas/DangerousAreaForm';
+import DangerousAreaSubmitConfirmation from '@/components/dangerous-areas/DangerousAreaSubmitConfirmation';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const AddDangerousArea = () => {
   const navigate = useNavigate();
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  
+  const handleSubmitSuccess = () => {
+    setIsSubmitted(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const handleAddAnother = () => {
+    setIsSubmitted(false);
+  };
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -25,17 +36,23 @@ const AddDangerousArea = () => {
               <ArrowLeft className="h-4 w-4 mr-2" /> Назад към всички участъци
             </Button>
             
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-                <AlertTriangle className="h-8 w-8 text-destructive" /> 
-                Докладвай опасен участък
-              </h1>
-              <p className="text-muted-foreground">
-                Споделете информация за опасен пътен участък, за да предпазим другите шофьори
-              </p>
-            </div>
-            
-            <DangerousAreaForm />
+            {!isSubmitted ? (
+              <>
+                <div className="mb-8">
+                  <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+                    <AlertTriangle className="h-8 w-8 text-destructive" /> 
+                    Докладвай опасен участък
+                  </h1>
+                  <p className="text-muted-foreground">
+                    Споделете информация за опасен пътен участък, за да предпазим другите шофьори
+                  </p>
+                </div>
+                
+                <DangerousAreaForm onSubmitSuccess={handleSubmitSuccess} />
+              </>
+            ) : (
+              <DangerousAreaSubmitConfirmation onAddAnother={handleAddAnother} />
+            )}
           </div>
         </div>
       </main>

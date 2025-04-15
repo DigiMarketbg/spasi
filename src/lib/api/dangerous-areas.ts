@@ -81,7 +81,7 @@ export const addDangerousArea = async (areaData: Omit<DangerousArea, 'id' | 'cre
     return data as DangerousArea;
   } catch (error) {
     console.error("Error in addDangerousArea:", error);
-    throw new Error("Error adding dangerous area");
+    throw new Error("Error adding dangerous areas");
   }
 };
 

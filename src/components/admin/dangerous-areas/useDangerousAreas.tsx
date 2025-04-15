@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react';
 import { fetchAllDangerousAreas, updateDangerousAreaApproval, deleteDangerousArea } from '@/lib/api/dangerous-areas';
 import { DangerousArea } from '@/types/dangerous-area';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useDangerousAreas = (onExternalRefresh?: () => void) => {
   const [areas, setAreas] = useState<DangerousArea[]>([]);
@@ -34,8 +35,16 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
       setProcessingApproval(id);
       setError(null);
       
-      // Update in Supabase database
-      await updateDangerousAreaApproval(id, true);
+      // Direct update via Supabase client for more reliable operation
+      const { error: updateError } = await supabase
+        .from('dangerous_areas')
+        .update({ is_approved: true })
+        .eq('id', id);
+        
+      if (updateError) {
+        throw updateError;
+      }
+      
       console.log("[handleApprove] Area successfully approved in database");
       
       // Update local state immediately to show change

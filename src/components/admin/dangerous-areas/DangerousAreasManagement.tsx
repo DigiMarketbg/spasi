@@ -8,6 +8,7 @@ import DangerousAreasList from '@/components/dangerous-areas/DangerousAreasList'
 import { DangerousArea } from '@/types/dangerous-area';
 import { toast } from 'sonner';
 import { updateDangerousAreaApproval, deleteDangerousArea, fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
+import { supabase } from '@/integrations/supabase/client';
 
 interface DangerousAreasManagementProps {
   areas?: DangerousArea[];
@@ -113,8 +114,26 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({
       setProcessingId(id);
       console.log(`Approving area with ID: ${id}`);
       
-      await updateDangerousAreaApproval(id, true);
+      // Direct update via Supabase client for more reliable operation
+      const { error: updateError } = await supabase
+        .from('dangerous_areas')
+        .update({ is_approved: true })
+        .eq('id', id);
+        
+      if (updateError) {
+        throw updateError;
+      }
+      
       toast.success("Опасният участък е одобрен успешно");
+      
+      // Update local state to reflect the change immediately
+      setAreasData(prevAreas => 
+        prevAreas.map(area => 
+          area.id === id ? {...area, is_approved: true} : area
+        )
+      );
+      
+      // Refresh data from the server
       fetchAreas();
     } catch (error) {
       console.error("Error in handleApproveArea:", error);
@@ -139,7 +158,6 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({
         }}
       />
 
-      {/* Fix line 142: Remove the console.log statement that was inside the JSX */}
       <DangerousAreasList
         areas={filteredAreas}
         isLoading={loading}
@@ -147,7 +165,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({
         isAdmin={true}
         onApprove={handleApproveArea}
         onDelete={confirmDelete}
-        processingApproval={processingApproval}
+        processingApproval={processingId}
       />
       
       <DeleteAreaDialog

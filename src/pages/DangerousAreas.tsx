@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -10,13 +11,18 @@ import { Link } from 'react-router-dom';
 import DangerousAreasList from '@/components/dangerous-areas/DangerousAreasList';
 import { fetchDangerousAreas } from '@/lib/api/dangerous-areas';
 import { DangerousArea } from '@/types/dangerous-area';
+import { toast } from 'sonner';
 
 const DangerousAreas = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
-  const { data: dangerousAreas = [], isLoading } = useQuery<DangerousArea[]>({
+  const { data: dangerousAreas = [], isLoading, isError, refetch } = useQuery<DangerousArea[]>({
     queryKey: ['dangerous-areas'],
-    queryFn: fetchDangerousAreas
+    queryFn: fetchDangerousAreas,
+    onError: (error) => {
+      toast.error('Грешка при зареждане на опасните участъци');
+      console.error('Error fetching dangerous areas:', error);
+    }
   });
 
   return (
@@ -69,6 +75,9 @@ const DangerousAreas = () => {
                     <p className="text-sm text-muted-foreground">
                       Споделете информация за опасни пътни участъци, които сте забелязали. 
                       Вашият сигнал може да предотврати инциденти и да спаси нечий живот.
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Забележка: Всички сигнали минават през одобрение от администратор преди да бъдат публикувани.
                     </p>
                   </div>
                 </div>
