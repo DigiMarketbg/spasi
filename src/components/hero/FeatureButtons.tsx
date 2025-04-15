@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Shield, Users, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -56,7 +55,7 @@ const FeatureButtons = () => {
         className={featureButtonStyle}
         onClick={navigateToDangerousAreas}
       >
-        <span className="text-[0.6rem] w-[60px] text-center">Опасни участъци и пътища</span>
+        <span className="text-[0.5rem] truncate w-[60px] text-center leading-tight">Опасни участъци</span>
       </Button>
       
       {/* Button 4: Placeholder */}
