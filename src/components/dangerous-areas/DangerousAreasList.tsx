@@ -1,9 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, MapPin, Calendar, User, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DangerousArea } from '@/types/dangerous-area';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DangerousAreasListProps {
   areas: DangerousArea[];
@@ -13,6 +15,7 @@ interface DangerousAreasListProps {
 
 const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasListProps) => {
   const [filteredAreas, setFilteredAreas] = useState<DangerousArea[]>([]);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     if (areas.length > 0) {
@@ -35,26 +38,26 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
   const getSeverityColor = (severity: "low" | "medium" | "high") => {
     switch (severity) {
       case 'high':
-        return 'bg-red-600 text-white'; // Increased color intensity
+        return 'bg-red-600'; 
       case 'medium':
-        return 'bg-orange-500 text-white font-bold'; // Bold text for better readability
+        return 'bg-orange-500';
       case 'low':
-        return 'bg-yellow-500 text-black font-semibold'; // Semibold for low severity
+        return 'bg-yellow-500';
       default:
-        return 'bg-gray-500 text-white';
+        return 'bg-gray-500';
     }
   };
 
   const getSeverityText = (severity: "low" | "medium" | "high") => {
     switch (severity) {
       case 'high':
-        return 'Висока опасност';
+        return 'Висока';
       case 'medium':
-        return 'Средна опасност';
+        return 'Средна';
       case 'low':
-        return 'Ниска опасност';
+        return 'Ниска';
       default:
-        return 'Неизвестна опасност';
+        return 'Неизв.';
     }
   };
 
@@ -97,9 +100,9 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
                 
                 <Badge 
                   variant="outline" 
-                  className={`px-4 py-1.5 ${getSeverityColor(area.severity)} text-sm rounded-full shadow-sm`}
+                  className={`px-2 py-1 ${getSeverityColor(area.severity)} ${severity => severity === 'low' ? 'text-black' : 'text-white'} text-xs font-bold rounded-full shadow-sm whitespace-nowrap`}
                 >
-                  {getSeverityText(area.severity)}
+                  {getSeverityText(area.severity)} опасност
                 </Badge>
               </div>
               
