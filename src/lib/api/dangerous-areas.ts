@@ -59,7 +59,7 @@ export const updateDangerousAreaApproval = async (id: string, isApproved: boolea
   console.log(`[updateDangerousAreaApproval] Starting approval update for ID ${id}, setting is_approved to ${isApproved}`);
   
   try {
-    // Important change: Remove the .select() and .single() calls that cause the JSON object error
+    // Important: Use a simpler update query without select() and single() to avoid JSON object errors
     const { error } = await supabase
       .from('dangerous_areas')
       .update({ is_approved: isApproved })

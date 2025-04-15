@@ -53,18 +53,14 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
   const pendingCount = areas.filter(area => !area.is_approved).length;
 
   const handleApproveArea = async (id: string): Promise<void> => {
-    setError(null); // Clear any previous errors
-    
     try {
+      setError(null); // Clear any previous errors
       console.log(`Approving area with ID: ${id}`);
       await handleApprove(id);
-      
-      // Refresh the list to show updated state
       console.log("Refreshing areas after approval");
-      await fetchAreas();
+      await fetchAreas(); // Force refresh after approval
     } catch (error) {
-      console.error("Error approving area:", error);
-      setError("Не успяхме да одобрим опасния участък");
+      console.error("Error in handleApproveArea:", error);
     }
   };
 
