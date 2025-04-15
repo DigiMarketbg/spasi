@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -19,6 +20,7 @@ interface AdminTabsProps {
   loadingDangerousAreas?: boolean;
   unreadCount: number;
   pendingRequestsCount: number;
+  pendingDangerousAreasCount: number; // Add this new prop
   onRefreshSignals: () => void;
   onRefreshUsers: () => void;
   onRefreshPartnerRequests: () => void;
@@ -37,6 +39,7 @@ const AdminTabs = ({
   loadingDangerousAreas,
   unreadCount,
   pendingRequestsCount,
+  pendingDangerousAreasCount, // Add this new prop
   onRefreshSignals,
   onRefreshUsers,
   onRefreshPartnerRequests,
@@ -63,7 +66,14 @@ const AdminTabs = ({
             </span>
           )}
         </TabsTrigger>
-        <TabsTrigger value="dangerous-areas">Опасни участъци</TabsTrigger>
+        <TabsTrigger value="dangerous-areas">
+          Опасни участъци
+          {pendingDangerousAreasCount > 0 && (
+            <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-orange-500 rounded-full">
+              {pendingDangerousAreasCount}
+            </span>
+          )}
+        </TabsTrigger>
       </TabsList>
       
       <TabsContent value="signals" className="mt-6">

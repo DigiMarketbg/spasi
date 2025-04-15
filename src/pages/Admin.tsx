@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -42,6 +41,7 @@ const Admin = () => {
         try {
           setLoadingDangerousAreas(true);
           const areas = await fetchAllDangerousAreas();
+          console.log("Fetched dangerous areas in Admin:", areas);
           const pendingCount = areas.filter(area => !area.is_approved).length;
           setPendingDangerousAreas(pendingCount);
         } catch (error) {
@@ -101,6 +101,7 @@ const Admin = () => {
             loadingDangerousAreas={loadingDangerousAreas}
             unreadCount={unreadCount}
             pendingRequestsCount={pendingRequestsCount}
+            pendingDangerousAreasCount={pendingDangerousAreas}
             onRefreshSignals={fetchSignals}
             onRefreshUsers={fetchUsers}
             onRefreshPartnerRequests={fetchPartnerRequests}

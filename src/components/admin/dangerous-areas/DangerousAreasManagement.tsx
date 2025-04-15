@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDangerousAreas } from './useDangerousAreas';
 import AreaFilters from './AreaFilters';
 import ErrorDisplay from './ErrorDisplay';
@@ -7,7 +7,7 @@ import DeleteAreaDialog from './DeleteAreaDialog';
 import DangerousAreasList from '@/components/dangerous-areas/DangerousAreasList';
 import { DangerousArea } from '@/types/dangerous-area';
 import { toast } from 'sonner';
-import { updateDangerousAreaApproval, deleteDangerousArea } from '@/lib/api/dangerous-areas';
+import { updateDangerousAreaApproval, deleteDangerousArea, fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
 
 interface DangerousAreasManagementProps {
   areas?: DangerousArea[];
@@ -24,6 +24,8 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [areaToDelete, setAreaToDelete] = useState<string | null>(null);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [areasData, setAreasData] = useState<DangerousArea[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Use the hook if no external data is provided
   const {
@@ -38,14 +40,36 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({
   } = useDangerousAreas(() => {
     console.log("External refresh callback triggered from useDangerousAreas");
     if (externalRefresh) externalRefresh();
+    fetchAllAreas();
   });
 
+  // Get all areas independently to ensure we always have the latest data
+  const fetchAllAreas = async () => {
+    try {
+      setIsLoading(true);
+      const data = await fetchAllDangerousAreas();
+      console.log("Fetched areas in DangerousAreasManagement:", data);
+      setAreasData(data || []);
+    } catch (err) {
+      console.error("Error fetching areas:", err);
+      toast.error("Грешка при зареждане на опасните участъци");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initial fetch
+  useEffect(() => {
+    fetchAllAreas();
+  }, []);
+
   // Choose between external and hook data
-  const areas = externalAreas || hookAreas;
-  const loading = externalLoading !== undefined ? externalLoading : hookLoading;
+  const areas = areasData.length > 0 ? areasData : (externalAreas || hookAreas);
+  const loading = isLoading || (externalLoading !== undefined ? externalLoading : hookLoading);
   const processingApproval = hookProcessingId || processingId;
 
   const fetchAreas = () => {
+    fetchAllAreas();
     if (externalRefresh) {
       externalRefresh();
     } else {
@@ -64,15 +88,9 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({
     try {
       setProcessingId(areaToDelete);
       
-      if (externalRefresh) {
-        // Use direct API call with external refresh
-        await deleteDangerousArea(areaToDelete);
-        toast.success("Опасният участък е изтрит успешно");
-        externalRefresh();
-      } else {
-        // Use hook function
-        await hookHandleDelete(areaToDelete);
-      }
+      await deleteDangerousArea(areaToDelete);
+      toast.success("Опасният участък е изтрит успешно");
+      fetchAreas();
     } catch (error) {
       console.error("Error deleting area:", error);
       toast.error("Грешка при изтриване на опасния участък");
@@ -95,15 +113,9 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({
       setProcessingId(id);
       console.log(`Approving area with ID: ${id}`);
       
-      if (externalRefresh) {
-        // Use direct API call with external refresh
-        await updateDangerousAreaApproval(id, true);
-        toast.success("Опасният участък е одобрен успешно");
-        externalRefresh();
-      } else {
-        // Use hook function
-        await hookHandleApprove(id);
-      }
+      await updateDangerousAreaApproval(id, true);
+      toast.success("Опасният участък е одобрен успешно");
+      fetchAreas();
     } catch (error) {
       console.error("Error in handleApproveArea:", error);
       toast.error("Грешка при одобряване на опасния участък");
@@ -127,6 +139,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({
         }}
       />
 
+      {console.log("Rendering areas list with:", filteredAreas)}
       <DangerousAreasList
         areas={filteredAreas}
         isLoading={loading}
