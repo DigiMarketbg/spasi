@@ -27,7 +27,7 @@ const WitnessesSection = () => {
       <div className="container mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-3xl font-bold">Търсене на свидетели</h2>
+            <h2 className="text-3xl font-bold">Сигнали за свидетели</h2>
             <p className="text-muted-foreground mt-1">
               Търсите или сте били свидетел на инцидент? Помогнете или намерете информация тук.
             </p>
@@ -38,7 +38,7 @@ const WitnessesSection = () => {
             onClick={() => navigate('/witnesses')}
             className="hidden md:flex"
           >
-            Всички обяви
+            Всички сигнали
             <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
@@ -104,12 +104,12 @@ const WitnessesSection = () => {
           </div>
         ) : (
           <div className="bg-background/60 border border-border rounded-lg p-8 text-center">
-            <h3 className="text-lg font-medium mb-2">Няма активни обяви за свидетели</h3>
+            <h3 className="text-lg font-medium mb-2">Няма активни сигнали за свидетели</h3>
             <p className="text-muted-foreground mb-4">
-              В момента няма публикувани обяви за търсене на свидетели.
+              В момента няма публикувани сигнали за търсене на свидетели.
             </p>
             <Button onClick={() => navigate('/witnesses')}>
-              Публикувай обява
+              Публикувай сигнал за свидетел
             </Button>
           </div>
         )}
@@ -119,7 +119,7 @@ const WitnessesSection = () => {
             variant="outline" 
             onClick={() => navigate('/witnesses')}
           >
-            Всички обяви
+            Всички сигнали
             <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         </div>

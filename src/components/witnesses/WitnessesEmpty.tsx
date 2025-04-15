@@ -19,20 +19,20 @@ const WitnessesEmpty: React.FC<WitnessesEmptyProps> = ({ searchQuery }) => {
         <>
           <h3 className="text-lg font-medium mb-2">Няма намерени резултати</h3>
           <p className="text-muted-foreground mb-4">
-            Не намерихме обяви, съответстващи на "{searchQuery}".
+            Не намерихме сигнали за свидетели, съответстващи на "{searchQuery}".
           </p>
         </>
       ) : (
         <>
-          <h3 className="text-lg font-medium mb-2">Няма активни обяви за свидетели</h3>
+          <h3 className="text-lg font-medium mb-2">Няма активни сигнали за свидетели</h3>
           <p className="text-muted-foreground mb-4">
-            В момента няма публикувани обяви за търсене на свидетели.
+            В момента няма публикувани сигнали за търсене на свидетели.
           </p>
         </>
       )}
       
       <Button onClick={() => navigate('/submit-witness')}>
-        Публикувай обява
+        Публикувай сигнал за свидетел
       </Button>
     </div>
   );

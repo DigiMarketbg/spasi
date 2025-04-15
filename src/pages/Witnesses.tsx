@@ -47,7 +47,7 @@ const Witnesses = () => {
                 onClick={() => navigate('/submit-witness')}
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Публикувай обява
+                Публикувай сигнал за свидетел
               </Button>
             )}
           </div>
@@ -80,7 +80,7 @@ const Witnesses = () => {
           
           {!user && (
             <div className="mt-8 p-6 border border-muted-foreground/20 rounded-lg bg-muted/30 text-center">
-              <h3 className="text-lg font-medium mb-2">Искате да публикувате обява за свидетели?</h3>
+              <h3 className="text-lg font-medium mb-2">Искате да публикувате сигнал за свидетел?</h3>
               <p className="mb-4 text-muted-foreground">Трябва първо да влезете в акаунта си</p>
               <Button onClick={() => navigate('/auth')}>
                 Вход / Регистрация
