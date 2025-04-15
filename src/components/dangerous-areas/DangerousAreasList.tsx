@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -111,9 +112,12 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
               
               <div className="flex items-center justify-between text-sm text-muted-foreground mt-2">
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    <span className="text-xs">{formatDate(area.created_at)} г.</span>
+                  <div className="flex flex-col items-start">
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      <span>{formatDate(area.created_at)}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground ml-5">г.</span>
                   </div>
                   
                   {area.reported_by_name && (
