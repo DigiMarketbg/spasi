@@ -10,10 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Shield, SquareCode, Share2, AlertTriangle, HeartHandshake, Lightbulb, Heart } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@/components/ThemeProvider';
 
 const Info = () => {
   const { openConsentDialog } = useGDPR();
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -26,7 +28,7 @@ const Info = () => {
             <p className="text-muted-foreground max-w-xl mx-auto">
               Платформа за взаимопомощ и сигнали при спешни ситуации
             </p>
-            <div className="flex justify-center mt-6 gap-4">
+            <div className="flex flex-col sm:flex-row justify-center mt-6 gap-4">
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -39,7 +41,9 @@ const Info = () => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="flex items-center gap-2"
+                className={`flex items-center gap-2 ${
+                  theme === 'dark' ? 'border-amber-500 hover:border-amber-400' : 'border-spasi-green hover:border-green-500'
+                }`}
                 onClick={() => navigate('/donations')}
               >
                 <Heart className="h-4 w-4 text-spasi-red" />
