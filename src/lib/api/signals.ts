@@ -7,42 +7,11 @@ export const fetchAllSignals = async (): Promise<Signal[]> => {
   console.log("Fetching all signals...");
   
   try {
-    // First check if we can join with profiles
-    const { data: testData, error: testError } = await supabase
+    // Just get all signals without trying to join with profiles
+    const { data, error } = await supabase
       .from("signals")
       .select("*")
-      .limit(1);
-      
-    if (testError) {
-      console.error("Error testing signals table:", testError);
-      throw new Error("Error fetching signals");
-    }
-    
-    // Main query - check if the table has user_id column before trying to join
-    const hasUserIdColumn = testData && testData.length > 0 && 'user_id' in testData[0];
-    
-    let query;
-    if (hasUserIdColumn) {
-      // If user_id exists, try to join with profiles
-      query = supabase
-        .from("signals")
-        .select(`
-          *,
-          profiles:user_id (
-            full_name,
-            email
-          )
-        `)
-        .order("created_at", { ascending: false });
-    } else {
-      // Fallback to just getting signals without the join
-      query = supabase
-        .from("signals")
-        .select("*")
-        .order("created_at", { ascending: false });
-    }
-    
-    const { data, error } = await query;
+      .order("created_at", { ascending: false });
     
     if (error) {
       console.error("Error fetching signals:", error);
@@ -55,7 +24,7 @@ export const fetchAllSignals = async (): Promise<Signal[]> => {
     const processedData = data.map(signal => {
       const processedSignal: Signal = {
         ...signal,
-        profiles: signal.profiles || { full_name: null, email: null }
+        profiles: { full_name: null, email: null }
       };
       return processedSignal;
     });
@@ -74,16 +43,10 @@ export const getSignalById = async (id: string): Promise<Signal> => {
   }
 
   try {
-    // Try first with the join
+    // Just get the signal by ID without joining
     const { data, error } = await supabase
       .from("signals")
-      .select(`
-        *,
-        profiles:user_id (
-          full_name,
-          email
-        )
-      `)
+      .select("*")
       .eq("id", id)
       .single();
 
@@ -96,9 +59,7 @@ export const getSignalById = async (id: string): Promise<Signal> => {
     const processedSignal: Signal = {
       ...data,
       // Ensure profiles is always a valid object with our expected structure
-      profiles: typeof data.profiles === 'object' && data.profiles 
-        ? data.profiles 
-        : { full_name: null, email: null }
+      profiles: { full_name: null, email: null }
     };
 
     return processedSignal;
