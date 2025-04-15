@@ -5,7 +5,7 @@ import SignalsManagement from '@/components/admin/SignalsManagement';
 import UsersManagement from '@/components/admin/UsersManagement';
 import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagement';
 import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
-import DangerousAreasManagement from '@/components/admin/DangerousAreasManagement';
+import DangerousAreasManagement from '@/components/admin/dangerous-areas/DangerousAreasManagement';
 
 interface AdminTabsProps {
   signals: any[];

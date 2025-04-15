@@ -5,7 +5,7 @@ import { useAuth } from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SignalsManagement from '@/components/admin/SignalsManagement';
-import DangerousAreasManagement from '@/components/admin/DangerousAreasManagement';
+import DangerousAreasManagement from '@/components/admin/dangerous-areas/DangerousAreasManagement';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
