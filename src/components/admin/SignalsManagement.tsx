@@ -8,7 +8,7 @@ import SignalsTable from './signals/SignalsTable';
 import SignalFilters from './signals/SignalFilters';
 import { RefreshCcw, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { updateSignalStatus } from '@/lib/api/signals';
+import { updateSignalStatus, toggleSignalUrgent } from '@/lib/api/signals';
 
 const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh }) => {
   const { toast: hookToast } = useToast();
@@ -75,6 +75,34 @@ const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh 
     }
   };
 
+  // Toggle urgent status
+  const handleToggleUrgent = async (id: string, isUrgent: boolean) => {
+    setProcessingId(id);
+    try {
+      await toggleSignalUrgent(id, isUrgent);
+
+      // Update local state immediately
+      setSignals(prevSignals => 
+        prevSignals.map(signal => 
+          signal.id === id 
+            ? { ...signal, is_urgent: isUrgent } 
+            : signal
+        )
+      );
+
+      toast.success(`Сигналът е маркиран като ${isUrgent ? 'спешен' : 'обикновен'}`);
+
+      // Also trigger the parent refresh
+      onRefresh();
+    } catch (error: any) {
+      toast.error("Грешка", {
+        description: error.message || "Възникна проблем при промяната на статуса на спешност."
+      });
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   // Show empty state if no signals
   if (!loadingSignals && signals.length === 0) {
     return (
@@ -131,6 +159,7 @@ const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh 
         signals={filteredSignals}
         onApprove={(id) => updateSignalStatusHandler(id, 'approved')}
         onReject={(id) => updateSignalStatusHandler(id, 'rejected')}
+        onToggleUrgent={handleToggleUrgent}
         processingId={processingId}
         loading={loadingSignals}
       />

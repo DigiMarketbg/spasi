@@ -105,16 +105,24 @@ export const deleteSignal = async (id: string): Promise<void> => {
 // Update a signal's status
 export const updateSignalStatus = async (
   id: string, 
-  newStatus: 'approved' | 'rejected'
+  newStatus: 'approved' | 'rejected',
+  isUrgent?: boolean
 ): Promise<void> => {
-  console.log(`Updating signal ${id} to status ${newStatus}`);
+  console.log(`Updating signal ${id} to status ${newStatus} ${isUrgent !== undefined ? `and isUrgent: ${isUrgent}` : ''}`);
+  
+  const updateData: any = { 
+    status: newStatus, 
+    is_approved: newStatus === 'approved'
+  };
+  
+  // Only update is_urgent if it's provided
+  if (isUrgent !== undefined) {
+    updateData.is_urgent = isUrgent;
+  }
   
   const { error } = await supabase
     .from('signals')
-    .update({ 
-      status: newStatus, 
-      is_approved: newStatus === 'approved' 
-    })
+    .update(updateData)
     .eq('id', id);
 
   if (error) {
@@ -123,4 +131,21 @@ export const updateSignalStatus = async (
   }
   
   console.log("Signal status updated successfully");
+};
+
+// New function to toggle the urgent status of a signal
+export const toggleSignalUrgent = async (id: string, isUrgent: boolean): Promise<void> => {
+  console.log(`Toggling urgent status for signal ${id} to ${isUrgent}`);
+  
+  const { error } = await supabase
+    .from('signals')
+    .update({ is_urgent: isUrgent })
+    .eq('id', id);
+
+  if (error) {
+    console.error("Error updating signal urgent status:", error);
+    throw error;
+  }
+  
+  console.log("Signal urgent status updated successfully");
 };

@@ -33,6 +33,7 @@ export interface Signal {
   image_url?: string | null;
   is_approved: boolean;
   is_resolved: boolean;
+  is_urgent?: boolean;
   created_at: string;
   user_id: string;
   status: string;
