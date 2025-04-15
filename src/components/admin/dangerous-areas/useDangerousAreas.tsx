@@ -44,7 +44,7 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
       // Update the local state with the new data
       setAreas(prevAreas => 
         prevAreas.map(area => 
-          area.id === id ? updatedArea : area
+          area.id === id ? {...area, is_approved: true} : area
         )
       );
       
@@ -53,17 +53,24 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
         description: "Опасният участък беше одобрен",
       });
       
-      // Notify parent component
-      if (onExternalRefresh) onExternalRefresh();
+      // Notify parent component and refresh data
+      if (onExternalRefresh) {
+        console.log("[handleApprove] Triggering external refresh");
+        onExternalRefresh();
+      }
+      
+      // Refresh the areas to ensure sync with DB
+      await fetchAreas();
       
       return updatedArea;
-    } catch (error) {
+    } catch (error: any) {
       console.error("[handleApprove] Error approving area:", error);
-      setError("Не успяхме да одобрим опасния участък");
+      const errorMessage = error.message || "Не успяхме да одобрим опасния участък";
+      setError(errorMessage);
       
       toast({
         title: "Грешка",
-        description: "Не успяхме да одобрим опасния участък",
+        description: errorMessage,
         variant: "destructive"
       });
       
@@ -87,7 +94,9 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
         description: "Опасният участък беше изтрит",
       });
       
-      if (onExternalRefresh) onExternalRefresh();
+      if (onExternalRefresh) {
+        onExternalRefresh();
+      }
     } catch (error) {
       console.error("Error deleting area:", error);
       setError("Не успяхме да изтрием опасния участък");
