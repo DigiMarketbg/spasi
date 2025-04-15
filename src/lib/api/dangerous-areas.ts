@@ -55,29 +55,22 @@ export const addDangerousArea = async (areaData: Omit<DangerousArea, 'id' | 'cre
   return data as DangerousArea;
 };
 
-export const updateDangerousAreaApproval = async (id: string, isApproved: boolean): Promise<DangerousArea> => {
+export const updateDangerousAreaApproval = async (id: string, isApproved: boolean): Promise<void> => {
   console.log(`[updateDangerousAreaApproval] Starting approval update for ID ${id}, setting is_approved to ${isApproved}`);
   
   try {
-    // Опростена версия на заявката - директно обновяване на is_approved полето
-    const { data, error } = await supabase
+    // Important change: Remove the .select() and .single() calls that cause the JSON object error
+    const { error } = await supabase
       .from('dangerous_areas')
       .update({ is_approved: isApproved })
-      .eq('id', id)
-      .select('*')
-      .single();
+      .eq('id', id);
     
     if (error) {
       console.error("[updateDangerousAreaApproval] Error updating area:", error);
       throw error;
     }
     
-    if (!data) {
-      throw new Error(`No data returned after update for ID ${id}`);
-    }
-    
-    console.log("[updateDangerousAreaApproval] Update successful, returned data:", data);
-    return data as DangerousArea;
+    console.log("[updateDangerousAreaApproval] Update successful");
   } catch (error) {
     console.error("[updateDangerousAreaApproval] Exception caught:", error);
     throw error;

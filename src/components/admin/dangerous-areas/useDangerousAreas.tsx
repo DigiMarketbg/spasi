@@ -37,11 +37,11 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
       setProcessingApproval(id);
       setError(null);
       
-      // Call the API to update the approval status
-      const updatedArea = await updateDangerousAreaApproval(id, true);
-      console.log("[handleApprove] Area successfully approved:", updatedArea);
+      // Update in the database - simplified to avoid the JSON object error
+      await updateDangerousAreaApproval(id, true);
+      console.log("[handleApprove] Area successfully approved");
       
-      // Update the local state with the new data
+      // Update the local state directly
       setAreas(prevAreas => 
         prevAreas.map(area => 
           area.id === id ? {...area, is_approved: true} : area
@@ -59,10 +59,7 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
         onExternalRefresh();
       }
       
-      // Refresh the areas to ensure sync with DB
-      await fetchAreas();
-      
-      return updatedArea;
+      return true;
     } catch (error: any) {
       console.error("[handleApprove] Error approving area:", error);
       const errorMessage = error.message || "Не успяхме да одобрим опасния участък";
