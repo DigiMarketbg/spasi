@@ -139,7 +139,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({
         }}
       />
 
-      {console.log("Rendering areas list with:", filteredAreas)}
+      {/* Fix line 142: Remove the console.log statement that was inside the JSX */}
       <DangerousAreasList
         areas={filteredAreas}
         isLoading={loading}
