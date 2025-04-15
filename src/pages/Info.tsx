@@ -48,9 +48,12 @@ const Info = () => {
           
           <Separator className="my-8" />
           
-          <PlatformDescription />
-          
+          {/* New Contact Section Moved Higher */}
           <ContactCollapsible />
+          
+          <Separator className="my-8" />
+          
+          <PlatformDescription />
           
           <div className="glass p-6 md:p-8 rounded-xl mb-8">
             <div className="flex items-center gap-2 mb-6">
