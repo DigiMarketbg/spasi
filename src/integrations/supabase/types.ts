@@ -401,6 +401,51 @@ export type Database = {
         }
         Relationships: []
       }
+      witnesses: {
+        Row: {
+          contact_name: string
+          created_at: string
+          date: string
+          description: string
+          expires_at: string
+          id: string
+          image_url: string | null
+          is_approved: boolean
+          location: string
+          phone: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          contact_name: string
+          created_at?: string
+          date: string
+          description: string
+          expires_at: string
+          id?: string
+          image_url?: string | null
+          is_approved?: boolean
+          location: string
+          phone?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          contact_name?: string
+          created_at?: string
+          date?: string
+          description?: string
+          expires_at?: string
+          id?: string
+          image_url?: string | null
+          is_approved?: boolean
+          location?: string
+          phone?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

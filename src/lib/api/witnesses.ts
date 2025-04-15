@@ -15,7 +15,7 @@ export const fetchApprovedWitnesses = async (): Promise<Witness[]> => {
       .select("*")
       .eq("is_approved", true)
       .gte("expires_at", now)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false }) as any;
     
     if (error) {
       console.error("Error fetching witnesses:", error);
@@ -24,8 +24,7 @@ export const fetchApprovedWitnesses = async (): Promise<Witness[]> => {
 
     console.log("Successfully fetched witness posts:", data);
     
-    // Type cast to Witness[] as we know the structure matches
-    return (data || []) as unknown as Witness[];
+    return data as Witness[];
   } catch (error) {
     console.error("Error in fetchApprovedWitnesses:", error);
     throw new Error("Error fetching witness posts");
@@ -43,14 +42,14 @@ export const getWitnessById = async (id: string): Promise<Witness> => {
       .from("witnesses")
       .select("*")
       .eq("id", id)
-      .single();
+      .single() as any;
 
     if (error) {
       console.error("Error fetching witness post:", error);
       throw new Error("Error fetching witness post details");
     }
 
-    return data as unknown as Witness;
+    return data as Witness;
   } catch (error) {
     console.error("Error in getWitnessById:", error);
     throw new Error("Error fetching witness post details");
@@ -79,7 +78,7 @@ export const submitWitness = async (witnessData: any, userId: string): Promise<s
         expires_at: expiryDate.toISOString()
       })
       .select("id")
-      .single();
+      .single() as any;
 
     if (error) {
       console.error("Error submitting witness post:", error);
@@ -104,7 +103,7 @@ export const deleteWitness = async (id: string): Promise<void> => {
     const { error } = await supabase
       .from("witnesses")
       .delete()
-      .eq("id", id);
+      .eq("id", id) as any;
 
     if (error) {
       console.error("Error deleting witness post:", error);
@@ -127,7 +126,7 @@ export const updateWitnessStatus = async (
     const { error } = await supabase
       .from('witnesses')
       .update({ is_approved: isApproved })
-      .eq('id', id);
+      .eq('id', id) as any;
 
     if (error) {
       console.error("Error updating witness status:", error);
@@ -149,14 +148,14 @@ export const fetchAllWitnesses = async (): Promise<Witness[]> => {
     const { data, error } = await supabase
       .from("witnesses")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false }) as any;
     
     if (error) {
       console.error("Error fetching all witnesses:", error);
       throw new Error("Error fetching all witnesses");
     }
 
-    return data as unknown as Witness[];
+    return data as Witness[];
   } catch (error) {
     console.error("Error in fetchAllWitnesses:", error);
     throw new Error("Error fetching all witnesses");
