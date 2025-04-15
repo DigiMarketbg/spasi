@@ -14,6 +14,7 @@ interface DangerousAreasListProps {
   isAdmin?: boolean;
   onApprove?: (id: string) => Promise<void>;
   onDelete?: (id: string) => void;
+  processingApproval?: string | null;
 }
 
 const DangerousAreasList = ({ 
@@ -22,7 +23,8 @@ const DangerousAreasList = ({
   searchQuery, 
   isAdmin = false,
   onApprove, 
-  onDelete
+  onDelete,
+  processingApproval
 }: DangerousAreasListProps) => {
   const [filteredAreas, setFilteredAreas] = useState<DangerousArea[]>([]);
   const isMobile = useIsMobile();
@@ -151,8 +153,9 @@ const DangerousAreasList = ({
                       size="sm" 
                       onClick={() => onApprove(area.id)}
                       className="text-white bg-green-600 hover:bg-green-700"
+                      disabled={processingApproval === area.id}
                     >
-                      Одобри
+                      {processingApproval === area.id ? 'Одобряване...' : 'Одобри'}
                     </Button>
                   )}
                   
@@ -162,6 +165,7 @@ const DangerousAreasList = ({
                       size="sm"
                       onClick={() => onDelete(area.id)} 
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      disabled={processingApproval === area.id}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
