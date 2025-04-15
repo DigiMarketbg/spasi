@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bg">
   <head>
@@ -114,6 +115,7 @@
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     
     <script>
+      // Enhanced Service Worker Registration with update handling
       if ('serviceWorker' in navigator) {
         if (window.matchMedia('(display-mode: standalone)').matches) {
           const splashScreen = document.getElementById('splash-screen');
@@ -128,12 +130,51 @@
           }
         }
       
-        navigator.serviceWorker.register('/sw.js')
-          .then(function(reg) {
-            console.log('Service worker registered.', reg);
-          }).catch(function(error) {
-            console.log('Service worker registration failed:', error);
-          });
+        // Define a function to handle updates
+        const registerServiceWorker = async () => {
+          try {
+            // Register the service worker
+            const registration = await navigator.serviceWorker.register('/sw.js');
+            console.log('Service worker registered.', registration);
+            
+            // Check for updates immediately
+            registration.update();
+            
+            // Setup periodic checks for updates (every 30 minutes)
+            setInterval(() => {
+              registration.update();
+              console.log('Checking for service worker updates...');
+            }, 30 * 60 * 1000);
+            
+            // Listen for the updatefound event
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              
+              // Listen for state changes on the new worker
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('New content is available, refreshing...');
+                  // Force reload the page to get the new version
+                  window.location.reload(true);
+                }
+              });
+            });
+            
+            // Listen for messages from the service worker
+            navigator.serviceWorker.addEventListener('message', (event) => {
+              if (event.data && event.data.type === 'UPDATE_READY') {
+                console.log('New version is ready, refreshing...');
+                window.location.reload(true);
+              }
+            });
+            
+          } catch (error) {
+            console.error('Service worker registration failed:', error);
+          }
+        };
+        
+        // Run the service worker registration
+        registerServiceWorker();
       }
     </script>
     

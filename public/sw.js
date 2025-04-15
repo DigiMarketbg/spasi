@@ -1,6 +1,6 @@
 
 // Cache name - update version to force refresh
-const CACHE_NAME = 'spasi-bg-v5';
+const CACHE_NAME = 'spasi-bg-v6';
 
 // Files to cache
 const urlsToCache = [
@@ -24,21 +24,50 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Fetch event
+// Fetch event - add network-first strategy for HTML and API requests
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
+  // Check if this is a navigation request (HTML)
+  const isNavigationRequest = event.request.mode === 'navigate';
+  const isHTMLRequest = event.request.headers.get('accept')?.includes('text/html');
+  const isAPIRequest = event.request.url.includes('/api/') || 
+                      event.request.url.includes('supabase');
+  
+  // For HTML navigation or API requests, use network-first strategy
+  if (isNavigationRequest || isHTMLRequest || isAPIRequest) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Clone the response to store in cache
+          const responseToCache = response.clone();
+          
+          caches.open(CACHE_NAME)
+            .then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+            
           return response;
-        }
-        return fetch(event.request);
-      })
-  );
+        })
+        .catch(() => {
+          // If network fails, try to get from cache
+          return caches.match(event.request);
+        })
+    );
+  } else {
+    // For other requests, use cache-first strategy
+    event.respondWith(
+      caches.match(event.request)
+        .then((response) => {
+          // Cache hit - return response
+          if (response) {
+            return response;
+          }
+          return fetch(event.request);
+        })
+    );
+  }
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up old caches and claim clients
 self.addEventListener('activate', (event) => {
   // Take control of all clients immediately
   event.waitUntil(clients.claim());
@@ -55,6 +84,11 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
+  
+  // After activation, immediately update all clients
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => client.postMessage({ type: 'UPDATE_READY' }));
+  });
 });
 
 // Add event listener for push notifications
