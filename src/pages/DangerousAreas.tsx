@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, AlertTriangle, MapPin, Plus, Info } from 'lucide-react';
+import { Search, AlertTriangle, Plus, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DangerousAreasList from '@/components/dangerous-areas/DangerousAreasList';
 import { fetchDangerousAreas } from '@/lib/api/dangerous-areas';
+import { DangerousArea } from '@/types/dangerous-area';
 
 const DangerousAreas = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
-  const { data: dangerousAreas = [], isLoading } = useQuery({
+  const { data: dangerousAreas = [], isLoading } = useQuery<DangerousArea[]>({
     queryKey: ['dangerous-areas'],
     queryFn: fetchDangerousAreas
   });

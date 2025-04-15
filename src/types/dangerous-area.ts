@@ -20,7 +20,13 @@ export const dangerousAreaSchema = z.object({
 
 export type DangerousAreaFormValues = z.infer<typeof dangerousAreaSchema>;
 
-export interface DangerousArea extends DangerousAreaFormValues {
+export interface DangerousArea {
   id: string;
   created_at: string;
+  location: string;
+  region?: string | null;
+  description: string;
+  severity: "low" | "medium" | "high";
+  map_link?: string | null;
+  reported_by_name?: string | null;
 }

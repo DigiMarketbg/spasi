@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -34,7 +33,7 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
   };
 
   // Get severity color
-  const getSeverityColor = (severity: string) => {
+  const getSeverityColor = (severity: "low" | "medium" | "high") => {
     switch (severity) {
       case 'high':
         return 'bg-red-500 hover:bg-red-600';
@@ -48,7 +47,7 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
   };
 
   // Get severity text
-  const getSeverityText = (severity: string) => {
+  const getSeverityText = (severity: "low" | "medium" | "high") => {
     switch (severity) {
       case 'high':
         return 'Висока опасност';

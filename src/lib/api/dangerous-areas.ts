@@ -15,7 +15,7 @@ export const fetchDangerousAreas = async () => {
 export const addDangerousArea = async (areaData: Omit<DangerousArea, 'id' | 'created_at'>) => {
   const { data, error } = await supabase
     .from('dangerous_areas')
-    .insert([areaData])
+    .insert(areaData)
     .select()
     .single();
     
