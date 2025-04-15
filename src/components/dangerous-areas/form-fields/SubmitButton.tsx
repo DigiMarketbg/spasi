@@ -19,7 +19,7 @@ const SubmitButton = ({ isSubmitting }: SubmitButtonProps) => {
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           Изпращане...
         </>
-      ) : 'Изпрати сигнал'}
+      ) : 'Изпрати'}
     </Button>
   );
 };
