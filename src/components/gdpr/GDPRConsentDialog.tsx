@@ -68,8 +68,8 @@ const GDPRConsentDialog: React.FC<GDPRConsentDialogProps> = ({
         
         <Tabs defaultValue="privacy" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="privacy" className="text-xs sm:text-sm">Политика за поверителност</TabsTrigger>
-            <TabsTrigger value="cookies" className="text-xs sm:text-sm">Политика за бисквитки</TabsTrigger>
+            <TabsTrigger value="privacy" className="text-[10px] sm:text-xs">Политика поверителност</TabsTrigger>
+            <TabsTrigger value="cookies" className="text-[10px] sm:text-xs">Политика бисквитки</TabsTrigger>
           </TabsList>
           
           <TabsContent value="privacy" className="mt-2">
@@ -196,7 +196,7 @@ const GDPRConsentDialog: React.FC<GDPRConsentDialogProps> = ({
         
         <DialogFooter className="pt-4 flex flex-col sm:flex-row gap-2">
           <Button 
-            className="w-full px-2 py-1.5 text-xs sm:text-sm" 
+            className="w-full px-1.5 py-1 text-[10px] sm:text-xs" 
             onClick={onAccept} 
             variant="default"
           >
