@@ -35,22 +35,21 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
     try {
       console.log(`[handleApprove] Attempting to approve area with ID: ${id}`);
       setProcessingApproval(id);
-      setLoading(true);
       setError(null);
       
-      // Update the area approval status
-      await updateDangerousAreaApproval(id, true);
-      
-      console.log("[handleApprove] Area successfully approved, updating UI");
-      
-      // Immediately update the UI state
+      // Първо обновяваме локалното състояние за по-добро потребителско преживяване
       setAreas(prevAreas => 
         prevAreas.map(area => 
           area.id === id ? { ...area, is_approved: true } : area
         )
       );
       
-      // Refresh from the database to ensure consistency
+      // След това правим API заявката
+      await updateDangerousAreaApproval(id, true);
+      
+      console.log("[handleApprove] Area successfully approved, updating UI");
+      
+      // Обновяваме данните от сървъра за да сме сигурни в консистентността
       await fetchAreas();
       
       toast({
@@ -58,19 +57,25 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
         description: "Опасният участък беше одобрен",
       });
       
-      // Notify parent component of the change
+      // Известяваме родителския компонент за промяната
       if (onExternalRefresh) onExternalRefresh();
     } catch (error) {
       console.error("[handleApprove] Error approving area:", error);
       setError("Не успяхме да одобрим опасния участък");
+      
+      // Връщаме локалното състояние при грешка
+      await fetchAreas();
+      
       toast({
         title: "Грешка",
         description: "Не успяхме да одобрим опасния участък",
         variant: "destructive"
       });
+      
+      throw error;
     } finally {
-      setLoading(false);
       setProcessingApproval(null);
+      setLoading(false);
     }
   };
 
