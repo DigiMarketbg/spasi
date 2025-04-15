@@ -10,9 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { AlertTriangle, Loader2, AlertCircle } from 'lucide-react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Checkbox } from '@/components/ui/checkbox';
 
 export interface SignalData {
   id: string;
@@ -23,7 +22,6 @@ export interface SignalData {
   status: string;
   created_at: string;
   is_approved?: boolean;
-  is_urgent?: boolean;
   user_full_name?: string;
   user_email?: string;
 }
@@ -32,7 +30,6 @@ interface SignalsTableProps {
   signals: SignalData[];
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
-  onToggleUrgent?: (id: string, isUrgent: boolean) => void;
   processingId?: string | null;
   loading?: boolean;
 }
@@ -41,7 +38,6 @@ const SignalsTable: React.FC<SignalsTableProps> = ({
   signals,
   onApprove,
   onReject,
-  onToggleUrgent,
   processingId = null,
   loading = false
 }) => {
@@ -104,13 +100,12 @@ const SignalsTable: React.FC<SignalsTableProps> = ({
             <TableHead>Подал</TableHead>
             <TableHead>Дата</TableHead>
             <TableHead>Статус</TableHead>
-            <TableHead>Спешен</TableHead>
             <TableHead>Действия</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {signals.map((signal) => (
-            <TableRow key={signal.id} className={signal.is_urgent ? "bg-red-50 dark:bg-red-900/10" : ""}>
+            <TableRow key={signal.id}>
               <TableCell className="font-medium">{signal.title}</TableCell>
               <TableCell>{signal.category}</TableCell>
               <TableCell>{signal.city}</TableCell>
@@ -128,23 +123,6 @@ const SignalsTable: React.FC<SignalsTableProps> = ({
                   signal.status === 'approved' ? 'Одобрен' : 
                   'Отхвърлен'}
                 </Badge>
-              </TableCell>
-              <TableCell>
-                {signal.status === 'approved' && onToggleUrgent && (
-                  <div className="flex items-center">
-                    <Checkbox 
-                      id={`urgent-${signal.id}`} 
-                      checked={!!signal.is_urgent}
-                      onCheckedChange={(checked) => {
-                        onToggleUrgent(signal.id, checked === true);
-                      }}
-                      disabled={!!processingId}
-                    />
-                    <label htmlFor={`urgent-${signal.id}`} className="ml-2 text-sm font-medium">
-                      Спешен
-                    </label>
-                  </div>
-                )}
               </TableCell>
               <TableCell>
                 {signal.status === 'pending' && (

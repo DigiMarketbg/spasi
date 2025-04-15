@@ -24,8 +24,6 @@ export const fetchAllSignals = async (): Promise<Signal[]> => {
     const processedData = data.map(signal => {
       const processedSignal: Signal = {
         ...signal,
-        // Add the is_urgent property with a default of false if it doesn't exist
-        is_urgent: Boolean(signal.is_urgent || false),
         profiles: { full_name: null, email: null }
       };
       return processedSignal;
@@ -60,8 +58,6 @@ export const getSignalById = async (id: string): Promise<Signal> => {
     // Handle profiles property safely with type checking
     const processedSignal: Signal = {
       ...data,
-      // Add the is_urgent property with a default of false if it doesn't exist
-      is_urgent: Boolean(data.is_urgent || false),
       // Ensure profiles is always a valid object with our expected structure
       profiles: { full_name: null, email: null }
     };
@@ -109,58 +105,22 @@ export const deleteSignal = async (id: string): Promise<void> => {
 // Update a signal's status
 export const updateSignalStatus = async (
   id: string, 
-  newStatus: 'approved' | 'rejected',
-  isUrgent?: boolean
+  newStatus: 'approved' | 'rejected'
 ): Promise<void> => {
-  console.log(`Updating signal ${id} to status ${newStatus} ${isUrgent !== undefined ? `and isUrgent: ${isUrgent}` : ''}`);
+  console.log(`Updating signal ${id} to status ${newStatus}`);
   
-  try {
-    // Create the update object with the status and is_approved fields
-    const updateObj: Record<string, any> = { 
+  const { error } = await supabase
+    .from('signals')
+    .update({ 
       status: newStatus, 
       is_approved: newStatus === 'approved' 
-    };
-    
-    // Only update is_urgent if it's provided
-    if (isUrgent !== undefined) {
-      updateObj.is_urgent = isUrgent;
-    }
-    
-    const { error } = await supabase
-      .from('signals')
-      .update(updateObj)
-      .eq('id', id);
+    })
+    .eq('id', id);
 
-    if (error) {
-      console.error("Error updating signal status:", error);
-      throw error;
-    }
-    
-    console.log("Signal status updated successfully");
-  } catch (error) {
-    console.error("Error in updateSignalStatus:", error);
+  if (error) {
+    console.error("Error updating signal status:", error);
     throw error;
   }
-};
-
-// New function to toggle the urgent status of a signal
-export const toggleSignalUrgent = async (id: string, isUrgent: boolean): Promise<void> => {
-  console.log(`Toggling urgent status for signal ${id} to ${isUrgent}`);
   
-  try {
-    const { error } = await supabase
-      .from('signals')
-      .update({ is_urgent: isUrgent })
-      .eq('id', id);
-
-    if (error) {
-      console.error("Error updating signal urgent status:", error);
-      throw error;
-    }
-    
-    console.log("Signal urgent status updated successfully");
-  } catch (error) {
-    console.error("Error in toggleSignalUrgent:", error);
-    throw error;
-  }
+  console.log("Signal status updated successfully");
 };
