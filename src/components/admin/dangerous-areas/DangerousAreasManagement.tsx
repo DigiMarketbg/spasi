@@ -52,14 +52,15 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
 
   const pendingCount = areas.filter(area => !area.is_approved).length;
 
-  // Оправена функция за одобрение - просто подава ID-то към handleApprove
   const handleApproveArea = async (id: string): Promise<void> => {
     try {
-      console.log(`Одобряване на участък с ID: ${id}`);
+      console.log(`Approving area with ID: ${id}`);
       await handleApprove(id);
+      // Refresh the list after approval
+      await fetchAreas();
     } catch (error) {
-      console.error("Грешка при одобряване на участък:", error);
-      throw error;
+      console.error("Error approving area:", error);
+      setError("Не успяхме да одобрим опасния участък");
     }
   };
 

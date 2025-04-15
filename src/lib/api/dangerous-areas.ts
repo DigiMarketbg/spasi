@@ -58,30 +58,25 @@ export const addDangerousArea = async (areaData: Omit<DangerousArea, 'id' | 'cre
 export const updateDangerousAreaApproval = async (id: string, isApproved: boolean): Promise<DangerousArea> => {
   console.log(`[updateDangerousAreaApproval] Starting approval update for ID ${id}, setting is_approved to ${isApproved}`);
   
-  try {
-    // Опростена заявка за обновяване
-    const { data, error } = await supabase
-      .from('dangerous_areas')
-      .update({ is_approved: isApproved })
-      .eq('id', id)
-      .select('*')
-      .maybeSingle();
-    
-    if (error) {
-      console.error("[updateDangerousAreaApproval] Error updating area:", error);
-      throw error;
-    }
-    
-    if (!data) {
-      throw new Error(`No data returned after update for ID ${id}`);
-    }
-    
-    console.log("[updateDangerousAreaApproval] Update successful, returned data:", data);
-    return data as DangerousArea;
-  } catch (error) {
-    console.error("[updateDangerousAreaApproval] Error in function:", error);
+  // Simplified direct approach - just update the is_approved field
+  const { data, error } = await supabase
+    .from('dangerous_areas')
+    .update({ is_approved: isApproved })
+    .eq('id', id)
+    .select()
+    .single();
+  
+  if (error) {
+    console.error("[updateDangerousAreaApproval] Error updating area:", error);
     throw error;
   }
+  
+  if (!data) {
+    throw new Error(`No data returned after update for ID ${id}`);
+  }
+  
+  console.log("[updateDangerousAreaApproval] Update successful, returned data:", data);
+  return data as DangerousArea;
 };
 
 export const deleteDangerousArea = async (id: string): Promise<void> => {

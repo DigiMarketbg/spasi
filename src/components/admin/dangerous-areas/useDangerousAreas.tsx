@@ -33,38 +33,33 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
 
   const handleApprove = async (id: string) => {
     try {
-      console.log(`[handleApprove] Attempting to approve area with ID: ${id}`);
+      console.log(`[handleApprove] Starting to approve area with ID: ${id}`);
       setProcessingApproval(id);
       setError(null);
       
-      // Първо обновяваме локалното състояние за по-добро потребителско преживяване
+      // Call the API to update the approval status
+      const updatedArea = await updateDangerousAreaApproval(id, true);
+      console.log("[handleApprove] Area successfully approved:", updatedArea);
+      
+      // Update the local state with the new data
       setAreas(prevAreas => 
         prevAreas.map(area => 
-          area.id === id ? { ...area, is_approved: true } : area
+          area.id === id ? updatedArea : area
         )
       );
-      
-      // След това правим API заявката
-      await updateDangerousAreaApproval(id, true);
-      
-      console.log("[handleApprove] Area successfully approved, updating UI");
-      
-      // Обновяваме данните от сървъра за да сме сигурни в консистентността
-      await fetchAreas();
       
       toast({
         title: "Успешно",
         description: "Опасният участък беше одобрен",
       });
       
-      // Известяваме родителския компонент за промяната
+      // Notify parent component
       if (onExternalRefresh) onExternalRefresh();
+      
+      return updatedArea;
     } catch (error) {
       console.error("[handleApprove] Error approving area:", error);
       setError("Не успяхме да одобрим опасния участък");
-      
-      // Връщаме локалното състояние при грешка
-      await fetchAreas();
       
       toast({
         title: "Грешка",
@@ -75,7 +70,6 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
       throw error;
     } finally {
       setProcessingApproval(null);
-      setLoading(false);
     }
   };
 
@@ -92,9 +86,6 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
         title: "Успешно",
         description: "Опасният участък беше изтрит",
       });
-      
-      // Refresh data to ensure consistency
-      await fetchAreas();
       
       if (onExternalRefresh) onExternalRefresh();
     } catch (error) {
