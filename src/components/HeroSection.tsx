@@ -299,8 +299,7 @@ const HeroSection = () => {
               className={featureButtonStyle}
               onClick={navigateToDangerousAreas}
             >
-              <Award className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-              <span className="text-[0.6rem] truncate w-[60px] text-center">Опасни участъци</span>
+              <span className="text-[0.6rem] w-[60px] text-center">Опасни участъци и пътища</span>
             </Button>
             
             {/* Button 4: Placeholder */}
