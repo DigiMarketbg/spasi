@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, MapPin, Calendar, User, ExternalLink } from 'lucide-react';
+import { AlertTriangle, MapPin, Calendar, User, ExternalLink, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DangerousArea } from '@/types/dangerous-area';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -13,6 +13,7 @@ interface DangerousAreasListProps {
   searchQuery: string;
   isAdmin?: boolean;
   onApprove?: (id: string) => Promise<void>;
+  onDelete?: (id: string) => void;
 }
 
 const DangerousAreasList = ({ 
@@ -20,7 +21,8 @@ const DangerousAreasList = ({
   isLoading, 
   searchQuery, 
   isAdmin = false,
-  onApprove 
+  onApprove, 
+  onDelete
 }: DangerousAreasListProps) => {
   const [filteredAreas, setFilteredAreas] = useState<DangerousArea[]>([]);
   const isMobile = useIsMobile();
@@ -151,6 +153,17 @@ const DangerousAreasList = ({
                       className="text-white bg-green-600 hover:bg-green-700"
                     >
                       Одобри
+                    </Button>
+                  )}
+                  
+                  {isAdmin && onDelete && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => onDelete(area.id)} 
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   )}
                   

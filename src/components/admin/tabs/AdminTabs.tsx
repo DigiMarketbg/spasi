@@ -6,6 +6,7 @@ import SignalsManagement from '@/components/admin/SignalsManagement';
 import UsersManagement from '@/components/admin/UsersManagement';
 import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagement';
 import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
+import DangerousAreasManagement from '@/components/admin/DangerousAreasManagement';
 
 interface AdminTabsProps {
   signals: any[];
@@ -61,6 +62,7 @@ const AdminTabs = ({
             </span>
           )}
         </TabsTrigger>
+        <TabsTrigger value="dangerous-areas">Опасни участъци</TabsTrigger>
       </TabsList>
       
       <TabsContent value="signals" className="mt-6">
@@ -131,6 +133,20 @@ const AdminTabs = ({
               loadingMessages={loadingContactMessages} 
               onRefresh={onRefreshContactMessages} 
             />
+          </CardContent>
+        </Card>
+      </TabsContent>
+      
+      <TabsContent value="dangerous-areas" className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Управление на опасни участъци</CardTitle>
+            <CardDescription>
+              Преглед и одобрение на подадени опасни участъци.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DangerousAreasManagement />
           </CardContent>
         </Card>
       </TabsContent>

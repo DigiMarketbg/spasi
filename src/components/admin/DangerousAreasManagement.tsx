@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { fetchAllDangerousAreas, updateDangerousAreaApproval } from '@/lib/api/dangerous-areas';
+import { fetchAllDangerousAreas, updateDangerousAreaApproval, deleteDangerousArea } from '@/lib/api/dangerous-areas';
 import { DangerousArea } from '@/types/dangerous-area';
 import { useToast } from '@/hooks/use-toast';
 import DangerousAreasList from '@/components/dangerous-areas/DangerousAreasList';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 interface DangerousAreasManagementProps {
   onRefresh?: () => void;
@@ -15,6 +16,8 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
   const [areas, setAreas] = useState<DangerousArea[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPending, setShowPending] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [areaToDelete, setAreaToDelete] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchAreas = async () => {
@@ -55,6 +58,34 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
         variant: "destructive"
       });
     }
+  };
+
+  const handleDelete = async () => {
+    if (!areaToDelete) return;
+    
+    try {
+      await deleteDangerousArea(areaToDelete);
+      toast({
+        title: "Успешно",
+        description: "Опасният участък беше изтрит",
+      });
+      fetchAreas();
+      if (onRefresh) onRefresh();
+      setAreaToDelete(null);
+      setDeleteDialogOpen(false);
+    } catch (error) {
+      console.error("Error deleting area:", error);
+      toast({
+        title: "Грешка",
+        description: "Не успяхме да изтрием опасния участък",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const confirmDelete = (id: string) => {
+    setAreaToDelete(id);
+    setDeleteDialogOpen(true);
   };
 
   const filteredAreas = showPending
@@ -106,7 +137,23 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
         searchQuery=""
         isAdmin={true}
         onApprove={handleApprove}
+        onDelete={confirmDelete}
       />
+      
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Потвърдете изтриването</DialogTitle>
+            <DialogDescription>
+              Сигурни ли сте, че искате да изтриете този опасен участък? Това действие не може да бъде отменено.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>Отказ</Button>
+            <Button variant="destructive" onClick={handleDelete}>Изтрий</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
@@ -8,10 +8,12 @@ import AdminDashboardGrid from '@/components/admin/dashboard/AdminDashboardGrid'
 import AdminTabs from '@/components/admin/tabs/AdminTabs';
 import { Button } from '@/components/ui/button';
 import { useAdminData } from '@/components/admin/hooks/useAdminData';
+import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
 
 const Admin = () => {
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const [pendingDangerousAreas, setPendingDangerousAreas] = useState(0);
 
   // Use the custom hook to manage all admin data
   const {
@@ -30,6 +32,23 @@ const Admin = () => {
     unreadCount,
     pendingRequestsCount
   } = useAdminData(isAdmin, user);
+
+  // Fetch pending dangerous areas count
+  useEffect(() => {
+    if (user && isAdmin) {
+      const getPendingDangerousAreas = async () => {
+        try {
+          const areas = await fetchAllDangerousAreas();
+          const pendingCount = areas.filter(area => !area.is_approved).length;
+          setPendingDangerousAreas(pendingCount);
+        } catch (error) {
+          console.error("Error fetching dangerous areas:", error);
+        }
+      };
+      
+      getPendingDangerousAreas();
+    }
+  }, [user, isAdmin]);
 
   // If not logged in or not admin
   if (!user || !isAdmin) {
@@ -59,7 +78,8 @@ const Admin = () => {
           {/* Dashboard Cards */}
           <AdminDashboardGrid 
             unreadMessagesCount={unreadCount} 
-            pendingRequestsCount={pendingRequestsCount} 
+            pendingRequestsCount={pendingRequestsCount}
+            pendingDangerousAreasCount={pendingDangerousAreas}
           />
           
           {/* Admin Tabs */}
