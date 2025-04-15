@@ -1,6 +1,6 @@
 
 // Cache name - update version to force refresh
-const CACHE_NAME = 'spasi-bg-v9';
+const CACHE_NAME = 'spasi-bg-v8';
 
 // Files to cache
 const urlsToCache = [
@@ -12,12 +12,6 @@ const urlsToCache = [
 ];
 
 console.log('🟢 Service Worker зареден, версия:', CACHE_NAME);
-
-// Important: Load OneSignal's service worker BEFORE any other code
-// This ensures the OneSignal SDK can properly handle push messages
-// и се изпълнява в контекста на нашия service worker
-console.log('🟢 Импортиране на OneSignal Service Worker');
-self.importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
 // Install event
 self.addEventListener('install', (event) => {
@@ -45,7 +39,6 @@ self.addEventListener('fetch', (event) => {
   
   // За OneSignal заявки, позволяваме директен достъп до мрежата
   if (event.request.url.includes('onesignal')) {
-    console.log('🔔 OneSignal заявка, пропускаме към мрежата:', event.request.url);
     return;
   }
   
@@ -156,3 +149,9 @@ self.addEventListener('notificationclick', function(event) {
     clients.openWindow(event.notification.data.url || '/')
   );
 });
+
+// Important: Load OneSignal's service worker BEFORE any other code
+// This ensures the OneSignal SDK can properly handle push messages
+// и се изпълнява в контекста на нашия service worker
+console.log('🟢 Импортиране на OneSignal Service Worker');
+self.importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, LogOut, Settings } from 'lucide-react'; // Add Settings icon
@@ -37,7 +36,9 @@ const MobileMenu = ({ displayName, triggerButton, handleSignOut, isLoggedIn, isA
           </div>
           
           <nav className="flex flex-col gap-4 py-8">
-            <NavLinks />
+            <NavLinks 
+              className="text-lg text-foreground hover:text-primary transition-colors py-2" 
+            />
           </nav>
           
           <div className="mt-auto flex flex-col gap-4 py-4">
