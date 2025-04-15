@@ -88,7 +88,6 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
           <div className={`h-2 w-full ${getSeverityColor(area.severity)}`} />
           <CardContent className="p-6">
             <div className="flex flex-col gap-4">
-              {/* Severity Badge - now placed at top, before the location */}
               <Badge 
                 variant="outline" 
                 className={`self-start ${getSeverityColor(area.severity)} ${area.severity === 'low' ? 'text-black' : 'text-white'} text-xs font-bold rounded-full shadow-sm px-3 py-1 mb-1`}
@@ -114,7 +113,7 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
                 <div className="flex items-center gap-4">
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-1" />
-                    <span>{formatDate(area.created_at)}</span>
+                    <span className="text-xs">{formatDate(area.created_at)} г.</span>
                   </div>
                   
                   {area.reported_by_name && (
