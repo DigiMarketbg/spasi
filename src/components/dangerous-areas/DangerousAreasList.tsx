@@ -32,15 +32,14 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
     return new Date(dateString).toLocaleDateString('bg-BG');
   };
 
-  // Updated severity color and text methods
   const getSeverityColor = (severity: "low" | "medium" | "high") => {
     switch (severity) {
       case 'high':
-        return 'bg-red-500 text-white';
+        return 'bg-red-600 text-white'; // Increased color intensity
       case 'medium':
-        return 'bg-orange-500 text-white'; // Increased contrast for better visibility
+        return 'bg-orange-500 text-white font-bold'; // Bold text for better readability
       case 'low':
-        return 'bg-yellow-500 text-black'; // Black text for low severity for readability
+        return 'bg-yellow-500 text-black font-semibold'; // Semibold for low severity
       default:
         return 'bg-gray-500 text-white';
     }
@@ -98,7 +97,7 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
                 
                 <Badge 
                   variant="outline" 
-                  className={`px-3 py-1 ${getSeverityColor(area.severity)} font-bold text-sm rounded-full`}
+                  className={`px-4 py-1.5 ${getSeverityColor(area.severity)} text-sm rounded-full shadow-sm`}
                 >
                   {getSeverityText(area.severity)}
                 </Badge>
