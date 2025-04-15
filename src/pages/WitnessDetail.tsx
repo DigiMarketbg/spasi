@@ -13,7 +13,8 @@ import {
   Clock, 
   ChevronLeft, 
   AlertTriangle,
-  Loader2 
+  Loader2,
+  Share2
 } from 'lucide-react';
 import { getWitnessById } from '@/lib/api/witnesses';
 import { formatDistanceToNow } from 'date-fns';
@@ -73,6 +74,19 @@ const WitnessDetail = () => {
       window.location.href = `tel:${witness.phone}`;
     } else {
       toast.error("Няма наличен телефонен номер");
+    }
+  };
+  
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: witness.title,
+        text: witness.description.substring(0, 100) + '...',
+        url: window.location.href
+      }).catch(error => console.error('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Линкът е копиран в клипборда");
     }
   };
   
@@ -154,6 +168,16 @@ const WitnessDetail = () => {
                   <Phone className="h-4 w-4 mr-2" />
                   Обади се
                 </Button>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full sm:w-auto"
+                  onClick={handleShare}
+                >
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Сподели
+                </Button>
+                
                 <Button 
                   variant="outline" 
                   className="w-full sm:w-auto"

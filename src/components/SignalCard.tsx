@@ -1,11 +1,13 @@
+
 import React from 'react';
-import { Eye, MapPin, Calendar, Phone, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle, CheckCircle } from 'lucide-react';
+import { Eye, MapPin, Calendar, Phone, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle, CheckCircle, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { cardStyles, categoryTranslations } from '@/lib/card-styles';
 import { useTheme } from '@/components/ThemeProvider';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useToast } from '@/hooks/use-toast';
 
 export interface SignalProps {
   id: string;
@@ -50,10 +52,32 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isMobile = useIsMobile();
+  const { toast } = useToast();
 
   const handleViewSignal = (e: React.MouseEvent) => {
     e.preventDefault();
     navigate(`/signal/${signal.id}`);
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    const shareUrl = `${window.location.origin}/signal/${signal.id}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: signal.title,
+        text: signal.description.substring(0, 100) + '...',
+        url: shareUrl
+      }).catch(error => console.error('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Линкът е копиран",
+        description: "Линкът към сигнала е копиран в клипборда"
+      });
+    }
   };
 
   // Translate category or use original if not found
@@ -125,15 +149,27 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
         
         <p className={cardStyles.description}>{signal.description}</p>
         
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className={cardStyles.button}
-          onClick={handleViewSignal}
-        >
-          <Eye className="h-4 w-4 group-hover:text-primary transition-colors" />
-          <span>Виж повече</span>
-        </Button>
+        <div className="flex items-center gap-2 mt-auto">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className={cardStyles.button}
+            onClick={handleViewSignal}
+          >
+            <Eye className="h-4 w-4 group-hover:text-primary transition-colors" />
+            <span>Виж повече</span>
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground ml-auto"
+            onClick={handleShare}
+          >
+            <Share2 className="h-4 w-4" />
+            <span className="sr-only">Сподели</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -21,8 +21,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-// Import the Trash2 icon from lucide-react
-import { Trash2 } from 'lucide-react';
+// Import the icons from lucide-react
+import { Trash2, Share2 } from 'lucide-react';
 
 // Define the SignalDetail component
 const SignalDetail = () => {
@@ -68,6 +68,23 @@ const SignalDetail = () => {
     }
     setIsDeleteDialogOpen(false);
   };
+  
+  // Function to handle share
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: signal?.title || "Сигнал",
+        text: signal?.description?.substring(0, 100) + "..." || "Виж този сигнал",
+        url: window.location.href
+      }).catch(error => console.error('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Линкът е копиран",
+        description: "Линкът към сигнала е копиран в клипборда"
+      });
+    }
+  };
 
   // Render loading state
   if (isLoading) {
@@ -106,9 +123,17 @@ const SignalDetail = () => {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button variant="outline" onClick={() => navigate('/admin')}>
-            Обратно
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate('/admin')}>
+              Обратно
+            </Button>
+            
+            <Button variant="outline" onClick={handleShare}>
+              <Share2 className="h-4 w-4 mr-2" />
+              Сподели
+            </Button>
+          </div>
+          
           {user?.role === 'admin' && (
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
               <AlertDialogTrigger asChild>

@@ -1,10 +1,11 @@
 
 import React from 'react';
-import { ExternalLink, Phone, Calendar, MapPin, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle, CheckCircle } from 'lucide-react';
+import { ExternalLink, Phone, Calendar, MapPin, Leaf, Building, AlertTriangle, HelpingHand, HelpCircle, CheckCircle, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { categoryTranslations, detailCardStyles } from '@/lib/card-styles';
 import { useTheme } from '@/components/ThemeProvider';
+import { useToast } from '@/hooks/use-toast';
 
 interface SignalContentProps {
   signal: {
@@ -50,6 +51,24 @@ const SignalContent: React.FC<SignalContentProps> = ({
   // Translate category
   const translatedCategory = categoryTranslations[signal.category] || signal.category;
   const { theme } = useTheme();
+  const { toast } = useToast();
+  
+  // Handle sharing
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: signal.title,
+        text: signal.description?.substring(0, 100) + '...',
+        url: window.location.href
+      }).catch(error => console.error('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Линкът е копиран",
+        description: "Линкът към сигнала е копиран в клипборда"
+      });
+    }
+  };
   
   // Add theme-specific styling
   const themeStyles = theme === 'dark'
@@ -107,12 +126,23 @@ const SignalContent: React.FC<SignalContentProps> = ({
           <p className={detailCardStyles.description}>{signal.description}</p>
         </div>
         
-        {signal.link && <div className="mt-6">
+        <div className="mt-6 flex flex-wrap gap-2">
+          {signal.link && (
             <Button variant="outline" onClick={() => window.open(signal.link, '_blank')} className={detailCardStyles.button}>
               <ExternalLink className="h-4 w-4" />
               <span>Виж поста във Facebook</span>
             </Button>
-          </div>}
+          )}
+          
+          <Button 
+            variant="outline" 
+            onClick={handleShare} 
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Share2 className="h-4 w-4 mr-2" />
+            <span>Сподели</span>
+          </Button>
+        </div>
       </div>
       
       {signal.image_url ? <div className="order-first md:order-last mb-6 md:mb-0">

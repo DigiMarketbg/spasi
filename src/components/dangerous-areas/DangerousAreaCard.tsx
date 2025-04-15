@@ -2,10 +2,11 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Calendar, User, ExternalLink, Trash2 } from 'lucide-react';
+import { MapPin, Calendar, User, ExternalLink, Trash2, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DangerousArea } from '@/types/dangerous-area';
 import SeverityBadge from './SeverityBadge';
+import { useToast } from '@/hooks/use-toast';
 
 interface DangerousAreaCardProps {
   area: DangerousArea;
@@ -22,6 +23,8 @@ const DangerousAreaCard = ({
   onDelete,
   processingApproval 
 }: DangerousAreaCardProps) => {
+  const { toast } = useToast();
+  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('bg-BG');
   };
@@ -36,6 +39,22 @@ const DangerousAreaCard = ({
         return 'bg-yellow-500';
       default:
         return 'bg-gray-500';
+    }
+  };
+  
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `Опасен участък: ${area.location}`,
+        text: area.description.substring(0, 100) + '...',
+        url: window.location.href
+      }).catch(error => console.error('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Линкът е копиран",
+        description: "Линкът към опасния участък е копиран в клипборда"
+      });
     }
   };
 
@@ -108,6 +127,16 @@ const DangerousAreaCard = ({
                   <Trash2 className="h-4 w-4" />
                 </Button>
               )}
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleShare}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <Share2 className="h-4 w-4 mr-1" />
+                <span className="sr-only md:not-sr-only md:inline">Сподели</span>
+              </Button>
               
               {area.map_link && (
                 <Button 

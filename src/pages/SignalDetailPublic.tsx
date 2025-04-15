@@ -29,8 +29,13 @@ const SignalDetailPublic = () => {
   useEffect(() => {
     // Show share button with animation after a delay on mobile
     if (isMobile && signal) {
-      const timer = setTimeout(() => setShareVisible(true), 1000);
+      const timer = setTimeout(() => setShareVisible(true), 500);
       return () => clearTimeout(timer);
+    }
+    
+    // Always show share button on desktop
+    if (!isMobile && signal) {
+      setShareVisible(true);
     }
   }, [isMobile, signal]);
   
@@ -122,7 +127,20 @@ const SignalDetailPublic = () => {
             {loading ? (
               <Skeleton className="h-16 w-full" />
             ) : signal ? (
-              <SignalHeader signal={signal} formatDate={formatDate} />
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <SignalHeader signal={signal} formatDate={formatDate} />
+                
+                {!isMobile && shareVisible && (
+                  <Button 
+                    onClick={handleShare}
+                    className="w-full md:w-auto bg-spasi-red hover:bg-spasi-red/90"
+                    size="sm"
+                  >
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Сподели
+                  </Button>
+                )}
+              </div>
             ) : null}
           </CardHeader>
           

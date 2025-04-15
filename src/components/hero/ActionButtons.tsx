@@ -22,21 +22,21 @@ const ActionButtons = () => {
     <div className="flex justify-center gap-2 mt-4 animate-fade-in space-x-2" style={{animationDelay: '0.3s'}}>
       <Button 
         onClick={navigateToSubmitSignal}
-        className="bg-spasi-red hover:bg-spasi-red/90 px-3 py-2 h-10 md:h-11"
+        className="bg-spasi-red hover:bg-spasi-red/90 px-2.5 py-1.5 h-8 md:h-10 text-xs md:text-sm rounded-full"
         size="sm"
       >
-        <PlusCircle className="mr-1 h-4 w-4" />
-        <span className="text-xs md:text-sm">Подай сигнал</span>
+        <PlusCircle className="mr-1 h-3.5 w-3.5 md:h-4 md:w-4" />
+        <span>Подай сигнал</span>
       </Button>
       
       <Button 
         onClick={navigateToSignals}
         variant="outline"
-        className="px-3 py-2 h-10 md:h-11 border-muted-foreground/50"
+        className="px-2.5 py-1.5 h-8 md:h-10 text-xs md:text-sm border-muted-foreground/50 rounded-full"
         size="sm"
       >
-        <AlertCircle className="mr-1 h-4 w-4" />
-        <span className="text-xs md:text-sm">Виж сигналите</span>
+        <AlertCircle className="mr-1 h-3.5 w-3.5 md:h-4 md:w-4" />
+        <span>Виж сигналите</span>
       </Button>
     </div>
   );

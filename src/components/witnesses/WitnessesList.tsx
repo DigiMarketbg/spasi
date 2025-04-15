@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Calendar, MapPin, Phone, User, Eye } from 'lucide-react';
+import { Calendar, MapPin, Phone, User, Eye, Share2 } from 'lucide-react';
 import { Witness } from '@/types/witness';
 import WitnessesEmpty from './WitnessesEmpty';
 import { formatDistanceToNow } from 'date-fns';
 import { bg } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 interface WitnessesListProps {
   witnesses: Witness[];
@@ -50,6 +51,24 @@ const WitnessesList: React.FC<WitnessesListProps> = ({
   const calculateExpiresIn = (expiresAt: string) => {
     const expiryDate = new Date(expiresAt);
     return formatDistanceToNow(expiryDate, { addSuffix: true, locale: bg });
+  };
+  
+  const handleShare = (witness: Witness, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const shareUrl = `${window.location.origin}/witness/${witness.id}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: witness.title,
+        text: witness.description.substring(0, 100) + '...',
+        url: shareUrl
+      }).catch(error => console.error('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Линкът е копиран в клипборда");
+    }
   };
 
   return (
@@ -93,14 +112,24 @@ const WitnessesList: React.FC<WitnessesListProps> = ({
             </div>
           </CardContent>
           
-          <CardFooter className="pt-0">
+          <CardFooter className="pt-0 flex gap-2">
             <Button 
               variant="outline" 
-              className="w-full"
+              className="flex-1"
               onClick={() => navigate(`/witness/${witness.id}`)}
             >
               <Eye className="w-4 h-4 mr-2" />
               Виж детайли
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="icon"
+              className="flex-none text-muted-foreground hover:text-foreground"
+              onClick={(e) => handleShare(witness, e)}
+            >
+              <Share2 className="h-4 w-4" />
+              <span className="sr-only">Сподели</span>
             </Button>
           </CardFooter>
         </Card>
