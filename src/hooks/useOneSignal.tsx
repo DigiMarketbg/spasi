@@ -211,7 +211,7 @@ export const useOneSignal = () => {
           // Тестово съобщение за потвърждение на абонамента
           console.log("📣 Изпращаме тестово съобщение за потвърждение...");
           try {
-            if (window.OneSignal.Notifications && typeof window.OneSignal.Notifications.sendSelfNotification === 'function') {
+            if (window.OneSignal.Notifications) {
               await window.OneSignal.Notifications.sendSelfNotification(
                 "Тестово известие", // Заглавие
                 "Ако виждате това, значи системата за известия работи!", // Текст
@@ -221,7 +221,17 @@ export const useOneSignal = () => {
               );
               console.log("✅ Тестовото съобщение е изпратено успешно!");
             } else {
-              console.warn("⚠️ Методът sendSelfNotification не е наличен");
+              console.warn("⚠️ Функцията за тестови известия не е налична в тази версия на OneSignal");
+              // Използваме Service Worker API директно за тестови съобщения
+              if ('serviceWorker' in navigator && 'PushManager' in window) {
+                const registration = await navigator.serviceWorker.ready;
+                registration.showNotification("Тестово известие", {
+                  body: "Ако виждате това, значи системата за известия работи!",
+                  icon: "/icon-192.png",
+                  data: { url: window.location.origin + "?test=true", test: true }
+                });
+                console.log("✅ Тестовото съобщение е изпратено чрез Service Worker API!");
+              }
             }
           } catch (e) {
             console.error("❌ Грешка при изпращане на тестово съобщение:", e);
@@ -302,8 +312,8 @@ export const useOneSignal = () => {
       
       console.log("📣 Опитваме се да изпратим тестово съобщение...");
       
-      // Check if the method is available
-      if (window.OneSignal.Notifications && typeof window.OneSignal.Notifications.sendSelfNotification === 'function') {
+      // Check if the Notifications API is available
+      if (window.OneSignal.Notifications) {
         await window.OneSignal.Notifications.sendSelfNotification(
           "Тестово известие от Спаси.БГ", 
           "Ако виждате това, значи системата за известия работи правилно!",
@@ -320,8 +330,27 @@ export const useOneSignal = () => {
           variant: "default"
         });
       } else {
-        console.warn("⚠️ Методът sendSelfNotification не е наличен");
-        throw new Error("Методът за изпращане на тестови съобщения не е наличен");
+        console.warn("⚠️ OneSignal Notifications API не е наличен");
+        
+        // Fallback to using Service Worker API directly
+        if ('serviceWorker' in navigator && 'PushManager' in window) {
+          const registration = await navigator.serviceWorker.ready;
+          await registration.showNotification("Тестово известие от Спаси.БГ", {
+            body: "Ако виждате това, значи системата за известия работи правилно!",
+            icon: "/icon-192.png",
+            data: { url: window.location.origin, test: true }
+          });
+          
+          console.log("✅ Тестовото съобщение е изпратено чрез Service Worker API!");
+          
+          toast({
+            title: "Изпратено тестово известие",
+            description: "Проверете дали сте получили известието",
+            variant: "default"
+          });
+        } else {
+          throw new Error("Нито OneSignal, нито Service Worker API са налични за изпращане на известия");
+        }
       }
     } catch (error) {
       console.error("❌ Грешка при изпращане на тестово съобщение:", error);
@@ -340,3 +369,4 @@ export const useOneSignal = () => {
     sendTestNotification
   };
 };
+

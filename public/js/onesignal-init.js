@@ -60,21 +60,24 @@ window.addEventListener('load', function() {
       
       console.log("✅ OneSignal initialized with version:", OneSignal.getVersion && OneSignal.getVersion());
       
-      // Add support for sending test notifications
-      if (OneSignal.Notifications) {
-        console.log("📣 OneSignal Notifications API available");
-        
-        // Try to register the sendSelfNotification method if it doesn't exist
-        if (!OneSignal.Notifications.sendSelfNotification) {
-          console.log("⚠️ Adding sendSelfNotification method to OneSignal");
-          OneSignal.Notifications.sendSelfNotification = async (title, message, url, icon, data) => {
+      // Add Notifications API if not available
+      if (!OneSignal.Notifications) {
+        console.log("⚠️ Adding Notifications API to OneSignal");
+        OneSignal.Notifications = {
+          permission: false,
+          
+          sendSelfNotification: async (title, message, url, icon, data) => {
             try {
               console.log("📣 Sending self notification:", { title, message });
-              // Only works if the user granted permission
-              if (await OneSignal.Notifications.permission) {
-                if (Notification && "ServiceWorkerRegistration" in window) {
+              
+              // Check if user granted notification permission
+              const state = await OneSignal.User.PushSubscription.optedIn;
+              OneSignal.Notifications.permission = state;
+              
+              if (state) {
+                if ('serviceWorker' in navigator && 'PushManager' in window) {
                   const sw = await navigator.serviceWorker.ready;
-                  sw.showNotification(title, {
+                  await sw.showNotification(title, {
                     body: message,
                     icon: icon,
                     data: { url, ...data }
@@ -88,8 +91,33 @@ window.addEventListener('load', function() {
               console.error("❌ Error sending self notification:", e);
             }
             return false;
-          };
-        }
+          },
+          
+          setDefaultUrl: (url) => {
+            console.log("📝 Setting default notification URL:", url);
+          },
+          
+          setDefaultTitle: (title) => {
+            console.log("📝 Setting default notification title:", title);
+          },
+          
+          isPushSupported: () => {
+            return 'PushManager' in window;
+          },
+          
+          requestPermission: async () => {
+            try {
+              if (Notification.permission !== "granted") {
+                const permission = await Notification.requestPermission();
+                return permission === "granted";
+              }
+              return true;
+            } catch (e) {
+              console.error("❌ Error requesting notification permission:", e);
+              return false;
+            }
+          }
+        };
       }
       
       // Verify initialization and app data
@@ -98,7 +126,8 @@ window.addEventListener('load', function() {
         initialized: OneSignal.initialized,
         serviceWorkerState: 'serviceWorker' in navigator ? 'active' : 'not active',
         userAgent: navigator.userAgent,
-        pushSupported: await OneSignal.isPushNotificationsSupported()
+        pushSupported: await OneSignal.isPushNotificationsSupported(),
+        notificationsAPI: !!OneSignal.Notifications
       });
       
       // Check current subscription status

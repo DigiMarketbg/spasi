@@ -27,6 +27,14 @@ declare global {
       Debug: {
         setLogLevel: (level: string) => void;
       };
+      Notifications?: {
+        permission: boolean;
+        setDefaultUrl: (url: string) => void;
+        setDefaultTitle: (title: string) => void;
+        isPushSupported: () => boolean;
+        requestPermission: () => Promise<boolean>;
+        sendSelfNotification: (title: string, message: string, url: string, icon: string, data: any) => Promise<boolean>;
+      };
     };
     OneSignalDeferred: Array<(OneSignal: Window['OneSignal']) => void>;
   }
