@@ -5,17 +5,18 @@ import { useTheme } from './ThemeProvider';
 import { Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import PrivacyPolicyLink from './gdpr/PrivacyPolicyLink';
 
 const Footer = () => {
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
   
   const footerLinks = [
-    { name: 'Подай сигнал', href: '#' },
-    { name: 'Хора в беда', href: '#' },
-    { name: 'Доброволци', href: '#' },
-    { name: 'За нас', href: '#' },
-    { name: 'Контакт', href: '#' },
+    { name: 'Подай сигнал', href: '/submit-signal' },
+    { name: 'Хора в беда', href: '/signals' },
+    { name: 'Доброволци', href: '/volunteers' },
+    { name: 'За нас', href: '/info' },
+    { name: 'Контакт', href: '/contact' },
   ];
 
   return (
@@ -53,6 +54,9 @@ const Footer = () => {
         </div>
         
         <div className="text-center text-sm text-muted-foreground mt-8">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-2">
+            <PrivacyPolicyLink />
+          </div>
           <p>© 2025 Spasi.bg. Всички права запазени.</p>
         </div>
       </div>
