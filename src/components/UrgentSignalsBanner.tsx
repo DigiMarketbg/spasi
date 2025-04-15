@@ -26,23 +26,29 @@ const UrgentSignalsBanner = () => {
   const { data: urgentSignals, isLoading } = useQuery({
     queryKey: ['urgentSignals'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('signals')
-        .select('*')
-        .eq('is_approved', true)
-        .eq('is_urgent', true)
-        .order('created_at', { ascending: false });
+      // Add a try-catch block to handle the case where is_urgent column doesn't exist yet
+      try {
+        const { data, error } = await supabase
+          .from('signals')
+          .select('*')
+          .eq('is_approved', true)
+          .eq('is_urgent', true)
+          .order('created_at', { ascending: false });
+          
+        if (error) throw error;
         
-      if (error) throw error;
-      
-      return data?.map(signal => ({
-        id: signal.id,
-        title: signal.title,
-        city: signal.city,
-        category: signal.category,
-        description: signal.description,
-        createdAt: format(new Date(signal.created_at), 'd MMMM yyyy', { locale: bg }),
-      } as UrgentSignalDisplay)) || [];
+        return data?.map(signal => ({
+          id: signal.id,
+          title: signal.title,
+          city: signal.city,
+          category: signal.category,
+          description: signal.description,
+          createdAt: format(new Date(signal.created_at), 'd MMMM yyyy', { locale: bg }),
+        } as UrgentSignalDisplay)) || [];
+      } catch (error) {
+        console.error('Error fetching urgent signals:', error);
+        return []; // Return empty array if column doesn't exist yet
+      }
     },
     enabled: true
   });

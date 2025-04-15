@@ -18,6 +18,7 @@ export const signalSchema = z.object({
   link: z.string().url({
     message: "Моля, въведете валиден URL адрес.",
   }).optional().or(z.literal('')),
+  is_urgent: z.boolean().optional().default(false), // Added to the schema
 });
 
 export type SignalFormValues = z.infer<typeof signalSchema>;
@@ -33,7 +34,7 @@ export interface Signal {
   image_url?: string | null;
   is_approved: boolean;
   is_resolved: boolean;
-  is_urgent: boolean;  // Changed from optional to required with boolean type
+  is_urgent: boolean;
   created_at: string;
   user_id: string;
   status: string;
