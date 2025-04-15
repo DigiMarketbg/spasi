@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import {
   Dialog,
@@ -67,8 +68,8 @@ const GDPRConsentDialog: React.FC<GDPRConsentDialogProps> = ({
         
         <Tabs defaultValue="privacy" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="privacy">Политика за поверителност</TabsTrigger>
-            <TabsTrigger value="cookies">Политика за бисквитки</TabsTrigger>
+            <TabsTrigger value="privacy" className="text-xs sm:text-sm">Политика за поверителност</TabsTrigger>
+            <TabsTrigger value="cookies" className="text-xs sm:text-sm">Политика за бисквитки</TabsTrigger>
           </TabsList>
           
           <TabsContent value="privacy" className="mt-2">
@@ -195,12 +196,12 @@ const GDPRConsentDialog: React.FC<GDPRConsentDialogProps> = ({
         
         <DialogFooter className="pt-4 flex flex-col sm:flex-row gap-2">
           <Button 
-            className="w-full px-3 py-2 text-sm" 
+            className="w-full px-2 py-1.5 text-xs sm:text-sm" 
             onClick={onAccept} 
             variant="default"
           >
-            <ShieldCheck className="mr-2 h-4 w-4" />
-            Приемам всички
+            <ShieldCheck className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
+            Приемам
           </Button>
         </DialogFooter>
       </DialogContent>
