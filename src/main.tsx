@@ -44,6 +44,11 @@ const addCacheBusting = () => {
     const url = input instanceof Request ? input.url : String(input);
     const isSameOrigin = url.startsWith(window.location.origin) || url.startsWith('/');
     
+    // Пропускаме OneSignal заявки
+    if (url.includes('onesignal')) {
+      return originalFetch.call(this, input, init);
+    }
+    
     if (isSameOrigin && !url.includes('socket')) {
       const separator = url.includes('?') ? '&' : '?';
       const cacheBuster = `v=${new Date().getTime()}`;
