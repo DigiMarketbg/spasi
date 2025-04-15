@@ -56,6 +56,15 @@ window.addEventListener('load', function() {
       
       console.log("✅ OneSignal initialized with version:", OneSignal.getVersion && OneSignal.getVersion());
       
+      // Verify initialization and app data
+      console.log("📊 OneSignal initialization details:", {
+        appId: OneSignal.app && OneSignal.app.appId,
+        initialized: OneSignal.initialized,
+        serviceWorkerState: 'serviceWorker' in navigator ? 'active' : 'not active',
+        userAgent: navigator.userAgent,
+        pushSupported: OneSignal.isPushNotificationsSupported && await OneSignal.isPushNotificationsSupported()
+      });
+      
       // Check current subscription status
       const isPushEnabled = await OneSignal.User.PushSubscription.optedIn;
       console.log("🔔 Current subscription status:", isPushEnabled ? "subscribed" : "not subscribed");
@@ -64,6 +73,13 @@ window.addEventListener('load', function() {
       if (isPushEnabled) {
         const playerId = await OneSignal.User.PushSubscription.id;
         console.log("🆔 OneSignal Player ID:", playerId || "none");
+        
+        // Subscription debugging information
+        console.log("📊 Detailed subscription info:", {
+          optedIn: isPushEnabled,
+          playerId: playerId,
+          pushSubscription: OneSignal.User.PushSubscription
+        });
         
         if (playerId) {
           // Important: This ensures the subscriber is recorded in the database
@@ -109,6 +125,7 @@ window.addEventListener('load', function() {
           const playerId = await OneSignal.User.PushSubscription.id;
           
           console.log(`🔔 New status: ${isSubscribed ? 'subscribed' : 'not subscribed'}, ID: ${playerId || 'none'}`);
+          console.log("📊 Full subscription data:", OneSignal.User.PushSubscription);
           
           if (isSubscribed && playerId && window.supabase) {
             // Get user ID, if logged in
