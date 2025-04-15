@@ -38,7 +38,15 @@ const DangerousAreaForm: React.FC<DangerousAreaFormProps> = ({ onSubmitSuccess }
     setIsSubmitting(true);
     
     try {
-      await addDangerousArea(data);
+      // Ensure all required fields are passed explicitly and properly typed
+      await addDangerousArea({
+        location: data.location,
+        region: data.region,
+        description: data.description,
+        severity: data.severity,
+        map_link: data.map_link || null,
+        reported_by_name: data.reported_by_name || null
+      });
       
       toast.success('Опасният участък е докладван успешно', {
         description: 'Сигналът ще бъде прегледан от администратор преди публикуване',

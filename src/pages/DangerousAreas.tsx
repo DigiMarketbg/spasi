@@ -19,9 +19,12 @@ const DangerousAreas = () => {
   const { data: dangerousAreas = [], isLoading, isError, refetch } = useQuery<DangerousArea[]>({
     queryKey: ['dangerous-areas'],
     queryFn: fetchDangerousAreas,
-    onError: (error) => {
-      toast.error('Грешка при зареждане на опасните участъци');
-      console.error('Error fetching dangerous areas:', error);
+    // Fix the React Query options format by using meta instead of direct onError
+    meta: {
+      onError: (error: any) => {
+        toast.error('Грешка при зареждане на опасните участъци');
+        console.error('Error fetching dangerous areas:', error);
+      }
     }
   });
 
