@@ -1,6 +1,6 @@
 
 // Cache name - update version to force refresh
-const CACHE_NAME = 'spasi-bg-v6';
+const CACHE_NAME = 'spasi-bg-v7';
 
 // Files to cache
 const urlsToCache = [
@@ -93,26 +93,47 @@ self.addEventListener('activate', (event) => {
 
 // Add event listener for push notifications
 self.addEventListener('push', function(event) {
-  const data = event.data.json();
-  const options = {
-    body: data.body,
-    icon: '/icon-192.png',
-    badge: '/icon-192.png',
-    data: {
-      url: data.url || '/'
+  try {
+    console.log('Получено push съобщение', event);
+    
+    let data;
+    try {
+      data = event.data.json();
+    } catch (e) {
+      console.error('Грешка при парсване на push данни:', e);
+      data = {
+        title: 'Ново съобщение',
+        body: 'Получено е ново съобщение от Спаси БГ',
+        url: '/'
+      };
     }
-  };
+    
+    const options = {
+      body: data.body || 'Получено е ново съобщение от Спаси БГ',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      data: {
+        url: data.url || '/'
+      }
+    };
 
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+    console.log('Показване на известие:', data.title, options);
+    
+    event.waitUntil(
+      self.registration.showNotification(data.title || 'Ново съобщение', options)
+    );
+  } catch (error) {
+    console.error('Грешка при обработка на push известие:', error);
+  }
 });
 
 // Add event listener for notification click
 self.addEventListener('notificationclick', function(event) {
+  console.log('Известието е кликнато', event);
+  
   event.notification.close();
   event.waitUntil(
-    clients.openWindow(event.notification.data.url)
+    clients.openWindow(event.notification.data.url || '/')
   );
 });
 
