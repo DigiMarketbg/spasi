@@ -92,10 +92,13 @@ export const getSignalById = async (id: string): Promise<Signal> => {
       throw new Error("Error fetching signal details");
     }
 
-    // Ensure signal has profiles property
+    // Handle profiles property safely with type checking
     const processedSignal: Signal = {
       ...data,
-      profiles: data.profiles || { full_name: null, email: null }
+      // Ensure profiles is always a valid object with our expected structure
+      profiles: typeof data.profiles === 'object' && data.profiles 
+        ? data.profiles 
+        : { full_name: null, email: null }
     };
 
     return processedSignal;

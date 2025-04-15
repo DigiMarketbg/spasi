@@ -35,9 +35,9 @@ export interface Signal {
   is_resolved: boolean;
   created_at: string;
   user_id: string;
-  status: string; // Added the status property
+  status: string;
   profiles?: {
-    full_name?: string;
-    email?: string;
-  } | null; // Changed from unknown to a typed object
+    full_name?: string | null;
+    email?: string | null;
+  } | null;
 }
