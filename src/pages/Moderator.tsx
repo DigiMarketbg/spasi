@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -11,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
 import { fetchAllSignals } from '@/lib/api/signals';
+import { Signal } from '@/types/signal';
 
 const Moderator = () => {
   const { user, profile } = useAuth();
@@ -45,7 +47,7 @@ const Moderator = () => {
         }
         
         // Process the data for display
-        const enrichedSignals = signalsData.map(signal => {
+        const enrichedSignals = signalsData.map((signal: Signal) => {
           return {
             ...signal,
             user_full_name: signal.profiles?.full_name || 'Неизвестен',

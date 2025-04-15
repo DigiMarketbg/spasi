@@ -1,7 +1,9 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { fetchAllSignals } from '@/lib/api/signals';
+import { Signal } from '@/types/signal';
 
 export interface SignalData {
   id: string;
