@@ -26,9 +26,9 @@ window.addEventListener('load', function() {
         return;
       }
 
-      // Initialize OneSignal with more debug options
+      // Initialize OneSignal
       await OneSignal.init({
-        appId: "35af33cb-8ab8-4d90-b789-17fb5c45542b", // Make sure this is your correct app ID
+        appId: "35af33cb-8ab8-4d90-b789-17fb5c45542b",
         allowLocalhostAsSecureOrigin: true,
         safari_web_id: "web.onesignal.auto.26e1efd4-c84b-4c22-b1a1-c9b7ff58fd07",
         notifyButton: {
@@ -51,83 +51,18 @@ window.addEventListener('load', function() {
               }
             ]
           }
-        },
-        // Add user tags for better targeting - enabling this for better notification segmentation
-        enableOnSession: true,
-        // Enable verbose logging
-        debugLevel: "trace"
+        }
       });
       
       console.log("✅ OneSignal initialized with version:", OneSignal.getVersion && OneSignal.getVersion());
       
-      // Add Notifications API if not available
-      if (!OneSignal.Notifications) {
-        console.log("⚠️ Adding Notifications API to OneSignal");
-        OneSignal.Notifications = {
-          permission: false,
-          
-          sendSelfNotification: async (title, message, url, icon, data) => {
-            try {
-              console.log("📣 Sending self notification:", { title, message });
-              
-              // Check if user granted notification permission
-              const state = await OneSignal.User.PushSubscription.optedIn;
-              OneSignal.Notifications.permission = state;
-              
-              if (state) {
-                if ('serviceWorker' in navigator && 'PushManager' in window) {
-                  const sw = await navigator.serviceWorker.ready;
-                  await sw.showNotification(title, {
-                    body: message,
-                    icon: icon,
-                    data: { url, ...data }
-                  });
-                  return true;
-                }
-              } else {
-                console.warn("⚠️ Notification permission not granted");
-              }
-            } catch (e) {
-              console.error("❌ Error sending self notification:", e);
-            }
-            return false;
-          },
-          
-          setDefaultUrl: (url) => {
-            console.log("📝 Setting default notification URL:", url);
-          },
-          
-          setDefaultTitle: (title) => {
-            console.log("📝 Setting default notification title:", title);
-          },
-          
-          isPushSupported: () => {
-            return 'PushManager' in window;
-          },
-          
-          requestPermission: async () => {
-            try {
-              if (Notification.permission !== "granted") {
-                const permission = await Notification.requestPermission();
-                return permission === "granted";
-              }
-              return true;
-            } catch (e) {
-              console.error("❌ Error requesting notification permission:", e);
-              return false;
-            }
-          }
-        };
-      }
-      
       // Verify initialization and app data
       console.log("📊 OneSignal initialization details:", {
-        appId: "35af33cb-8ab8-4d90-b789-17fb5c45542b",
+        appId: OneSignal.app && OneSignal.app.appId,
         initialized: OneSignal.initialized,
         serviceWorkerState: 'serviceWorker' in navigator ? 'active' : 'not active',
         userAgent: navigator.userAgent,
-        pushSupported: await OneSignal.isPushNotificationsSupported(),
-        notificationsAPI: !!OneSignal.Notifications
+        pushSupported: OneSignal.isPushNotificationsSupported && await OneSignal.isPushNotificationsSupported()
       });
       
       // Check current subscription status
