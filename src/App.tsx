@@ -32,6 +32,9 @@ import Info from "./pages/Info";
 import Rescuers from "./pages/Rescuers";
 import DangerousAreas from "./pages/DangerousAreas";
 import AddDangerousArea from "./pages/AddDangerousArea";
+import Witnesses from "./pages/Witnesses";
+import SubmitWitness from "./pages/SubmitWitness";
+import WitnessDetail from "./pages/WitnessDetail";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +71,9 @@ const App = () => (
               <Route path="/donations" element={<Donations />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/info" element={<Info />} />
+              <Route path="/witnesses" element={<Witnesses />} />
+              <Route path="/submit-witness" element={<SubmitWitness />} />
+              <Route path="/witness/:id" element={<WitnessDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <MobileNavBar />

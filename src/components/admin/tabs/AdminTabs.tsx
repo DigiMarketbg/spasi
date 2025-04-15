@@ -7,6 +7,7 @@ import UsersManagement from '@/components/admin/UsersManagement';
 import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagement';
 import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
 import DangerousAreasManagement from '@/components/admin/dangerous-areas/DangerousAreasManagement';
+import WitnessesManagement from '@/components/admin/witnesses/WitnessesManagement';
 
 interface AdminTabsProps {
   signals: any[];
@@ -20,7 +21,8 @@ interface AdminTabsProps {
   loadingDangerousAreas?: boolean;
   unreadCount: number;
   pendingRequestsCount: number;
-  pendingDangerousAreasCount: number; // Add this new prop
+  pendingDangerousAreasCount: number;
+  pendingWitnessesCount?: number;
   onRefreshSignals: () => void;
   onRefreshUsers: () => void;
   onRefreshPartnerRequests: () => void;
@@ -39,7 +41,8 @@ const AdminTabs = ({
   loadingDangerousAreas,
   unreadCount,
   pendingRequestsCount,
-  pendingDangerousAreasCount, // Add this new prop
+  pendingDangerousAreasCount,
+  pendingWitnessesCount = 0,
   onRefreshSignals,
   onRefreshUsers,
   onRefreshPartnerRequests,
@@ -71,6 +74,14 @@ const AdminTabs = ({
           {pendingDangerousAreasCount > 0 && (
             <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-orange-500 rounded-full">
               {pendingDangerousAreasCount}
+            </span>
+          )}
+        </TabsTrigger>
+        <TabsTrigger value="witnesses">
+          Свидетели
+          {pendingWitnessesCount > 0 && (
+            <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-purple-500 rounded-full">
+              {pendingWitnessesCount}
             </span>
           )}
         </TabsTrigger>
@@ -161,6 +172,20 @@ const AdminTabs = ({
               onRefresh={onRefreshSignals} 
               loading={loadingDangerousAreas} 
             />
+          </CardContent>
+        </Card>
+      </TabsContent>
+      
+      <TabsContent value="witnesses" className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Управление на обяви за свидетели</CardTitle>
+            <CardDescription>
+              Преглед и одобрение на обяви за търсене на свидетели.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <WitnessesManagement onRefresh={onRefreshSignals} />
           </CardContent>
         </Card>
       </TabsContent>

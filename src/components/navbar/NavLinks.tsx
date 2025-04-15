@@ -24,6 +24,7 @@ const NavLinks = ({ className }: NavLinksProps) => {
     { path: '/signals', label: 'Сигнали' },
     { path: '/volunteers', label: 'Доброволци' },
     { path: '/rescuers', label: 'Спасители' },
+    { path: '/witnesses', label: 'Свидетели' },
     { path: '/blog', label: 'Блог' },
     { path: '/videos', label: 'Видео' },
     { path: '/contact', label: 'Контакти' },
