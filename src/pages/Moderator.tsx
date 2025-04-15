@@ -77,6 +77,34 @@ const Moderator = () => {
     }
   });
 
+  // Fetch dangerous areas for moderators
+  const {
+    data: dangerousAreas = [],
+    isLoading: loadingDangerousAreas,
+    error: dangerousAreasError,
+    refetch: refetchDangerousAreas
+  } = useQuery({
+    queryKey: ['moderator-dangerous-areas', refreshKey],
+    queryFn: async () => {
+      if (!user || !isModerator) return [];
+      
+      try {
+        // Get all dangerous areas
+        return await fetchAllDangerousAreas();
+      } catch (error: any) {
+        console.error("Error fetching dangerous areas for moderator:", error);
+        setError(`Грешка при зареждане на опасните участъци: ${error.message || error}`);
+        return [];
+      }
+    },
+    enabled: !!user && isModerator,
+    meta: {
+      onError: (err: any) => {
+        setError(`Грешка при зареждане на опасните участъци: ${err.message || 'Неизвестна грешка'}`);
+      }
+    }
+  });
+
   // Display toast for errors
   useEffect(() => {
     if (signalsError) {
@@ -84,7 +112,13 @@ const Moderator = () => {
         description: 'Моля, опитайте отново чрез бутона за обновяване',
       });
     }
-  }, [signalsError]);
+    
+    if (dangerousAreasError) {
+      toast.error('Възникна проблем при зареждането на опасните участъци', {
+        description: 'Моля, опитайте отново чрез бутона за обновяване',
+      });
+    }
+  }, [signalsError, dangerousAreasError]);
 
   // If not logged in or not a moderator
   if (!user || !isModerator) {
@@ -141,7 +175,9 @@ const Moderator = () => {
             
             <TabsContent value="dangerous-areas">
               <DangerousAreasManagement 
-                onRefresh={handleRefresh}
+                areas={dangerousAreas}
+                loading={loadingDangerousAreas}
+                onRefresh={refetchDangerousAreas}
               />
             </TabsContent>
           </Tabs>

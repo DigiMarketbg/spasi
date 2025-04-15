@@ -1,38 +1,57 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDangerousAreas } from './useDangerousAreas';
 import AreaFilters from './AreaFilters';
 import ErrorDisplay from './ErrorDisplay';
 import DeleteAreaDialog from './DeleteAreaDialog';
 import DangerousAreasList from '@/components/dangerous-areas/DangerousAreasList';
+import { DangerousArea } from '@/types/dangerous-area';
+import { toast } from 'sonner';
+import { updateDangerousAreaApproval, deleteDangerousArea } from '@/lib/api/dangerous-areas';
 
 interface DangerousAreasManagementProps {
+  areas?: DangerousArea[];
+  loading?: boolean;
   onRefresh?: () => void;
 }
 
-const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onRefresh }) => {
+const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ 
+  areas: externalAreas, 
+  loading: externalLoading,
+  onRefresh: externalRefresh 
+}) => {
   const [showPending, setShowPending] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [areaToDelete, setAreaToDelete] = useState<string | null>(null);
+  const [processingId, setProcessingId] = useState<string | null>(null);
   
+  // Use the hook if no external data is provided
   const {
-    areas,
-    loading,
+    areas: hookAreas,
+    loading: hookLoading,
     error,
-    processingApproval,
-    fetchAreas,
-    handleApprove,
-    handleDelete,
+    processingApproval: hookProcessingId,
+    fetchAreas: hookFetchAreas,
+    handleApprove: hookHandleApprove,
+    handleDelete: hookHandleDelete,
     setError
   } = useDangerousAreas(() => {
     console.log("External refresh callback triggered from useDangerousAreas");
-    if (onRefresh) onRefresh();
+    if (externalRefresh) externalRefresh();
   });
 
-  useEffect(() => {
-    console.log("DangerousAreasManagement - Initial load or dependency changed, fetching areas");
-    fetchAreas();
-  }, [fetchAreas]);
+  // Choose between external and hook data
+  const areas = externalAreas || hookAreas;
+  const loading = externalLoading !== undefined ? externalLoading : hookLoading;
+  const processingApproval = hookProcessingId || processingId;
+
+  const fetchAreas = () => {
+    if (externalRefresh) {
+      externalRefresh();
+    } else {
+      hookFetchAreas();
+    }
+  };
 
   const confirmDelete = (id: string) => {
     setAreaToDelete(id);
@@ -41,9 +60,27 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
 
   const handleConfirmDelete = async () => {
     if (!areaToDelete) return;
-    await handleDelete(areaToDelete);
-    setAreaToDelete(null);
-    setDeleteDialogOpen(false);
+    
+    try {
+      setProcessingId(areaToDelete);
+      
+      if (externalRefresh) {
+        // Use direct API call with external refresh
+        await deleteDangerousArea(areaToDelete);
+        toast.success("Опасният участък е изтрит успешно");
+        externalRefresh();
+      } else {
+        // Use hook function
+        await hookHandleDelete(areaToDelete);
+      }
+    } catch (error) {
+      console.error("Error deleting area:", error);
+      toast.error("Грешка при изтриване на опасния участък");
+    } finally {
+      setProcessingId(null);
+      setAreaToDelete(null);
+      setDeleteDialogOpen(false);
+    }
   };
 
   const filteredAreas = showPending
@@ -55,13 +92,23 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
   const handleApproveArea = async (id: string): Promise<void> => {
     try {
       setError(null); // Clear any previous errors
+      setProcessingId(id);
       console.log(`Approving area with ID: ${id}`);
-      await handleApprove(id);
-      console.log("Refreshing areas after approval");
-      // Force refresh to reflect the updated state
-      fetchAreas();
+      
+      if (externalRefresh) {
+        // Use direct API call with external refresh
+        await updateDangerousAreaApproval(id, true);
+        toast.success("Опасният участък е одобрен успешно");
+        externalRefresh();
+      } else {
+        // Use hook function
+        await hookHandleApprove(id);
+      }
     } catch (error) {
       console.error("Error in handleApproveArea:", error);
+      toast.error("Грешка при одобряване на опасния участък");
+    } finally {
+      setProcessingId(null);
     }
   };
 

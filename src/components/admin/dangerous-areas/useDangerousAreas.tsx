@@ -2,14 +2,13 @@
 import { useState, useCallback } from 'react';
 import { fetchAllDangerousAreas, updateDangerousAreaApproval, deleteDangerousArea } from '@/lib/api/dangerous-areas';
 import { DangerousArea } from '@/types/dangerous-area';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 export const useDangerousAreas = (onExternalRefresh?: () => void) => {
   const [areas, setAreas] = useState<DangerousArea[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [processingApproval, setProcessingApproval] = useState<string | null>(null);
-  const { toast } = useToast();
 
   const fetchAreas = useCallback(async () => {
     try {
@@ -18,18 +17,16 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
       const allAreas = await fetchAllDangerousAreas();
       console.log("Fetched areas in hook:", allAreas);
       setAreas(allAreas);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching areas:", error);
       setError("Не успяхме да заредим опасните участъци");
-      toast({
-        title: "Грешка",
-        description: "Не успяхме да заредим опасните участъци",
-        variant: "destructive"
+      toast.error("Не успяхме да заредим опасните участъци", {
+        description: error.message || "Моля, опитайте отново",
       });
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, []);
 
   const handleApprove = async (id: string) => {
     try {
@@ -48,10 +45,7 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
         )
       );
       
-      toast({
-        title: "Успешно",
-        description: "Опасният участък беше одобрен",
-      });
+      toast.success("Опасният участък беше одобрен успешно");
       
       // Notify parent component if callback exists
       if (onExternalRefresh) {
@@ -68,10 +62,8 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
       const errorMessage = error.message || "Не успяхме да одобрим опасния участък";
       setError(errorMessage);
       
-      toast({
-        title: "Грешка",
+      toast.error("Грешка при одобряване", {
         description: errorMessage,
-        variant: "destructive"
       });
       
       throw error;
@@ -89,21 +81,16 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
       // Update local state
       setAreas(prevAreas => prevAreas.filter(area => area.id !== id));
       
-      toast({
-        title: "Успешно",
-        description: "Опасният участък беше изтрит",
-      });
+      toast.success("Опасният участък беше изтрит успешно");
       
       if (onExternalRefresh) {
         onExternalRefresh();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting area:", error);
       setError("Не успяхме да изтрием опасния участък");
-      toast({
-        title: "Грешка",
-        description: "Не успяхме да изтрием опасния участък",
-        variant: "destructive"
+      toast.error("Грешка при изтриване", {
+        description: error.message || "Моля, опитайте отново",
       });
     } finally {
       setLoading(false);
