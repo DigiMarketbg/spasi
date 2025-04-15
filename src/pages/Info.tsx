@@ -7,11 +7,13 @@ import PlatformDescription from '@/components/info/PlatformDescription';
 import TermsAccordion from '@/components/info/TermsAccordion';
 import { useGDPR } from '@/components/gdpr/GDPRProvider';
 import { Button } from '@/components/ui/button';
-import { Shield, SquareCode, Share2, AlertTriangle, HeartHandshake } from 'lucide-react';
+import { Shield, SquareCode, Share2, AlertTriangle, HeartHandshake, Lightbulb, Heart } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { useNavigate } from 'react-router-dom';
 
 const Info = () => {
   const { openConsentDialog } = useGDPR();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -29,26 +31,26 @@ const Info = () => {
                 variant="outline" 
                 size="sm" 
                 className="flex items-center gap-2"
-                onClick={() => window.open('/submit-signal', '_blank')}
+                onClick={() => navigate('/contact')}
               >
-                <AlertTriangle className="h-4 w-4 text-spasi-red" />
-                <span>Подай сигнал</span>
+                <Lightbulb className="h-4 w-4 text-spasi-green" />
+                <span>Дай идеи</span>
               </Button>
               <Button 
                 variant="outline" 
                 size="sm" 
                 className="flex items-center gap-2"
-                onClick={() => window.open('/volunteers', '_blank')}
+                onClick={() => navigate('/donations')}
               >
-                <HeartHandshake className="h-4 w-4 text-spasi-green" />
-                <span>Стани доброволец</span>
+                <Heart className="h-4 w-4 text-spasi-red" />
+                <span>Направи дарение на Spasi.bg</span>
               </Button>
             </div>
           </div>
           
           <Separator className="my-8" />
           
-          {/* New Contact Section Moved Higher */}
+          {/* Contact Section */}
           <ContactCollapsible />
           
           <Separator className="my-8" />
