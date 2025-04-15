@@ -67,7 +67,7 @@ const SignalCard: React.FC<SignalCardProps> = ({ signal, className }) => {
     
     if (navigator.share) {
       navigator.share({
-        title: signal.title,
+        title: `Spasi.bg – ${signal.title}`,
         text: signal.description.substring(0, 100) + '...',
         url: shareUrl
       }).catch(error => console.error('Error sharing', error));

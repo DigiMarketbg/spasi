@@ -57,7 +57,7 @@ const SignalContent: React.FC<SignalContentProps> = ({
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
-        title: signal.title,
+        title: `Spasi.bg – ${signal.title}`,
         text: signal.description?.substring(0, 100) + '...',
         url: window.location.href
       }).catch(error => console.error('Error sharing', error));
