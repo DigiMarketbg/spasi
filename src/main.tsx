@@ -4,7 +4,7 @@ import App from './App.tsx'
 import './index.css'
 import { supabase } from './integrations/supabase/client'
 
-// Pravim Supabase dostupno globalno
+// Make Supabase available globally
 window.supabase = supabase;
 
 // Add cache busting mechanism
