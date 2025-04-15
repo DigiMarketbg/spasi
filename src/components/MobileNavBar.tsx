@@ -37,7 +37,7 @@ const MobileNavBar = () => {
     {
       name: 'Инфо',
       icon: Info, 
-      path: '/info', // Fixed path from '/blog' to '/info'
+      path: '/info',
     },
     {
       name: user ? 'Профил' : 'Вход',
@@ -103,7 +103,7 @@ const MobileNavBar = () => {
                 )} />
               </div>
               <span className={cn(
-                "text-xs",
+                "text-xs truncate max-w-full", // Added truncate and max-w-full
                 isActive ? "text-primary" : "text-muted-foreground"
               )}>{item.name}</span>
             </Link>
@@ -117,3 +117,4 @@ const MobileNavBar = () => {
 };
 
 export default MobileNavBar;
+
