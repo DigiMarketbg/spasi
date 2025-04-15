@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
@@ -10,10 +10,12 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
 
 const Moderator = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
+  const [refreshDangerousAreas, setRefreshDangerousAreas] = useState(0);
   
   // Check if the user is a moderator or admin
   const isModerator = profile?.role === 'moderator' || profile?.role === 'admin';
@@ -63,6 +65,12 @@ const Moderator = () => {
     enabled: !!user && isModerator
   });
 
+  // Function to trigger refreshing of dangerous areas
+  const handleRefreshDangerousAreas = () => {
+    console.log("Triggering refresh of dangerous areas");
+    setRefreshDangerousAreas(prev => prev + 1);
+  };
+
   // If not logged in or not a moderator
   if (!user || !isModerator) {
     return (
@@ -104,7 +112,7 @@ const Moderator = () => {
             
             <TabsContent value="dangerous-areas">
               <DangerousAreasManagement 
-                onRefresh={() => {}} 
+                onRefresh={handleRefreshDangerousAreas}
               />
             </TabsContent>
           </Tabs>

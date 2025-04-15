@@ -55,12 +55,20 @@ export const addDangerousArea = async (areaData: Omit<DangerousArea, 'id' | 'cre
 };
 
 export const updateDangerousAreaApproval = async (id: string, isApproved: boolean): Promise<void> => {
-  const { error } = await supabase
+  console.log(`Updating dangerous area approval: ID ${id}, setting is_approved to ${isApproved}`);
+  
+  const { error, data } = await supabase
     .from('dangerous_areas')
     .update({ is_approved: isApproved })
-    .eq('id', id);
+    .eq('id', id)
+    .select();
     
-  if (error) throw error;
+  if (error) {
+    console.error("Error updating dangerous area:", error);
+    throw error;
+  }
+  
+  console.log("Update response:", data);
 };
 
 export const deleteDangerousArea = async (id: string): Promise<void> => {

@@ -24,6 +24,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
     try {
       setLoading(true);
       const allAreas = await fetchAllDangerousAreas();
+      console.log("Fetched areas:", allAreas);
       setAreas(allAreas);
     } catch (error) {
       console.error("Error fetching areas:", error);
@@ -43,12 +44,24 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
 
   const handleApprove = async (id: string) => {
     try {
+      console.log(`Attempting to approve area with ID: ${id}`);
       await updateDangerousAreaApproval(id, true);
+      
+      // Обновяване на локалното състояние
+      setAreas(prevAreas => 
+        prevAreas.map(area => 
+          area.id === id ? { ...area, is_approved: true } : area
+        )
+      );
+      
       toast({
         title: "Успешно",
         description: "Опасният участък беше одобрен",
       });
+      
+      // Презареждане на данните, за да сме сигурни, че състоянието е синхронизирано
       fetchAreas();
+      
       if (onRefresh) onRefresh();
     } catch (error) {
       console.error("Error approving area:", error);
@@ -65,11 +78,15 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
     
     try {
       await deleteDangerousArea(areaToDelete);
+      
+      // Обновяване на локалното състояние
+      setAreas(prevAreas => prevAreas.filter(area => area.id !== areaToDelete));
+      
       toast({
         title: "Успешно",
         description: "Опасният участък беше изтрит",
       });
-      fetchAreas();
+      
       if (onRefresh) onRefresh();
       setAreaToDelete(null);
       setDeleteDialogOpen(false);
