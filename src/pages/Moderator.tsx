@@ -70,8 +70,10 @@ const Moderator = () => {
       }
     },
     enabled: !!user && isModerator,
-    onError: (err: any) => {
-      setError(`Грешка при зареждане на сигналите: ${err.message || 'Неизвестна грешка'}`);
+    meta: {
+      onError: (err: any) => {
+        setError(`Грешка при зареждане на сигналите: ${err.message || 'Неизвестна грешка'}`);
+      }
     }
   });
 

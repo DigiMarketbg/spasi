@@ -51,13 +51,16 @@ export const fetchAllSignals = async (): Promise<Signal[]> => {
 
     console.log("Successfully fetched signals:", data);
     
-    // Ensure all signals have a profiles object, even if empty
-    const processedData = data.map(signal => ({
-      ...signal,
-      profiles: signal.profiles || { full_name: null, email: null }
-    }));
+    // Ensure all signals have a profiles property, even if empty
+    const processedData = data.map(signal => {
+      const processedSignal: Signal = {
+        ...signal,
+        profiles: signal.profiles || { full_name: null, email: null }
+      };
+      return processedSignal;
+    });
     
-    return processedData as Signal[];
+    return processedData;
   } catch (error) {
     console.error("Error in fetchAllSignals:", error);
     throw new Error("Error fetching signals");
@@ -83,10 +86,13 @@ export const getSignalById = async (id: string): Promise<Signal> => {
       throw new Error("Error fetching signal details");
     }
 
-    return {
+    // Ensure signal has profiles property
+    const processedSignal: Signal = {
       ...data,
       profiles: data.profiles || { full_name: null, email: null }
-    } as Signal;
+    };
+
+    return processedSignal;
   } catch (error) {
     console.error("Error in getSignalById:", error);
     throw new Error("Error fetching signal details");
