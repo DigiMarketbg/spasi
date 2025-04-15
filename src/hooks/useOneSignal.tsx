@@ -201,10 +201,11 @@ export const useOneSignal = () => {
           await saveSubscriptionToDatabase(playerId);
           setIsSubscribed(true);
           
-          // Допълнителни данни за диагностика
-          console.log("✅ Абонаментът е успешен! Проверка на данните в OneSignal:", {
-            appId: window.OneSignal.app && window.OneSignal.app.appId,
-            subscription: window.OneSignal.User.PushSubscription
+          // Допълнителни данни за диагностика - тук премахваме window.OneSignal.app
+          console.log("✅ Абонаментът е успешен! Допълнителна диагностична информация:", {
+            initialized: window.OneSignal.initialized,
+            optedIn: isOptedIn,
+            playerId: playerId
           });
         } else {
           console.log("⚠️ Потребителят не е абониран след диалога или няма playerId");
