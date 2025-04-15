@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { AdminDashboardCard } from '@/components/admin/dashboard/AdminDashboardCard';
+import AdminDashboardCard from '@/components/admin/dashboard/AdminDashboardCard';
 import { Mail, Handshake as HandshakeIcon, AlertTriangle } from 'lucide-react';
 
 interface AdminDashboardGridProps {
