@@ -30,6 +30,8 @@ import Donations from "./pages/Donations";
 import Contact from "./pages/Contact";
 import Info from "./pages/Info";
 import Rescuers from "./pages/Rescuers";
+import DangerousAreas from "./pages/DangerousAreas";
+import AddDangerousArea from "./pages/AddDangerousArea";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +50,8 @@ const App = () => (
               <Route path="/submit-signal" element={<SubmitSignal />} />
               <Route path="/volunteers" element={<Volunteers />} />
               <Route path="/rescuers" element={<Rescuers />} />
+              <Route path="/dangerous-areas" element={<DangerousAreas />} />
+              <Route path="/add-dangerous-area" element={<AddDangerousArea />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/moderator" element={<Moderator />} />
               <Route path="/admin/signals/:id" element={<SignalDetail />} />
