@@ -37,16 +37,12 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
       setProcessingApproval(id);
       setError(null);
       
-      // First update in Supabase database
+      // Update in Supabase database
       await updateDangerousAreaApproval(id, true);
       console.log("[handleApprove] Area successfully approved in database");
       
-      // Then update the local state immediately
-      setAreas(prevAreas => 
-        prevAreas.map(area => 
-          area.id === id ? {...area, is_approved: true} : area
-        )
-      );
+      // Force a complete refresh from the database to get updated data
+      await fetchAreas();
       
       toast({
         title: "Успешно",
@@ -58,9 +54,6 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
         console.log("[handleApprove] Triggering external refresh");
         onExternalRefresh();
       }
-      
-      // Finally refresh areas from database to ensure sync
-      await fetchAreas();
       
       return true;
     } catch (error: any) {
