@@ -34,7 +34,15 @@ const DangerousAreaForm = () => {
     setIsSubmitting(true);
     
     try {
-      await addDangerousArea(data);
+      // Make sure we're sending an object that matches our expected type
+      await addDangerousArea({
+        location: data.location,
+        region: data.region || null,
+        description: data.description,
+        severity: data.severity,
+        map_link: data.map_link || null,
+        reported_by_name: data.reported_by_name || null,
+      });
       
       toast.success('Опасният участък беше добавен успешно!');
       navigate('/dangerous-areas');
@@ -46,6 +54,7 @@ const DangerousAreaForm = () => {
     }
   };
 
+  
   return (
     <Card className="border-none shadow-lg bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm">
       <CardContent className="p-6">

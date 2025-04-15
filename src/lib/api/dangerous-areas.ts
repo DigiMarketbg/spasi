@@ -2,14 +2,16 @@
 import { supabase } from "@/integrations/supabase/client";
 import { DangerousArea } from "@/types/dangerous-area";
 
-export const fetchDangerousAreas = async () => {
+export const fetchDangerousAreas = async (): Promise<DangerousArea[]> => {
   const { data, error } = await supabase
     .from('dangerous_areas')
     .select('*')
     .order('created_at', { ascending: false });
     
   if (error) throw error;
-  return data || [];
+  
+  // Cast the returned data to ensure correct typing
+  return (data || []) as DangerousArea[];
 };
 
 export const addDangerousArea = async (areaData: Omit<DangerousArea, 'id' | 'created_at'>) => {
@@ -20,5 +22,5 @@ export const addDangerousArea = async (areaData: Omit<DangerousArea, 'id' | 'cre
     .single();
     
   if (error) throw error;
-  return data;
+  return data as DangerousArea;
 };
