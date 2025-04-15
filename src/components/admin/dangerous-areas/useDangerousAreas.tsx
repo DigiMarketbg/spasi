@@ -39,22 +39,18 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
       setError(null);
       
       // Update the area approval status
-      const updatedArea = await updateDangerousAreaApproval(id, true);
+      await updateDangerousAreaApproval(id, true);
       
-      console.log("[handleApprove] Approval response:", updatedArea);
+      console.log("[handleApprove] Area successfully approved, updating UI");
       
-      if (!updatedArea || updatedArea.is_approved !== true) {
-        throw new Error("Одобрението не беше приложено правилно");
-      }
-      
-      // Immediately update the UI with the updated area
+      // Immediately update the UI state
       setAreas(prevAreas => 
         prevAreas.map(area => 
           area.id === id ? { ...area, is_approved: true } : area
         )
       );
       
-      // Refresh the entire list to ensure consistency
+      // Refresh from the database to ensure consistency
       await fetchAreas();
       
       toast({

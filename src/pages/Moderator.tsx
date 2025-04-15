@@ -22,9 +22,9 @@ const Moderator = () => {
   
   // Function to trigger refreshing of all data
   const handleRefresh = useCallback(() => {
-    console.log("Triggering refresh in Moderator page");
+    console.log("Triggering refresh in Moderator page, current key:", refreshKey);
     setRefreshKey(prev => prev + 1);
-  }, []);
+  }, [refreshKey]);
   
   // Fetch signals for moderators
   const { 

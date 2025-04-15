@@ -24,9 +24,13 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
     handleApprove,
     handleDelete,
     setError
-  } = useDangerousAreas(onRefresh);
+  } = useDangerousAreas(() => {
+    console.log("External refresh callback triggered from useDangerousAreas");
+    if (onRefresh) onRefresh();
+  });
 
   useEffect(() => {
+    console.log("DangerousAreasManagement - Initial load or dependency changed, fetching areas");
     fetchAreas();
   }, [fetchAreas]);
 
@@ -57,7 +61,10 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
         setShowPending={setShowPending}
         pendingCount={pendingCount}
         loading={loading}
-        onRefresh={fetchAreas}
+        onRefresh={() => {
+          console.log("Manual refresh triggered from UI");
+          fetchAreas();
+        }}
       />
 
       <DangerousAreasList
@@ -65,7 +72,10 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
         isLoading={loading}
         searchQuery=""
         isAdmin={true}
-        onApprove={handleApprove}
+        onApprove={(id) => {
+          console.log(`Approve button clicked for ID: ${id}`);
+          handleApprove(id);
+        }}
         onDelete={confirmDelete}
       />
       
