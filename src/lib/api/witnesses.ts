@@ -12,7 +12,7 @@ export const fetchApprovedWitnesses = async (): Promise<Witness[]> => {
     // Get all approved witness posts that haven't expired
     const { data, error } = await supabase
       .from("witnesses")
-      .select()
+      .select("*")
       .eq("is_approved", true)
       .gte("expires_at", now)
       .order("created_at", { ascending: false });
@@ -24,7 +24,8 @@ export const fetchApprovedWitnesses = async (): Promise<Witness[]> => {
 
     console.log("Successfully fetched witness posts:", data);
     
-    return data as Witness[];
+    // Type cast to Witness[] as we know the structure matches
+    return (data || []) as unknown as Witness[];
   } catch (error) {
     console.error("Error in fetchApprovedWitnesses:", error);
     throw new Error("Error fetching witness posts");
@@ -40,7 +41,7 @@ export const getWitnessById = async (id: string): Promise<Witness> => {
   try {
     const { data, error } = await supabase
       .from("witnesses")
-      .select()
+      .select("*")
       .eq("id", id)
       .single();
 
@@ -49,7 +50,7 @@ export const getWitnessById = async (id: string): Promise<Witness> => {
       throw new Error("Error fetching witness post details");
     }
 
-    return data as Witness;
+    return data as unknown as Witness;
   } catch (error) {
     console.error("Error in getWitnessById:", error);
     throw new Error("Error fetching witness post details");
@@ -77,7 +78,7 @@ export const submitWitness = async (witnessData: any, userId: string): Promise<s
         created_at: now.toISOString(),
         expires_at: expiryDate.toISOString()
       })
-      .select()
+      .select("id")
       .single();
 
     if (error) {
@@ -147,7 +148,7 @@ export const fetchAllWitnesses = async (): Promise<Witness[]> => {
   try {
     const { data, error } = await supabase
       .from("witnesses")
-      .select()
+      .select("*")
       .order("created_at", { ascending: false });
     
     if (error) {
@@ -155,7 +156,7 @@ export const fetchAllWitnesses = async (): Promise<Witness[]> => {
       throw new Error("Error fetching all witnesses");
     }
 
-    return data as Witness[];
+    return data as unknown as Witness[];
   } catch (error) {
     console.error("Error in fetchAllWitnesses:", error);
     throw new Error("Error fetching all witnesses");
