@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -89,6 +88,14 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
           <div className={`h-2 w-full ${getSeverityColor(area.severity)}`} />
           <CardContent className="p-6">
             <div className="flex flex-col gap-4">
+              {/* Severity Badge - now placed at top, before the location */}
+              <Badge 
+                variant="outline" 
+                className={`self-start ${getSeverityColor(area.severity)} ${area.severity === 'low' ? 'text-black' : 'text-white'} text-xs font-bold rounded-full shadow-sm px-3 py-1 mb-1`}
+              >
+                {getSeverityText(area.severity)} опасност
+              </Badge>
+              
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="text-2xl font-bold text-foreground">{area.location}</h3>
@@ -97,13 +104,6 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
                     <span>{area.region || 'Неизвестен регион'}</span>
                   </div>
                 </div>
-                
-                <Badge 
-                  variant="outline" 
-                  className={`px-2 py-1 ${getSeverityColor(area.severity)} ${severity => severity === 'low' ? 'text-black' : 'text-white'} text-xs font-bold rounded-full shadow-sm whitespace-nowrap`}
-                >
-                  {getSeverityText(area.severity)} опасност
-                </Badge>
               </div>
               
               <div className="bg-background/80 rounded-lg p-4 shadow-inner">
