@@ -4,35 +4,7 @@ import App from './App.tsx'
 import './index.css'
 import { supabase } from './integrations/supabase/client'
 
-// Дефинираме OneSignal типове за по-добра поддръжка
-declare global {
-  interface Window {
-    supabase: typeof supabase;
-    OneSignal: {
-      initialized: boolean;
-      init: (options: any) => Promise<void>;
-      User: {
-        PushSubscription: {
-          id: string | null;
-          optedIn: boolean;
-          addEventListener: (event: string, callback: (event: any) => void) => void;
-          removeEventListener: (event: string, callback: (event: any) => void) => void;
-        }
-      };
-      isPushNotificationsSupported: () => Promise<boolean>;
-      Slidedown: {
-        promptPush: (options?: { force?: boolean, forceSlidedownOverNative?: boolean }) => Promise<any>;
-      };
-      getVersion: () => string;
-      Debug: {
-        setLogLevel: (level: string) => void;
-      };
-    };
-    OneSignalDeferred: Array<(OneSignal: Window['OneSignal']) => void>;
-  }
-}
-
-// Правим Supabase достъпен глобално за OneSignal интеграцията
+// Pravim Supabase dostupno globalno
 window.supabase = supabase;
 
 // Add cache busting mechanism

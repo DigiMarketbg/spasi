@@ -1,6 +1,6 @@
 
 // Cache name - update version to force refresh
-const CACHE_NAME = 'spasi-bg-v9';
+const CACHE_NAME = 'spasi-bg-v10';
 
 // Files to cache
 const urlsToCache = [
@@ -39,11 +39,6 @@ self.addEventListener('fetch', (event) => {
   const isHTMLRequest = event.request.headers.get('accept')?.includes('text/html');
   const isAPIRequest = event.request.url.includes('/api/') || 
                       event.request.url.includes('supabase');
-  
-  // За OneSignal заявки, позволяваме директен достъп до мрежата
-  if (event.request.url.includes('onesignal')) {
-    return;
-  }
   
   // For HTML navigation or API requests, use network-first strategy
   if (isNavigationRequest || isHTMLRequest || isAPIRequest) {
@@ -107,81 +102,3 @@ self.addEventListener('activate', (event) => {
   });
 });
 
-// Add event listener for push notifications
-self.addEventListener('push', function(event) {
-  try {
-    console.log('🟢 Получено push съобщение', event);
-    
-    let data;
-    try {
-      data = event.data.json();
-    } catch (e) {
-      console.error('❌ Грешка при парсване на push данни:', e);
-      data = {
-        title: 'Ново съобщение',
-        body: 'Получено е ново съобщение от Спаси БГ',
-        url: '/'
-      };
-    }
-    
-    const options = {
-      body: data.body || 'Получено е ново съобщение от Спаси БГ',
-      icon: '/icon-192.png',
-      badge: '/icon-192.png',
-      data: {
-        url: data.url || '/'
-      }
-    };
-
-    console.log('🟢 Показване на известие:', data.title, options);
-    
-    event.waitUntil(
-      self.registration.showNotification(data.title || 'Ново съобщение', options)
-    );
-  } catch (error) {
-    console.error('❌ Грешка при обработка на push известие:', error);
-  }
-});
-
-// Add event listener for notification click
-self.addEventListener('notificationclick', function(event) {
-  console.log('🟢 Известието е кликнато', event);
-  
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url || '/')
-  );
-});
-
-// Debug subscription information passing
-self.addEventListener('pushsubscriptionchange', function(event) {
-  console.log('🟢 pushsubscriptionchange event triggered', event);
-  
-  // Attempt to resubscribe if subscription changes
-  if (self.registration && self.registration.pushManager) {
-    console.log('🟢 Attempting to resubscribe');
-    const subscribeOptions = {
-      userVisibleOnly: true,
-      applicationServerKey: event.oldSubscription ? 
-        event.oldSubscription.options.applicationServerKey : 
-        undefined
-    };
-    
-    event.waitUntil(
-      self.registration.pushManager.subscribe(subscribeOptions)
-        .then(function(subscription) {
-          console.log('🟢 Resubscribed successfully', subscription);
-          // Here should be code to send the new subscription to your server
-        })
-        .catch(function(error) {
-          console.error('❌ Resubscription failed:', error);
-        })
-    );
-  }
-});
-
-// Important: Load OneSignal's service worker BEFORE any other code
-// This ensures the OneSignal SDK can properly handle push messages
-// и се изпълнява в контекста на нашия service worker
-console.log('🟢 Импортиране на OneSignal Service Worker');
-self.importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
