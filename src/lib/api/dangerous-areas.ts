@@ -7,11 +7,10 @@ export const fetchDangerousAreas = async (): Promise<DangerousArea[]> => {
     const { data, error } = await supabase
       .from('dangerous_areas')
       .select('*')
-      .eq('is_approved', true) // Only fetch approved areas
       .order('created_at', { ascending: false });
       
     if (error) {
-      console.error("Error fetching approved dangerous areas:", error);
+      console.error("Error fetching dangerous areas:", error);
       throw error;
     }
     
