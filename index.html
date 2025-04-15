@@ -34,6 +34,10 @@
           notifyButton: {
             enable: true,
           },
+          // Използваме subdomain fallback за решаване на проблема със Service Worker
+          subdomainName: "spasi-bg",
+          serviceWorkerPath: "/",
+          serviceWorkerParam: { scope: "/" }
         });
       });
     </script>
