@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -87,6 +86,7 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
       {filteredAreas.map((area) => (
         <Card key={area.id} className="overflow-hidden border-none bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 shadow-lg hover:shadow-xl transition-all duration-300">
           <div className={`h-2 w-full ${getSeverityColor(area.severity)}`} />
+          
           <CardContent className="p-6">
             <div className="flex flex-col gap-4">
               <Badge 
@@ -112,12 +112,9 @@ const DangerousAreasList = ({ areas, isLoading, searchQuery }: DangerousAreasLis
               
               <div className="flex items-center justify-between text-sm text-muted-foreground mt-2">
                 <div className="flex items-center gap-4">
-                  <div className="flex flex-col items-start">
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      <span>{formatDate(area.created_at)}</span>
-                    </div>
-                    <span className="text-xs text-muted-foreground ml-5">г.</span>
+                  <div className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    <span className="text-xs">{formatDate(area.created_at)} г.</span>
                   </div>
                   
                   {area.reported_by_name && (
