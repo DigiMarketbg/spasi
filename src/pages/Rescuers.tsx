@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 
 interface Rescuer {
   id: string;
@@ -17,6 +19,9 @@ interface Rescuer {
 }
 
 const Rescuers = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredRescuers, setFilteredRescuers] = useState<Rescuer[]>([]);
+  
   const { data: rescuers = [], isLoading } = useQuery({
     queryKey: ['rescuers'],
     queryFn: async () => {
@@ -30,6 +35,19 @@ const Rescuers = () => {
     }
   });
 
+  useEffect(() => {
+    if (rescuers.length > 0) {
+      const filtered = rescuers.filter(rescuer => {
+        const nameMatch = rescuer.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const cityMatch = rescuer.city.toLowerCase().includes(searchQuery.toLowerCase());
+        return nameMatch || cityMatch;
+      });
+      setFilteredRescuers(filtered);
+    } else {
+      setFilteredRescuers([]);
+    }
+  }, [searchQuery, rescuers]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('bg-BG');
   };
@@ -42,21 +60,36 @@ const Rescuers = () => {
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-3xl font-bold mb-2">Спасители</h1>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-muted-foreground mb-6">
               Тук отбелязваме хората, които са направили разлика. Благодарим на всички, които помагат и спасяват!
             </p>
+            
+            {/* Search Bar */}
+            <div className="mb-8 relative">
+              <div className="relative">
+                <Input
+                  placeholder="Търсене по име или град..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pr-10"
+                />
+                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              </div>
+            </div>
             
             {isLoading ? (
               <div className="flex justify-center items-center min-h-[200px]">
                 <p>Зареждане...</p>
               </div>
-            ) : rescuers.length === 0 ? (
+            ) : filteredRescuers.length === 0 ? (
               <div className="text-center py-16">
-                <p className="text-muted-foreground">Все още няма добавени спасители</p>
+                <p className="text-muted-foreground">
+                  {rescuers.length === 0 ? 'Все още няма добавени спасители' : 'Няма намерени спасители по зададените критерии'}
+                </p>
               </div>
             ) : (
               <div className="space-y-6">
-                {rescuers.map((rescuer) => (
+                {filteredRescuers.map((rescuer) => (
                   <Card key={rescuer.id}>
                     <CardContent className="p-6">
                       <div className="flex flex-col md:flex-row gap-6">
