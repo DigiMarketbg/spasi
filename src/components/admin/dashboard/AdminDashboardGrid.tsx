@@ -1,7 +1,7 @@
 
 import React from 'react';
 import AdminDashboardCard from '@/components/admin/dashboard/AdminDashboardCard';
-import { Mail, Handshake as HandshakeIcon, AlertTriangle } from 'lucide-react';
+import { Mail, Handshake, AlertTriangle } from 'lucide-react';
 
 interface AdminDashboardGridProps {
   unreadMessagesCount: number;
@@ -20,21 +20,21 @@ const AdminDashboardGrid = ({
         title="Непрочетени съобщения"
         value={unreadMessagesCount}
         description="от контактната форма"
-        icon={<Mail className="h-6 w-6 text-blue-500" />}
+        icon={Mail}
       />
       
       <AdminDashboardCard
         title="Чакащи заявки"
         value={pendingRequestsCount}
         description="за партньорство"
-        icon={<HandshakeIcon className="h-6 w-6 text-green-500" />}
+        icon={Handshake}
       />
       
       <AdminDashboardCard
         title="Опасни участъци"
         value={pendingDangerousAreasCount}
         description="чакащи одобрение"
-        icon={<AlertTriangle className="h-6 w-6 text-orange-500" />}
+        icon={AlertTriangle}
       />
     </div>
   );
