@@ -55,7 +55,10 @@ const FeatureButtons = () => {
         className={featureButtonStyle}
         onClick={navigateToDangerousAreas}
       >
-        <span className="text-[0.5rem] truncate w-[60px] text-center leading-tight">Опасни участъци</span>
+        <span className="text-[0.5rem] truncate w-[60px] text-center leading-tight flex flex-col">
+          <span>Опасни</span>
+          <span>Участъци</span>
+        </span>
       </Button>
       
       {/* Button 4: Placeholder */}
