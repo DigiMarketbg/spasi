@@ -24,7 +24,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
     try {
       setLoading(true);
       const allAreas = await fetchAllDangerousAreas();
-      console.log("Fetched areas:", allAreas);
+      console.log("Fetched areas in component:", allAreas);
       setAreas(allAreas);
     } catch (error) {
       console.error("Error fetching areas:", error);
@@ -44,10 +44,17 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
 
   const handleApprove = async (id: string) => {
     try {
-      console.log(`Attempting to approve area with ID: ${id}`);
+      console.log(`[handleApprove] Attempting to approve area with ID: ${id}`);
+      setLoading(true); // Set loading state
+      
       await updateDangerousAreaApproval(id, true);
       
-      // Обновяване на локалното състояние
+      console.log("[handleApprove] Approval request completed, refreshing data");
+      
+      // Immediately fetch fresh data from the server
+      await fetchAreas();
+      
+      // Also update local state to provide immediate feedback
       setAreas(prevAreas => 
         prevAreas.map(area => 
           area.id === id ? { ...area, is_approved: true } : area
@@ -59,17 +66,17 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
         description: "Опасният участък беше одобрен",
       });
       
-      // Презареждане на данните, за да сме сигурни, че състоянието е синхронизирано
-      fetchAreas();
-      
+      // Notify parent component of the change
       if (onRefresh) onRefresh();
     } catch (error) {
-      console.error("Error approving area:", error);
+      console.error("[handleApprove] Error approving area:", error);
       toast({
         title: "Грешка",
         description: "Не успяхме да одобрим опасния участък",
         variant: "destructive"
       });
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -77,15 +84,19 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
     if (!areaToDelete) return;
     
     try {
+      setLoading(true);
       await deleteDangerousArea(areaToDelete);
       
-      // Обновяване на локалното състояние
+      // Update local state
       setAreas(prevAreas => prevAreas.filter(area => area.id !== areaToDelete));
       
       toast({
         title: "Успешно",
         description: "Опасният участък беше изтрит",
       });
+      
+      // Refresh data to ensure consistency
+      await fetchAreas();
       
       if (onRefresh) onRefresh();
       setAreaToDelete(null);
@@ -97,6 +108,8 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
         description: "Не успяхме да изтрием опасния участък",
         variant: "destructive"
       });
+    } finally {
+      setLoading(false);
     }
   };
 

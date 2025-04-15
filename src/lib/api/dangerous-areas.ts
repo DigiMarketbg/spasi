@@ -23,6 +23,7 @@ export const fetchAllDangerousAreas = async (): Promise<DangerousArea[]> => {
     
   if (error) throw error;
   
+  console.log("Fetched all dangerous areas:", data);
   // Cast the returned data to ensure correct typing
   return (data || []) as DangerousArea[];
 };
@@ -55,20 +56,59 @@ export const addDangerousArea = async (areaData: Omit<DangerousArea, 'id' | 'cre
 };
 
 export const updateDangerousAreaApproval = async (id: string, isApproved: boolean): Promise<void> => {
-  console.log(`Updating dangerous area approval: ID ${id}, setting is_approved to ${isApproved}`);
+  console.log(`[updateDangerousAreaApproval] Starting approval update for ID ${id}, setting is_approved to ${isApproved}`);
   
-  const { error, data } = await supabase
-    .from('dangerous_areas')
-    .update({ is_approved: isApproved })
-    .eq('id', id)
-    .select();
+  try {
+    // First, verify the area exists
+    const { data: checkData, error: checkError } = await supabase
+      .from('dangerous_areas')
+      .select('id, is_approved')
+      .eq('id', id)
+      .single();
     
-  if (error) {
-    console.error("Error updating dangerous area:", error);
+    if (checkError) {
+      console.error("[updateDangerousAreaApproval] Error checking area existence:", checkError);
+      throw checkError;
+    }
+    
+    console.log("[updateDangerousAreaApproval] Area current status:", checkData);
+    
+    // Now update the approval status
+    const { data, error } = await supabase
+      .from('dangerous_areas')
+      .update({ is_approved: isApproved })
+      .eq('id', id)
+      .select();
+    
+    if (error) {
+      console.error("[updateDangerousAreaApproval] Error updating area:", error);
+      throw error;
+    }
+    
+    console.log("[updateDangerousAreaApproval] Update response:", data);
+    
+    // Verify the update was successful
+    const { data: verifyData, error: verifyError } = await supabase
+      .from('dangerous_areas')
+      .select('id, is_approved')
+      .eq('id', id)
+      .single();
+    
+    if (verifyError) {
+      console.error("[updateDangerousAreaApproval] Error verifying update:", verifyError);
+      throw verifyError;
+    }
+    
+    console.log("[updateDangerousAreaApproval] Post-update verification:", verifyData);
+    
+    if (verifyData.is_approved !== isApproved) {
+      console.error("[updateDangerousAreaApproval] Update failed, status mismatch:", verifyData);
+      throw new Error("Failed to update approval status");
+    }
+  } catch (error) {
+    console.error("[updateDangerousAreaApproval] Exception occurred:", error);
     throw error;
   }
-  
-  console.log("Update response:", data);
 };
 
 export const deleteDangerousArea = async (id: string): Promise<void> => {
