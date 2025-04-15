@@ -5,8 +5,9 @@ import { DangerousArea } from '@/types/dangerous-area';
 import { useToast } from '@/hooks/use-toast';
 import DangerousAreasList from '@/components/dangerous-areas/DangerousAreasList';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Trash2 } from 'lucide-react';
+import { AlertTriangle, Trash2, RefreshCw } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 interface DangerousAreasManagementProps {
   onRefresh?: () => void;
@@ -18,16 +19,19 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
   const [showPending, setShowPending] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [areaToDelete, setAreaToDelete] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchAreas = async () => {
     try {
+      setError(null);
       setLoading(true);
       const allAreas = await fetchAllDangerousAreas();
       console.log("Fetched areas in component:", allAreas);
       setAreas(allAreas);
     } catch (error) {
       console.error("Error fetching areas:", error);
+      setError("Не успяхме да заредим опасните участъци");
       toast({
         title: "Грешка",
         description: "Не успяхме да заредим опасните участъци",
@@ -45,21 +49,23 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
   const handleApprove = async (id: string) => {
     try {
       console.log(`[handleApprove] Attempting to approve area with ID: ${id}`);
-      setLoading(true); // Set loading state
+      setLoading(true);
+      setError(null);
       
-      await updateDangerousAreaApproval(id, true);
+      // Update the area approval status
+      const updatedArea = await updateDangerousAreaApproval(id, true);
       
-      console.log("[handleApprove] Approval request completed, refreshing data");
+      console.log("[handleApprove] Approval response:", updatedArea);
       
-      // Immediately fetch fresh data from the server
-      await fetchAreas();
-      
-      // Also update local state to provide immediate feedback
+      // Immediately update the UI with the updated area
       setAreas(prevAreas => 
         prevAreas.map(area => 
           area.id === id ? { ...area, is_approved: true } : area
         )
       );
+      
+      // Refresh the entire list to ensure consistency
+      await fetchAreas();
       
       toast({
         title: "Успешно",
@@ -70,13 +76,14 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
       if (onRefresh) onRefresh();
     } catch (error) {
       console.error("[handleApprove] Error approving area:", error);
+      setError("Не успяхме да одобрим опасния участък");
       toast({
         title: "Грешка",
         description: "Не успяхме да одобрим опасния участък",
         variant: "destructive"
       });
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 
@@ -85,6 +92,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
     
     try {
       setLoading(true);
+      setError(null);
       await deleteDangerousArea(areaToDelete);
       
       // Update local state
@@ -103,6 +111,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
       setDeleteDialogOpen(false);
     } catch (error) {
       console.error("Error deleting area:", error);
+      setError("Не успяхме да изтрием опасния участък");
       toast({
         title: "Грешка",
         description: "Не успяхме да изтрием опасния участък",
@@ -126,6 +135,13 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
 
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertTitle>Грешка</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold flex items-center gap-2">
           <AlertTriangle className="h-6 w-6 text-orange-500" />
@@ -153,9 +169,12 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
           </Button>
           <Button 
             variant="outline" 
-            onClick={fetchAreas} 
+            onClick={fetchAreas}
+            disabled={loading}
             size="sm"
+            className="flex items-center gap-1"
           >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             Обнови
           </Button>
         </div>

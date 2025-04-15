@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
@@ -15,10 +15,16 @@ import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
 const Moderator = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
-  const [refreshDangerousAreas, setRefreshDangerousAreas] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
   
   // Check if the user is a moderator or admin
   const isModerator = profile?.role === 'moderator' || profile?.role === 'admin';
+  
+  // Function to trigger refreshing of all data
+  const handleRefresh = useCallback(() => {
+    console.log("Triggering refresh in Moderator page");
+    setRefreshKey(prev => prev + 1);
+  }, []);
   
   // Fetch signals for moderators
   const { 
@@ -26,7 +32,7 @@ const Moderator = () => {
     isLoading: loadingSignals,
     refetch: refetchSignals
   } = useQuery({
-    queryKey: ['moderator-signals'],
+    queryKey: ['moderator-signals', refreshKey],
     queryFn: async () => {
       if (!user || !isModerator) return [];
       
@@ -64,12 +70,6 @@ const Moderator = () => {
     },
     enabled: !!user && isModerator
   });
-
-  // Function to trigger refreshing of dangerous areas
-  const handleRefreshDangerousAreas = () => {
-    console.log("Triggering refresh of dangerous areas");
-    setRefreshDangerousAreas(prev => prev + 1);
-  };
 
   // If not logged in or not a moderator
   if (!user || !isModerator) {
@@ -112,7 +112,7 @@ const Moderator = () => {
             
             <TabsContent value="dangerous-areas">
               <DangerousAreasManagement 
-                onRefresh={handleRefreshDangerousAreas}
+                onRefresh={handleRefresh}
               />
             </TabsContent>
           </Tabs>

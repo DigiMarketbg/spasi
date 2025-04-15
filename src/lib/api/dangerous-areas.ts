@@ -55,56 +55,30 @@ export const addDangerousArea = async (areaData: Omit<DangerousArea, 'id' | 'cre
   return data as DangerousArea;
 };
 
-export const updateDangerousAreaApproval = async (id: string, isApproved: boolean): Promise<void> => {
+export const updateDangerousAreaApproval = async (id: string, isApproved: boolean): Promise<DangerousArea> => {
   console.log(`[updateDangerousAreaApproval] Starting approval update for ID ${id}, setting is_approved to ${isApproved}`);
   
   try {
-    // First, verify the area exists
-    const { data: checkData, error: checkError } = await supabase
-      .from('dangerous_areas')
-      .select('id, is_approved')
-      .eq('id', id)
-      .single();
-    
-    if (checkError) {
-      console.error("[updateDangerousAreaApproval] Error checking area existence:", checkError);
-      throw checkError;
-    }
-    
-    console.log("[updateDangerousAreaApproval] Area current status:", checkData);
-    
-    // Now update the approval status
+    // Directly update without first checking
     const { data, error } = await supabase
       .from('dangerous_areas')
       .update({ is_approved: isApproved })
       .eq('id', id)
-      .select();
+      .select()
+      .single(); // Use single to get direct error if not found
     
     if (error) {
       console.error("[updateDangerousAreaApproval] Error updating area:", error);
       throw error;
     }
     
-    console.log("[updateDangerousAreaApproval] Update response:", data);
+    console.log("[updateDangerousAreaApproval] Update successful:", data);
     
-    // Verify the update was successful
-    const { data: verifyData, error: verifyError } = await supabase
-      .from('dangerous_areas')
-      .select('id, is_approved')
-      .eq('id', id)
-      .single();
-    
-    if (verifyError) {
-      console.error("[updateDangerousAreaApproval] Error verifying update:", verifyError);
-      throw verifyError;
+    if (!data) {
+      throw new Error(`No data returned after update for ID ${id}`);
     }
     
-    console.log("[updateDangerousAreaApproval] Post-update verification:", verifyData);
-    
-    if (verifyData.is_approved !== isApproved) {
-      console.error("[updateDangerousAreaApproval] Update failed, status mismatch:", verifyData);
-      throw new Error("Failed to update approval status");
-    }
+    return data as DangerousArea;
   } catch (error) {
     console.error("[updateDangerousAreaApproval] Exception occurred:", error);
     throw error;
