@@ -1,6 +1,6 @@
 
 // Cache name - update version to force refresh
-const CACHE_NAME = 'spasi-bg-v9';
+const CACHE_NAME = 'spasi-bg-v10';
 
 // Files to cache
 const urlsToCache = [
@@ -15,7 +15,6 @@ console.log('🟢 Service Worker зареден, версия:', CACHE_NAME);
 
 // Important: Load OneSignal's service worker BEFORE any other code
 // This ensures the OneSignal SDK can properly handle push messages
-// и се изпълнява в контекста на нашия service worker
 console.log('🟢 Импортиране на OneSignal Service Worker');
 self.importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
@@ -128,13 +127,29 @@ self.addEventListener('push', function(event) {
       };
     }
     
+    console.log('📦 Push данни:', data);
+    
     const options = {
       body: data.body || 'Получено е ново съобщение от Спаси БГ',
       icon: '/icon-192.png',
       badge: '/icon-192.png',
       data: {
         url: data.url || '/'
-      }
+      },
+      // Add additional options for better notifications
+      vibrate: [100, 50, 100],
+      requireInteraction: true, // Keep the notification until dismissed
+      tag: 'spasi-bg-notification', // Group notifications
+      actions: [
+        {
+          action: 'open',
+          title: 'Отвори'
+        },
+        {
+          action: 'close',
+          title: 'Затвори'
+        }
+      ]
     };
 
     console.log('🟢 Показване на известие:', data.title, options);
@@ -144,6 +159,14 @@ self.addEventListener('push', function(event) {
     );
   } catch (error) {
     console.error('❌ Грешка при обработка на push известие:', error);
+    
+    // Fallback notification if there's an error
+    event.waitUntil(
+      self.registration.showNotification('Ново съобщение', {
+        body: 'Получено е ново съобщение от Спаси БГ',
+        icon: '/icon-192.png'
+      })
+    );
   }
 });
 
@@ -152,7 +175,31 @@ self.addEventListener('notificationclick', function(event) {
   console.log('🟢 Известието е кликнато', event);
   
   event.notification.close();
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url || '/')
-  );
+  
+  // Handle notification action buttons
+  if (event.action === 'open' || !event.action) {
+    // Open the URL if action is 'open' or if clicked on the notification body
+    const urlToOpen = event.notification.data?.url || '/';
+    console.log('🔗 Отваряне на URL:', urlToOpen);
+    
+    event.waitUntil(
+      clients.matchAll({type: 'window'}).then(function(clientList) {
+        // Check if there's already a window open
+        for (let i = 0; i < clientList.length; i++) {
+          const client = clientList[i];
+          if (client.url.indexOf(urlToOpen) !== -1 && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // If no window is open, open a new one
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
+    );
+  } else if (event.action === 'close') {
+    // Just close the notification, which already happened above
+    console.log('🔴 Известието е затворено');
+  }
 });
+
