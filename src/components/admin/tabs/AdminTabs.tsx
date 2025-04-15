@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -16,6 +17,7 @@ interface AdminTabsProps {
   loadingUsers: boolean;
   loadingPartnerRequests: boolean;
   loadingContactMessages: boolean;
+  loadingDangerousAreas?: boolean;
   unreadCount: number;
   pendingRequestsCount: number;
   onRefreshSignals: () => void;
@@ -33,6 +35,7 @@ const AdminTabs = ({
   loadingUsers,
   loadingPartnerRequests,
   loadingContactMessages,
+  loadingDangerousAreas,
   unreadCount,
   pendingRequestsCount,
   onRefreshSignals,
@@ -145,7 +148,10 @@ const AdminTabs = ({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <DangerousAreasManagement onRefresh={onRefreshSignals} />
+            <DangerousAreasManagement 
+              onRefresh={onRefreshSignals} 
+              loading={loadingDangerousAreas} 
+            />
           </CardContent>
         </Card>
       </TabsContent>

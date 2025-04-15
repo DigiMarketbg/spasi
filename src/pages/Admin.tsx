@@ -9,11 +9,13 @@ import AdminTabs from '@/components/admin/tabs/AdminTabs';
 import { Button } from '@/components/ui/button';
 import { useAdminData } from '@/components/admin/hooks/useAdminData';
 import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
+import { toast } from 'sonner';
 
 const Admin = () => {
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [pendingDangerousAreas, setPendingDangerousAreas] = useState(0);
+  const [loadingDangerousAreas, setLoadingDangerousAreas] = useState(true);
 
   // Use the custom hook to manage all admin data
   const {
@@ -38,11 +40,15 @@ const Admin = () => {
     if (user && isAdmin) {
       const getPendingDangerousAreas = async () => {
         try {
+          setLoadingDangerousAreas(true);
           const areas = await fetchAllDangerousAreas();
           const pendingCount = areas.filter(area => !area.is_approved).length;
           setPendingDangerousAreas(pendingCount);
         } catch (error) {
           console.error("Error fetching dangerous areas:", error);
+          toast.error("Грешка при зареждане на опасните участъци");
+        } finally {
+          setLoadingDangerousAreas(false);
         }
       };
       
@@ -92,6 +98,7 @@ const Admin = () => {
             loadingUsers={loadingUsers}
             loadingPartnerRequests={loadingPartnerRequests}
             loadingContactMessages={loadingContactMessages}
+            loadingDangerousAreas={loadingDangerousAreas}
             unreadCount={unreadCount}
             pendingRequestsCount={pendingRequestsCount}
             onRefreshSignals={fetchSignals}
