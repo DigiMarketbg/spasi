@@ -58,36 +58,18 @@ export const addDangerousArea = async (areaData: Omit<DangerousArea, 'id' | 'cre
 export const updateDangerousAreaApproval = async (id: string, isApproved: boolean): Promise<void> => {
   console.log(`[updateDangerousAreaApproval] Starting approval update for ID ${id}, setting is_approved to ${isApproved}`);
   
-  // Using a completely different approach to update the approval status
-  try {
-    const { error } = await supabase
-      .from('dangerous_areas')
-      .update({ is_approved: isApproved })
-      .eq('id', id);
-    
-    if (error) {
-      console.error("[updateDangerousAreaApproval] Error updating area:", error);
-      throw error;
-    }
-    
-    // Double check the update was successful by fetching the record
-    const { data, error: fetchError } = await supabase
-      .from('dangerous_areas')
-      .select('*')
-      .eq('id', id)
-      .single();
-      
-    if (fetchError) {
-      console.error("[updateDangerousAreaApproval] Error fetching updated area:", fetchError);
-    } else {
-      console.log("[updateDangerousAreaApproval] Area after update:", data);
-    }
-    
-    console.log("[updateDangerousAreaApproval] Update successful");
-  } catch (error) {
-    console.error("[updateDangerousAreaApproval] Exception caught:", error);
+  // Simplified update approach with no returns
+  const { error } = await supabase
+    .from('dangerous_areas')
+    .update({ is_approved: isApproved })
+    .eq('id', id);
+  
+  if (error) {
+    console.error("[updateDangerousAreaApproval] Error updating area:", error);
     throw error;
   }
+  
+  console.log("[updateDangerousAreaApproval] Update successful");
 };
 
 export const deleteDangerousArea = async (id: string): Promise<void> => {

@@ -58,7 +58,8 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
       console.log(`Approving area with ID: ${id}`);
       await handleApprove(id);
       console.log("Refreshing areas after approval");
-      await fetchAreas(); // Force refresh after approval
+      // Force refresh to reflect the updated state
+      fetchAreas();
     } catch (error) {
       console.error("Error in handleApproveArea:", error);
     }
@@ -86,6 +87,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
         isAdmin={true}
         onApprove={handleApproveArea}
         onDelete={confirmDelete}
+        processingApproval={processingApproval}
       />
       
       <DeleteAreaDialog

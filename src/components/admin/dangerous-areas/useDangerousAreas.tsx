@@ -41,8 +41,12 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
       await updateDangerousAreaApproval(id, true);
       console.log("[handleApprove] Area successfully approved in database");
       
-      // Force a complete refresh from the database to get updated data
-      await fetchAreas();
+      // Update local state immediately to show change
+      setAreas(prevAreas => 
+        prevAreas.map(area => 
+          area.id === id ? {...area, is_approved: true} : area
+        )
+      );
       
       toast({
         title: "Успешно",
@@ -54,6 +58,9 @@ export const useDangerousAreas = (onExternalRefresh?: () => void) => {
         console.log("[handleApprove] Triggering external refresh");
         onExternalRefresh();
       }
+      
+      // Also refresh from database to ensure everything is in sync
+      await fetchAreas();
       
       return true;
     } catch (error: any) {
