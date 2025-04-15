@@ -12,7 +12,7 @@ export const fetchApprovedWitnesses = async (): Promise<Witness[]> => {
     // Get all approved witness posts that haven't expired
     const { data, error } = await supabase
       .from("witnesses")
-      .select("*, profiles:user_id(full_name, email)")
+      .select("*")
       .eq("is_approved", true)
       .gte("expires_at", now)
       .order("created_at", { ascending: false });
@@ -24,11 +24,7 @@ export const fetchApprovedWitnesses = async (): Promise<Witness[]> => {
 
     console.log("Successfully fetched witness posts:", data);
     
-    // Process the data to conform to our Witness type
-    return data.map((item) => ({
-      ...item,
-      profiles: item.profiles || { full_name: null, email: null }
-    }));
+    return data as Witness[];
   } catch (error) {
     console.error("Error in fetchApprovedWitnesses:", error);
     throw new Error("Error fetching witness posts");
@@ -44,7 +40,7 @@ export const getWitnessById = async (id: string): Promise<Witness> => {
   try {
     const { data, error } = await supabase
       .from("witnesses")
-      .select("*, profiles:user_id(full_name, email)")
+      .select("*")
       .eq("id", id)
       .single();
 
@@ -53,11 +49,7 @@ export const getWitnessById = async (id: string): Promise<Witness> => {
       throw new Error("Error fetching witness post details");
     }
 
-    // Process the data to conform to our Witness type
-    return {
-      ...data,
-      profiles: data.profiles || { full_name: null, email: null }
-    };
+    return data as Witness;
   } catch (error) {
     console.error("Error in getWitnessById:", error);
     throw new Error("Error fetching witness post details");
@@ -155,7 +147,7 @@ export const fetchAllWitnesses = async (): Promise<Witness[]> => {
   try {
     const { data, error } = await supabase
       .from("witnesses")
-      .select("*, profiles:user_id(full_name, email)")
+      .select("*")
       .order("created_at", { ascending: false });
     
     if (error) {
@@ -163,11 +155,7 @@ export const fetchAllWitnesses = async (): Promise<Witness[]> => {
       throw new Error("Error fetching all witnesses");
     }
 
-    // Process the data
-    return data.map((item) => ({
-      ...item,
-      profiles: item.profiles || { full_name: null, email: null }
-    }));
+    return data as Witness[];
   } catch (error) {
     console.error("Error in fetchAllWitnesses:", error);
     throw new Error("Error fetching all witnesses");
