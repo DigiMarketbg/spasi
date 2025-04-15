@@ -24,6 +24,7 @@ export const fetchAllSignals = async (): Promise<Signal[]> => {
     const processedData = data.map(signal => {
       const processedSignal: Signal = {
         ...signal,
+        is_urgent: signal.is_urgent || false, // Ensure is_urgent exists and defaults to false
         profiles: { full_name: null, email: null }
       };
       return processedSignal;
@@ -58,6 +59,7 @@ export const getSignalById = async (id: string): Promise<Signal> => {
     // Handle profiles property safely with type checking
     const processedSignal: Signal = {
       ...data,
+      is_urgent: data.is_urgent || false, // Ensure is_urgent exists and defaults to false
       // Ensure profiles is always a valid object with our expected structure
       profiles: { full_name: null, email: null }
     };
@@ -110,7 +112,12 @@ export const updateSignalStatus = async (
 ): Promise<void> => {
   console.log(`Updating signal ${id} to status ${newStatus} ${isUrgent !== undefined ? `and isUrgent: ${isUrgent}` : ''}`);
   
-  const updateData: any = { 
+  // Create the update object with the status and is_approved fields
+  const updateData: {
+    status: string;
+    is_approved: boolean;
+    is_urgent?: boolean;
+  } = { 
     status: newStatus, 
     is_approved: newStatus === 'approved'
   };

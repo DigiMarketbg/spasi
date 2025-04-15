@@ -8,8 +8,17 @@ import { format } from 'date-fns';
 import { bg } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { SignalProps } from './SignalCard';
 import { useTheme } from '@/components/ThemeProvider';
+
+// Define a type for the transformed signal data to avoid recursive references
+interface UrgentSignalDisplay {
+  id: string;
+  title: string;
+  city: string;
+  category: string;
+  description: string;
+  createdAt: string;
+}
 
 const UrgentSignalsBanner = () => {
   const { theme } = useTheme();
@@ -33,7 +42,7 @@ const UrgentSignalsBanner = () => {
         category: signal.category,
         description: signal.description,
         createdAt: format(new Date(signal.created_at), 'd MMMM yyyy', { locale: bg }),
-      } as SignalProps)) || [];
+      } as UrgentSignalDisplay)) || [];
     },
     enabled: true
   });
