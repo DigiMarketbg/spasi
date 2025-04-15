@@ -7,5 +7,7 @@ import { Database } from './integrations/supabase/types';
 declare global {
   interface Window {
     supabase: SupabaseClient<Database>;
+    OneSignal: any;
+    OneSignalDeferred: any[];
   }
 }

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bg">
   <head>
@@ -22,6 +23,20 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Спаси БГ" />
+    
+    <!-- OneSignal Web Push Notifications -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "5e8423e4-9749-42ba-b564-f4dc70d93066",
+          notifyButton: {
+            enable: true,
+          },
+        });
+      });
+    </script>
     
     <!-- Manifest link for PWA -->
     <link rel="manifest" href="/manifest.json" />

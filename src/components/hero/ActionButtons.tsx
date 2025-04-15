@@ -4,6 +4,7 @@ import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
+import NotificationButton from './NotificationButton';
 
 const ActionButtons = () => {
   const navigate = useNavigate();
@@ -24,6 +25,8 @@ const ActionButtons = () => {
         <AlertTriangle className="h-5 w-5 relative z-10" />
         <span className="relative z-10">Подай сигнал</span>
       </Button>
+      
+      <NotificationButton />
     </div>
   );
 };
