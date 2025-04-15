@@ -1,6 +1,6 @@
 
 // Cache name - update version to force refresh
-const CACHE_NAME = 'spasi-bg-v8';
+const CACHE_NAME = 'spasi-bg-v9';
 
 // Files to cache
 const urlsToCache = [
@@ -31,6 +31,9 @@ self.addEventListener('install', (event) => {
 
 // Fetch event - add network-first strategy for HTML and API requests
 self.addEventListener('fetch', (event) => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') return;
+  
   // Check if this is a navigation request (HTML)
   const isNavigationRequest = event.request.mode === 'navigate';
   const isHTMLRequest = event.request.headers.get('accept')?.includes('text/html');
@@ -148,6 +151,33 @@ self.addEventListener('notificationclick', function(event) {
   event.waitUntil(
     clients.openWindow(event.notification.data.url || '/')
   );
+});
+
+// Debug subscription information passing
+self.addEventListener('pushsubscriptionchange', function(event) {
+  console.log('🟢 pushsubscriptionchange event triggered', event);
+  
+  // Attempt to resubscribe if subscription changes
+  if (self.registration && self.registration.pushManager) {
+    console.log('🟢 Attempting to resubscribe');
+    const subscribeOptions = {
+      userVisibleOnly: true,
+      applicationServerKey: event.oldSubscription ? 
+        event.oldSubscription.options.applicationServerKey : 
+        undefined
+    };
+    
+    event.waitUntil(
+      self.registration.pushManager.subscribe(subscribeOptions)
+        .then(function(subscription) {
+          console.log('🟢 Resubscribed successfully', subscription);
+          // Here should be code to send the new subscription to your server
+        })
+        .catch(function(error) {
+          console.error('❌ Resubscription failed:', error);
+        })
+    );
+  }
 });
 
 // Important: Load OneSignal's service worker BEFORE any other code

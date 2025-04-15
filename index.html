@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bg">
   <head>
@@ -68,6 +69,14 @@
           try {
             console.log("🔔 Инициализиране на OneSignal SDK...");
             
+            // Разширена диагностика преди инициализацията
+            if (window.navigator && window.navigator.serviceWorker) {
+              const registrations = await navigator.serviceWorker.getRegistrations();
+              console.log("🔍 Съществуващи service worker регистрации:", registrations);
+            } else {
+              console.warn("⚠️ ServiceWorker API не е достъпен в този браузър");
+            }
+            
             await OneSignal.init({
               appId: "35af33cb-8ab8-4d90-b789-17fb5c45542b",
               allowLocalhostAsSecureOrigin: true,
@@ -76,7 +85,7 @@
                 enable: false, // Не показваме вградения бутон за известия
               },
               serviceWorkerParam: { scope: "/" },
-              serviceWorkerPath: "/sw.js",
+              serviceWorkerPath: "/sw.js", // Важно: Пътят трябва да е точен
               promptOptions: {
                 slidedown: {
                   prompts: [
@@ -91,65 +100,109 @@
                     }
                   ]
                 }
-              }
+              },
+              // Важно: Добавяме повече настройки за надеждност
+              welcomeNotification: {
+                disable: true
+              },
+              persistNotification: false
             });
             
-            // Активираме логване за отстраняване на грешки
-            OneSignal.Debug.setLogLevel("trace");
-            
-            // Debug info
-            console.log("✅ OneSignal инициализиран с версия:", OneSignal.getVersion());
-            
-            const isPushSupported = await OneSignal.isPushNotificationsSupported();
-            if (isPushSupported) {
-              console.log("✅ Push известията са поддържани от този браузър");
+            // Разширена диагностика след инициализацията
+            try {
+              // Активираме логване за отстраняване на грешки
+              OneSignal.Debug.setLogLevel("trace");
               
-              // Проверяваме текущото състояние на абонамента
-              const isPushEnabled = await OneSignal.User.PushSubscription.optedIn;
-              console.log("🔔 Текущ статус на абонамента:", isPushEnabled ? "абониран" : "неабониран");
+              // Debug info
+              console.log("✅ OneSignal инициализиран с версия:", OneSignal.getVersion());
               
-              // Получаваме player ID, ако потребителят е абониран
-              if (isPushEnabled) {
-                const playerId = await OneSignal.User.PushSubscription.id;
-                console.log("🆔 OneSignal Player ID:", playerId || "няма");
+              // Проверяваме дали push е поддържан
+              const isPushSupported = await OneSignal.isPushNotificationsSupported();
+              if (isPushSupported) {
+                console.log("✅ Push известията са поддържани от този браузър");
                 
-                if (playerId) {
-                  // Важно: Това осигурява, че абонатът е записан в базата данни
-                  // веднага след зареждане, ако вече е абониран
-                  try {
-                    if (window.supabase) {
-                      // Получаваме ID на потребителя, ако е логнат
-                      let userId = null;
-                      try {
-                        const { data } = await window.supabase.auth.getUser();
-                        userId = data?.user?.id || null;
-                      } catch (e) {
-                        console.error("❌ Грешка при получаване на потребителя:", e);
+                // Проверяваме текущото състояние на абонамента
+                const isPushEnabled = await OneSignal.User.PushSubscription.optedIn;
+                console.log("🔔 Текущ статус на абонамента:", isPushEnabled ? "абониран" : "неабониран");
+                
+                // Активно наблюдаваме за промени в състоянието на абонамента
+                OneSignal.User.PushSubscription.addEventListener('change', (event) => {
+                  console.log("🔄 Промяна на статуса на push абонамента:", event);
+                });
+                
+                // Получаваме player ID, ако потребителят е абониран
+                if (isPushEnabled) {
+                  const playerId = await OneSignal.User.PushSubscription.id;
+                  console.log("🆔 OneSignal Player ID:", playerId || "няма");
+                  
+                  if (playerId) {
+                    // Важно: Това осигурява, че абонатът е записан в базата данни
+                    // веднага след зареждане, ако вече е абониран
+                    try {
+                      if (window.supabase) {
+                        // Получаваме ID на потребителя, ако е логнат
+                        let userId = null;
+                        try {
+                          const { data } = await window.supabase.auth.getUser();
+                          userId = data?.user?.id || null;
+                        } catch (e) {
+                          console.error("❌ Грешка при получаване на потребителя:", e);
+                        }
+                        
+                        console.log("💾 Записване на push абонат при зареждане:", { playerId, userId });
+                        
+                        const { error } = await window.supabase
+                          .from('push_subscribers')
+                          .upsert([{
+                            user_id: userId,
+                            player_id: playerId,
+                            updated_at: new Date().toISOString()
+                          }], { onConflict: 'player_id' });
+                        
+                        if (error) {
+                          console.error("❌ Грешка при запис на push абонат:", error);
+                        } else {
+                          console.log("✅ Push абонатът е записан успешно при зареждане!");
+                        }
                       }
-                      
-                      console.log("💾 Записване на push абонат при зареждане:", { playerId, userId });
-                      
-                      const { error } = await window.supabase
-                        .from('push_subscribers')
-                        .upsert([{
-                          user_id: userId,
-                          player_id: playerId,
-                          updated_at: new Date().toISOString()
-                        }], { onConflict: 'player_id' });
-                      
-                      if (error) {
-                        console.error("❌ Грешка при запис на push абонат:", error);
-                      } else {
-                        console.log("✅ Push абонатът е записан успешно при зареждане!");
-                      }
+                    } catch (error) {
+                      console.error("❌ Грешка при запис на абонамент при зареждане:", error);
                     }
-                  } catch (error) {
-                    console.error("❌ Грешка при запис на абонамент при зареждане:", error);
                   }
                 }
+              } else {
+                console.log("⚠️ Push известията НЕ се поддържат от този браузър");
               }
-            } else {
-              console.log("⚠️ Push известията НЕ се поддържат от този браузър");
+              
+              // Активно наблюдаваме за грешки
+              window.addEventListener('error', function(event) {
+                if (event.message && event.message.includes('OneSignal')) {
+                  console.error("🔴 OneSignal error:", event);
+                }
+              });
+              
+              // Проверяваме service worker регистрацията след OneSignal инициализация
+              setTimeout(async () => {
+                if (navigator.serviceWorker) {
+                  try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    console.log("🔍 Service worker регистрации след OneSignal инициализация:", registrations);
+                    
+                    // Проверка дали има активен service worker за OneSignal
+                    const hasOneSignalSW = registrations.some(reg => 
+                      reg.scope.includes(window.location.origin) && 
+                      (reg.active?.scriptURL.includes('OneSignal') || reg.active?.scriptURL.includes('sw.js'))
+                    );
+                    
+                    console.log("🔔 OneSignal service worker активен:", hasOneSignalSW);
+                  } catch (error) {
+                    console.error("❌ Грешка при проверка на service worker регистрации:", error);
+                  }
+                }
+              }, 3000);
+              
+            } catch (debugError) {
+              console.error("❌ Грешка при диагностика на OneSignal:", debugError);
             }
           } catch (error) {
             console.error("❌ Грешка при инициализиране на OneSignal:", error);
@@ -190,7 +243,9 @@
           try {
             console.log("Регистриране на Service Worker...");
             // Register the service worker
-            const registration = await navigator.serviceWorker.register('/sw.js');
+            const registration = await navigator.serviceWorker.register('/sw.js', {
+              scope: '/' // Explicit scope setting
+            });
             console.log('Service worker регистриран успешно.', registration);
             
             // Check for updates immediately
