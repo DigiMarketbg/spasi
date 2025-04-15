@@ -12,7 +12,7 @@ export const fetchApprovedWitnesses = async (): Promise<Witness[]> => {
     // Get all approved witness posts that haven't expired
     const { data, error } = await supabase
       .from("witnesses")
-      .select("*")
+      .select()
       .eq("is_approved", true)
       .gte("expires_at", now)
       .order("created_at", { ascending: false });
@@ -40,7 +40,7 @@ export const getWitnessById = async (id: string): Promise<Witness> => {
   try {
     const { data, error } = await supabase
       .from("witnesses")
-      .select("*")
+      .select()
       .eq("id", id)
       .single();
 
@@ -77,7 +77,7 @@ export const submitWitness = async (witnessData: any, userId: string): Promise<s
         created_at: now.toISOString(),
         expires_at: expiryDate.toISOString()
       })
-      .select("id")
+      .select()
       .single();
 
     if (error) {
@@ -147,7 +147,7 @@ export const fetchAllWitnesses = async (): Promise<Witness[]> => {
   try {
     const { data, error } = await supabase
       .from("witnesses")
-      .select("*")
+      .select()
       .order("created_at", { ascending: false });
     
     if (error) {

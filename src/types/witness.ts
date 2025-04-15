@@ -35,8 +35,4 @@ export interface Witness {
   created_at: string;
   expires_at: string;
   user_id: string;
-  profiles?: {
-    full_name?: string | null;
-    email?: string | null;
-  } | null;
 }
