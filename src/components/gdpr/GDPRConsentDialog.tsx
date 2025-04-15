@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import {
   Dialog,
@@ -195,7 +194,11 @@ const GDPRConsentDialog: React.FC<GDPRConsentDialogProps> = ({
         </Tabs>
         
         <DialogFooter className="pt-4 flex flex-col sm:flex-row gap-2">
-          <Button className="w-full" onClick={onAccept} variant="default">
+          <Button 
+            className="w-full px-3 py-2 text-sm" 
+            onClick={onAccept} 
+            variant="default"
+          >
             <ShieldCheck className="mr-2 h-4 w-4" />
             Приемам всички
           </Button>
