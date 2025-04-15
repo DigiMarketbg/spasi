@@ -75,6 +75,39 @@ export type Database = {
         }
         Relationships: []
       }
+      dangerous_areas: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          location: string
+          map_link: string | null
+          region: string | null
+          reported_by_name: string | null
+          severity: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          location: string
+          map_link?: string | null
+          region?: string | null
+          reported_by_name?: string | null
+          severity: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          location?: string
+          map_link?: string | null
+          region?: string | null
+          reported_by_name?: string | null
+          severity?: string
+        }
+        Relationships: []
+      }
       partners: {
         Row: {
           company_name: string

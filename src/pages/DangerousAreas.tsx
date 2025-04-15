@@ -1,30 +1,21 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, AlertTriangle, MapPin, Plus, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DangerousAreasList from '@/components/dangerous-areas/DangerousAreasList';
+import { fetchDangerousAreas } from '@/lib/api/dangerous-areas';
 
 const DangerousAreas = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   const { data: dangerousAreas = [], isLoading } = useQuery({
     queryKey: ['dangerous-areas'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('dangerous_areas')
-        .select('*')
-        .order('created_at', { ascending: false });
-        
-      if (error) throw error;
-      return data || [];
-    }
+    queryFn: fetchDangerousAreas
   });
 
   return (

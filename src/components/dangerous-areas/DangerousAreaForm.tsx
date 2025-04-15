@@ -1,10 +1,8 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { dangerousAreaSchema } from '@/types/dangerous-area';
 import type { DangerousAreaFormValues } from '@/types/dangerous-area';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -14,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MapPin, AlertTriangle, Link as LinkIcon } from 'lucide-react';
+import { addDangerousArea } from '@/lib/api/dangerous-areas';
 
 const DangerousAreaForm = () => {
   const navigate = useNavigate();
@@ -35,14 +34,7 @@ const DangerousAreaForm = () => {
     setIsSubmitting(true);
     
     try {
-      const { error } = await supabase
-        .from('dangerous_areas')
-        .insert([{
-          ...data,
-          created_at: new Date().toISOString(),
-        }]);
-      
-      if (error) throw error;
+      await addDangerousArea(data);
       
       toast.success('Опасният участък беше добавен успешно!');
       navigate('/dangerous-areas');
