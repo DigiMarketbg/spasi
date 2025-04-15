@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, List, Plus, Info, User, Palette } from 'lucide-react';
@@ -103,7 +102,7 @@ const MobileNavBar = () => {
                 )} />
               </div>
               <span className={cn(
-                "text-xs truncate max-w-full", // Added truncate and max-w-full
+                "text-[10px] text-center w-full overflow-hidden whitespace-nowrap", // Smaller text, centered, prevent wrapping
                 isActive ? "text-primary" : "text-muted-foreground"
               )}>{item.name}</span>
             </Link>
@@ -117,4 +116,3 @@ const MobileNavBar = () => {
 };
 
 export default MobileNavBar;
-
