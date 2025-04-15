@@ -59,23 +59,44 @@ export const updateDangerousAreaApproval = async (id: string, isApproved: boolea
   console.log(`[updateDangerousAreaApproval] Starting approval update for ID ${id}, setting is_approved to ${isApproved}`);
   
   try {
-    // Directly update without first checking
+    // Direct update with improved verification
     const { data, error } = await supabase
       .from('dangerous_areas')
       .update({ is_approved: isApproved })
       .eq('id', id)
       .select()
-      .single(); // Use single to get direct error if not found
+      .single();
     
     if (error) {
       console.error("[updateDangerousAreaApproval] Error updating area:", error);
       throw error;
     }
     
-    console.log("[updateDangerousAreaApproval] Update successful:", data);
+    console.log("[updateDangerousAreaApproval] Update successful, returned data:", data);
     
     if (!data) {
       throw new Error(`No data returned after update for ID ${id}`);
+    }
+    
+    // Verify the update was successful by checking the returned data
+    if (data.is_approved !== isApproved) {
+      console.error(`[updateDangerousAreaApproval] Update failed: expected is_approved=${isApproved}, got is_approved=${data.is_approved}`);
+      throw new Error('Database update did not apply correctly');
+    }
+    
+    // Double-check by fetching the record again
+    const { data: verificationData, error: verificationError } = await supabase
+      .from('dangerous_areas')
+      .select('*')
+      .eq('id', id)
+      .single();
+      
+    if (verificationError) {
+      console.error("[updateDangerousAreaApproval] Error verifying update:", verificationError);
+    } else if (verificationData && verificationData.is_approved !== isApproved) {
+      console.error(`[updateDangerousAreaApproval] Verification failed: expected is_approved=${isApproved}, got is_approved=${verificationData.is_approved}`);
+    } else {
+      console.log("[updateDangerousAreaApproval] Verification successful:", verificationData);
     }
     
     return data as DangerousArea;

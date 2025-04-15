@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -146,7 +145,7 @@ const AdminTabs = ({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <DangerousAreasManagement />
+            <DangerousAreasManagement onRefresh={onRefreshSignals} />
           </CardContent>
         </Card>
       </TabsContent>

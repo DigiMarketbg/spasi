@@ -20,6 +20,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [areaToDelete, setAreaToDelete] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [processingApproval, setProcessingApproval] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchAreas = async () => {
@@ -49,6 +50,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
   const handleApprove = async (id: string) => {
     try {
       console.log(`[handleApprove] Attempting to approve area with ID: ${id}`);
+      setProcessingApproval(id);
       setLoading(true);
       setError(null);
       
@@ -56,6 +58,10 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
       const updatedArea = await updateDangerousAreaApproval(id, true);
       
       console.log("[handleApprove] Approval response:", updatedArea);
+      
+      if (!updatedArea || updatedArea.is_approved !== true) {
+        throw new Error("Одобрението не беше приложено правилно");
+      }
       
       // Immediately update the UI with the updated area
       setAreas(prevAreas => 
@@ -84,6 +90,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
       });
     } finally {
       setLoading(false);
+      setProcessingApproval(null);
     }
   };
 
