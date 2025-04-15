@@ -77,7 +77,13 @@ export const getSignalById = async (id: string): Promise<Signal> => {
     // Try first with the join
     const { data, error } = await supabase
       .from("signals")
-      .select("*")
+      .select(`
+        *,
+        profiles:user_id (
+          full_name,
+          email
+        )
+      `)
       .eq("id", id)
       .single();
 
