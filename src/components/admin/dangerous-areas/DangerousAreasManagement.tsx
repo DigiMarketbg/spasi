@@ -52,6 +52,11 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
 
   const pendingCount = areas.filter(area => !area.is_approved).length;
 
+  // Create a new function that returns a Promise to match the expected type
+  const handleApproveArea = async (id: string): Promise<void> => {
+    return handleApprove(id);
+  };
+
   return (
     <div className="space-y-6">
       <ErrorDisplay error={error} />
@@ -72,10 +77,7 @@ const DangerousAreasManagement: React.FC<DangerousAreasManagementProps> = ({ onR
         isLoading={loading}
         searchQuery=""
         isAdmin={true}
-        onApprove={(id) => {
-          console.log(`Approve button clicked for ID: ${id}`);
-          handleApprove(id);
-        }}
+        onApprove={handleApproveArea}
         onDelete={confirmDelete}
       />
       
