@@ -80,6 +80,7 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          is_approved: boolean
           location: string
           map_link: string | null
           region: string | null
@@ -90,6 +91,7 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
+          is_approved?: boolean
           location: string
           map_link?: string | null
           region?: string | null
@@ -100,6 +102,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          is_approved?: boolean
           location?: string
           map_link?: string | null
           region?: string | null

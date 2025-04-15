@@ -29,6 +29,5 @@ export interface DangerousArea {
   severity: "low" | "medium" | "high";
   map_link?: string | null;
   reported_by_name?: string | null;
-  is_approved?: boolean;
+  is_approved: boolean;
 }
-

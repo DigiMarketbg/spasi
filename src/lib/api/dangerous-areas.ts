@@ -49,4 +49,3 @@ export const updateDangerousAreaApproval = async (id: string, isApproved: boolea
     
   if (error) throw error;
 };
-
