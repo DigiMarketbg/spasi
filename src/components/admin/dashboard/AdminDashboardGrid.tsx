@@ -18,21 +18,21 @@ const AdminDashboardGrid = ({
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
       <AdminDashboardCard
         title="Непрочетени съобщения"
-        value={unreadMessagesCount}
+        badgeCount={unreadMessagesCount}
         description="от контактната форма"
         icon={Mail}
       />
       
       <AdminDashboardCard
         title="Чакащи заявки"
-        value={pendingRequestsCount}
+        badgeCount={pendingRequestsCount}
         description="за партньорство"
         icon={Handshake}
       />
       
       <AdminDashboardCard
         title="Опасни участъци"
-        value={pendingDangerousAreasCount}
+        badgeCount={pendingDangerousAreasCount}
         description="чакащи одобрение"
         icon={AlertTriangle}
       />
