@@ -7,7 +7,7 @@ import PlatformDescription from '@/components/info/PlatformDescription';
 import TermsAccordion from '@/components/info/TermsAccordion';
 import { useGDPR } from '@/components/gdpr/GDPRProvider';
 import { Button } from '@/components/ui/button';
-import { Shield, SquareCode, Share2 } from 'lucide-react';
+import { Shield, SquareCode, Share2, AlertTriangle, HeartHandshake } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const Info = () => {
