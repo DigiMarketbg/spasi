@@ -10,98 +10,137 @@ const NotificationButton = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const { user } = useAuth();
 
+  // Проверява състоянието на абонамента при зареждане на компонента
   useEffect(() => {
-    const checkSubscriptionStatus = async () => {
-      try {
-        if (!window.OneSignal) {
-          console.error("❌ OneSignal не е зареден");
-          return;
-        }
-
-        const isPushEnabled = await window.OneSignal.User.PushSubscription.optedIn;
-        setIsSubscribed(isPushEnabled);
-        console.log(`🔔 Статус на абонамента: ${isPushEnabled ? 'абониран' : 'неабониран'}`);
-      } catch (error) {
-        console.error("❌ Грешка при проверка на абонамента:", error);
-        toast({
-          title: "Техническа грешка",
-          description: "Не можахме да проверим статуса на абонамента",
-          variant: "destructive"
-        });
+    checkSubscriptionStatus();
+    
+    // Добавяме глобален слушател за промени в абонамента
+    if (window.OneSignal) {
+      console.log("🟢 Настройваме OneSignal слушател при зареждане");
+      window.OneSignal.User.PushSubscription.addEventListener('change', handleSubscriptionChange);
+    }
+    
+    return () => {
+      if (window.OneSignal) {
+        window.OneSignal.User.PushSubscription.removeEventListener('change', handleSubscriptionChange);
       }
     };
-
-    checkSubscriptionStatus();
   }, []);
+
+  const checkSubscriptionStatus = async () => {
+    try {
+      if (!window.OneSignal) {
+        console.error("❌ OneSignal не е зареден");
+        return;
+      }
+
+      // Проверка дали SDK е инициализиран
+      if (!window.OneSignal.initialized) {
+        console.log("⏳ Изчакваме OneSignal да се инициализира...");
+        // Използваме deferred функция, за да изчакаме инициализацията
+        window.OneSignalDeferred.push(async function() {
+          checkSubscriptionStatus();
+        });
+        return;
+      }
+
+      // Проверяваме дали потребителят е абониран
+      const isPushSubscriptionActive = await window.OneSignal.User.PushSubscription.optedIn;
+      const playerId = await window.OneSignal.User.PushSubscription.id;
+      
+      setIsSubscribed(isPushSubscriptionActive);
+      
+      console.log(`🔔 Текущ статус на абонамента: ${isPushSubscriptionActive ? 'абониран' : 'неабониран'}`);
+      console.log(`🆔 Player ID: ${playerId || 'няма'}`);
+      
+      // Ако е абониран, но нямаме записан ID, записваме го в Supabase
+      if (isPushSubscriptionActive && playerId) {
+        saveSubscriptionToDatabase(playerId);
+      }
+    } catch (error) {
+      console.error("❌ Грешка при проверка на абонамента:", error);
+      toast({
+        title: "Техническа грешка",
+        description: "Не можахме да проверим статуса на абонамента",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Функция за обработка на промени в абонамента от OneSignal
+  const handleSubscriptionChange = async (event) => {
+    try {
+      console.log("🔄 Промяна в push абонамента", event);
+      
+      const isSubscribed = await window.OneSignal.User.PushSubscription.optedIn;
+      const playerId = await window.OneSignal.User.PushSubscription.id;
+      
+      console.log(`🔔 Нов статус: ${isSubscribed ? 'абониран' : 'неабониран'}, ID: ${playerId || 'няма'}`);
+      
+      setIsSubscribed(isSubscribed);
+      
+      if (isSubscribed && playerId) {
+        await saveSubscriptionToDatabase(playerId);
+      }
+    } catch (error) {
+      console.error("❌ Грешка при обработка на промяна в абонамента:", error);
+    }
+  };
+
+  // Функция за записване на абонамента в базата данни
+  const saveSubscriptionToDatabase = async (playerId) => {
+    try {
+      console.log("💾 Опитваме се да запишем абонамент с ID:", playerId);
+      
+      if (!window.supabase) {
+        console.error("❌ Supabase клиентът не е достъпен");
+        return;
+      }
+      
+      const userId = user?.id || null;
+      
+      const { error } = await window.supabase
+        .from('push_subscribers')
+        .upsert([{
+          user_id: userId,
+          player_id: playerId,
+          updated_at: new Date().toISOString()
+        }], { onConflict: 'player_id' });
+      
+      if (error) {
+        console.error("❌ Грешка при запис на абонамент:", error);
+        throw error;
+      }
+      
+      console.log("✅ Push абонатът е записан успешно!");
+    } catch (error) {
+      console.error("❌ Грешка при запис на абонамент:", error);
+    }
+  };
 
   const handleSubscribe = async () => {
     try {
       setIsSubscribing(true);
       
+      // Проверяваме дали OneSignal е зареден
       if (!window.OneSignal) {
         throw new Error("OneSignal не е инициализиран");
       }
 
-      const isPushEnabled = await window.OneSignal.User.PushSubscription.optedIn;
-      
-      if (isPushEnabled) {
-        setIsSubscribed(true);
-        toast({
-          title: "Вече сте абонирани",
-          description: "Получавате известия от платформата",
-        });
-        return;
-      }
-
       console.log("🔔 Започваме процеса на абониране...");
       
-      const unsubscribe = window.OneSignal.User.PushSubscription.addEventListener('change', async (event) => {
-        try {
-          const isNowEnabled = await window.OneSignal.User.PushSubscription.optedIn;
-          
-          if (isNowEnabled) {
-            setIsSubscribed(true);
-            const playerId = await window.OneSignal.User.PushSubscription.id;
-            
-            console.log(`🔔 Получен OneSignal player_id: ${playerId}`);
-            
-            if (window.supabase && playerId) {
-              const userId = user?.id || null;
-              
-              const { error } = await window.supabase
-                .from('push_subscribers')
-                .upsert([{
-                  user_id: userId,
-                  player_id: playerId
-                }], { onConflict: 'player_id' });
-              
-              if (error) {
-                console.error("❌ Грешка при запис на абонамент:", error);
-                throw error;
-              }
-              
-              console.log("✅ Push абонатът е записан успешно!");
-            }
-            
-            toast({
-              title: "Успешно абониране",
-              description: "Ще получавате известия за нови сигнали",
-            });
-          }
-        } catch (error) {
-          console.error("❌ Грешка при обработка на абонамента:", error);
-          toast({
-            title: "Грешка при абониране",
-            description: "Моля, опитайте отново",
-            variant: "destructive"
-          });
-        } finally {
-          unsubscribe();
-        }
+      // Принудително отваряме диалога за разрешение и изчакваме потребителя да избере
+      const result = await window.OneSignal.Slidedown.promptPush({
+        force: true,
+        forceSlidedownOverNative: true
       });
       
-      console.log("🔔 Показваме прозореца за абониране");
-      await window.OneSignal.Slidedown.promptPush({ force: true });
+      console.log("📊 Резултат от диалога:", result);
+      
+      // След като диалогът е показан, проверяваме отново статуса
+      // (промяната в абонамента ще бъде уловена от обработчика на събитие)
+      setTimeout(checkSubscriptionStatus, 2000);
+      
     } catch (error) {
       console.error("❌ Общa грешка при абониране:", error);
       toast({
