@@ -86,11 +86,11 @@ const ProfilePanel = () => {
     });
   }
   
-  // Check if the user is a volunteer by checking if they exist in volunteers table
-  // Since we don't have direct access to is_volunteer, we'll need to implement this differently
-  // For now, we're commenting this out until we implement a proper way to check volunteer status
+  // Check if the user is a volunteer
+  // This is now properly commented out since the volunteer status is not available in profile
   /*
-  const isVolunteer = !!profile?.is_volunteer;
+  // We'll need to implement a proper way to check volunteer status in the future
+  const isVolunteer = false; 
   
   if (isVolunteer) {
     buttons.push({
@@ -135,7 +135,7 @@ const ProfilePanel = () => {
                   <div className="space-y-2">
                     <p><strong>Имейл:</strong> {user.email}</p>
                     {profile?.full_name && <p><strong>Име:</strong> {profile.full_name}</p>}
-                    {/* Commenting out city reference since it doesn't exist in profile */}
+                    {/* City field is not available in the profile type */}
                     {/* {profile?.city && <p><strong>Град:</strong> {profile.city}</p>} */}
                   </div>
                 </CardContent>
@@ -185,19 +185,7 @@ const ProfilePanel = () => {
                 </Button>
               )}
               
-              {/* Commenting out volunteer button until we implement a proper way to check volunteer status */}
-              {/* 
-              {isVolunteer && (
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/volunteers')}
-                  className="flex flex-col items-center justify-center h-24 text-center"
-                >
-                  <Users className="h-6 w-6 mb-2" />
-                  <span>Доброволци</span>
-                </Button>
-              )}
-              */}
+              {/* Volunteer button removed as we don't have the volunteer status */}
             </TabsContent>
           </Tabs>
         </div>

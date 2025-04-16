@@ -35,7 +35,7 @@ const Admin = () => {
     
     setLoadingSignals(true);
     try {
-      // Modified to properly handle the join between signals and profiles
+      // Fetch signals without joining profiles
       const { data: signalsData, error } = await supabase
         .from('signals')
         .select('*');
@@ -44,6 +44,7 @@ const Admin = () => {
       
       // For each signal, fetch the user profile separately
       const processedSignals = await Promise.all(signalsData.map(async (signal) => {
+        // Explicitly fetch the profile for each signal's user_id
         const { data: profileData } = await supabase
           .from('profiles')
           .select('full_name, email')
@@ -52,6 +53,7 @@ const Admin = () => {
           
         return {
           ...signal,
+          // Use default values if profile data is null or undefined
           user_full_name: profileData?.full_name || 'Неизвестен',
           user_email: profileData?.email || 'Неизвестен имейл'
         };

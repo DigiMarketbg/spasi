@@ -18,7 +18,7 @@ interface UserData {
   email: string | null;
   created_at: string | null;
   is_admin: boolean | null;
-  role?: Tables<'profiles'>['role'];
+  role?: string;
 }
 
 interface UsersListProps {
