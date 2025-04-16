@@ -48,7 +48,7 @@ const MobileNavBar = () => {
       path: '/info',
     },
     {
-      name: user ? 'Профил',
+      name: user ? 'Профил' : 'Вход', // Fixed: added the full ternary
       icon: User,
       path: '#',
       isProfileButton: true,
