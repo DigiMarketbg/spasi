@@ -73,7 +73,7 @@ const Admin = () => {
     
     setLoadingUsers(true);
     try {
-      // Fetch profiles directly with explicit columns to ensure we get the role
+      // Fetch all profiles without filtering
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, email, created_at, is_admin, role')

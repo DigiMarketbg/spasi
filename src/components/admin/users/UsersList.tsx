@@ -28,6 +28,8 @@ interface UsersListProps {
 }
 
 const UsersList: React.FC<UsersListProps> = ({ users, onRefresh, formatDate }) => {
+  console.log('All users in UsersList:', users); // Add this to debug what users are being rendered
+  
   return (
     <Table>
       <TableHeader>

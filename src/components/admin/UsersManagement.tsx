@@ -57,7 +57,7 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
     } else if (roleFilter === "moderator") {
       matchesRole = user.role === 'moderator';
     } else if (roleFilter === "user") {
-      matchesRole = !user.is_admin && user.role === 'user';
+      matchesRole = !user.is_admin && user.role !== 'moderator';
     }
     
     return matchesSearch && matchesRole;
