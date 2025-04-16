@@ -86,7 +86,10 @@ const ProfilePanel = () => {
     });
   }
   
-  // Check if the user is a volunteer
+  // Check if the user is a volunteer by checking if they exist in volunteers table
+  // Since we don't have direct access to is_volunteer, we'll need to implement this differently
+  // For now, we're commenting this out until we implement a proper way to check volunteer status
+  /*
   const isVolunteer = !!profile?.is_volunteer;
   
   if (isVolunteer) {
@@ -97,6 +100,7 @@ const ProfilePanel = () => {
       onClick: () => navigate('/volunteers'),
     });
   }
+  */
 
   // Mobile drawer content
   const mobilePanel = (
@@ -131,7 +135,8 @@ const ProfilePanel = () => {
                   <div className="space-y-2">
                     <p><strong>Имейл:</strong> {user.email}</p>
                     {profile?.full_name && <p><strong>Име:</strong> {profile.full_name}</p>}
-                    {profile?.city && <p><strong>Град:</strong> {profile.city}</p>}
+                    {/* Commenting out city reference since it doesn't exist in profile */}
+                    {/* {profile?.city && <p><strong>Град:</strong> {profile.city}</p>} */}
                   </div>
                 </CardContent>
               </Card>
@@ -180,6 +185,8 @@ const ProfilePanel = () => {
                 </Button>
               )}
               
+              {/* Commenting out volunteer button until we implement a proper way to check volunteer status */}
+              {/* 
               {isVolunteer && (
                 <Button 
                   variant="outline"
@@ -190,6 +197,7 @@ const ProfilePanel = () => {
                   <span>Доброволци</span>
                 </Button>
               )}
+              */}
             </TabsContent>
           </Tabs>
         </div>

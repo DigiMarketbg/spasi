@@ -35,17 +35,26 @@ const Admin = () => {
     
     setLoadingSignals(true);
     try {
+      // Modified to properly handle the join between signals and profiles
       const { data: signalsData, error } = await supabase
         .from('signals')
-        .select('*, profiles!signals_user_id_fkey(full_name, email)')
-        .order('created_at', { ascending: false });
+        .select('*');
 
       if (error) throw error;
       
-      const processedSignals = signalsData.map(signal => ({
-        ...signal,
-        user_full_name: signal.profiles?.full_name || 'Неизвестен',
-        user_email: signal.profiles?.email || 'Неизвестен имейл'
+      // For each signal, fetch the user profile separately
+      const processedSignals = await Promise.all(signalsData.map(async (signal) => {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', signal.user_id)
+          .single();
+          
+        return {
+          ...signal,
+          user_full_name: profileData?.full_name || 'Неизвестен',
+          user_email: profileData?.email || 'Неизвестен имейл'
+        };
       }));
       
       setSignals(processedSignals);
