@@ -5,7 +5,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useProfileConfig } from '@/hooks/use-profile-config';
 import { useNavigate } from 'react-router-dom';
 import DesktopProfilePanel from './DesktopProfilePanel';
-import MobileProfileDrawer from './MobileProfileDrawer';
 
 const ProfilePanel = () => {
   const { user, profile, isModerator, signOut } = useAuth();
@@ -13,34 +12,11 @@ const ProfilePanel = () => {
   const navigate = useNavigate();
   const { buttons, activeTab, setActiveTab } = useProfileConfig(isModerator);
 
-  if (!user) {
+  if (!user || isMobile) {
     return null;
   }
 
-  const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Потребител';
-  
-  // Simple direct navigation without manipulating tabs
-  const handleNavigate = (path: string) => {
-    navigate(path);
-  };
-  
-  // Mobile panel
-  if (isMobile) {
-    return (
-      <MobileProfileDrawer
-        displayName={displayName}
-        userEmail={user.email}
-        fullName={profile?.full_name}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isModerator={isModerator}
-        signOut={signOut}
-        navigateToPath={handleNavigate}
-      />
-    );
-  }
-
-  // Desktop panel
+  // Desktop panel only
   return <DesktopProfilePanel buttons={buttons} />;
 };
 

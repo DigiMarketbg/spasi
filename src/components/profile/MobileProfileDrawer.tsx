@@ -25,6 +25,7 @@ interface MobileProfileDrawerProps {
   isModerator: boolean;
   signOut: () => Promise<void>;
   navigateToPath: (path: string) => void;
+  triggerButton?: React.ReactNode;
 }
 
 const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
@@ -36,6 +37,7 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
   isModerator,
   signOut,
   navigateToPath,
+  triggerButton,
 }) => {
   // Create a handler that will both navigate and close the drawer
   const handleNavigateAndClose = (path: string) => {
@@ -54,9 +56,11 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline" size="icon" className="rounded-full fixed bottom-20 right-4 z-50 bg-card shadow-lg">
-          <User className="h-5 w-5" />
-        </Button>
+        {triggerButton || (
+          <Button variant="outline" size="icon" className="rounded-full fixed bottom-20 right-4 z-50 bg-card shadow-lg">
+            <User className="h-5 w-5" />
+          </Button>
+        )}
       </DrawerTrigger>
       <DrawerContent className="min-h-[65vh]">
         <DrawerHeader>

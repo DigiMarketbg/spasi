@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, List, Plus, Info, User, Palette } from 'lucide-react';
@@ -8,14 +9,22 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import Logo from './Logo';
 import { useTheme } from './ThemeProvider';
 import { Button } from '@/components/ui/button';
+import MobileProfileDrawer from './profile/MobileProfileDrawer';
 
 const MobileNavBar = () => {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, profile, isModerator, signOut } = useAuth();
   const isMobile = useIsMobile();
   const { theme, toggleTheme } = useTheme();
 
   if (!isMobile) return null;
+
+  const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Потребител';
+  
+  // Simple direct navigation without manipulating tabs
+  const handleNavigate = (path: string) => {
+    window.location.href = path;
+  };
 
   const navItems = [
     {
@@ -39,9 +48,10 @@ const MobileNavBar = () => {
       path: '/info',
     },
     {
-      name: user ? 'Профил' : 'Вход',
+      name: user ? 'Профил',
       icon: User,
-      path: user ? '/admin' : '/auth',
+      path: '#',
+      isProfileButton: true,
     }
   ];
 
@@ -66,7 +76,58 @@ const MobileNavBar = () => {
       {/* Bottom navigation with tubelight effect */}
       <div className="flex justify-around items-center h-16 px-2">
         {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
+          const isActive = !item.isProfileButton && location.pathname === item.path;
+          
+          if (item.isProfileButton && user) {
+            return (
+              <MobileProfileDrawer
+                key={item.name}
+                displayName={displayName}
+                userEmail={user?.email}
+                fullName={profile?.full_name}
+                activeTab="profile"
+                setActiveTab={() => {}}
+                isModerator={!!isModerator}
+                signOut={signOut}
+                navigateToPath={handleNavigate}
+                triggerButton={
+                  <div
+                    className={cn(
+                      "relative flex flex-col items-center justify-center w-full h-full px-1",
+                      "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <div className="relative">
+                      <User className="h-5 w-5 mb-1 text-muted-foreground" />
+                    </div>
+                    <span className="text-[10px] text-center w-full overflow-hidden whitespace-nowrap text-muted-foreground">
+                      {item.name}
+                    </span>
+                  </div>
+                }
+              />
+            );
+          }
+          
+          if (item.isProfileButton && !user) {
+            return (
+              <Link
+                key={item.name}
+                to="/auth"
+                className={cn(
+                  "relative flex flex-col items-center justify-center w-full h-full px-1",
+                  "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <div className="relative">
+                  <User className="h-5 w-5 mb-1 text-muted-foreground" />
+                </div>
+                <span className="text-[10px] text-center w-full overflow-hidden whitespace-nowrap text-muted-foreground">
+                  Вход
+                </span>
+              </Link>
+            );
+          }
           
           return (
             <Link
@@ -102,7 +163,7 @@ const MobileNavBar = () => {
                 )} />
               </div>
               <span className={cn(
-                "text-[10px] text-center w-full overflow-hidden whitespace-nowrap", // Smaller text, centered, prevent wrapping
+                "text-[10px] text-center w-full overflow-hidden whitespace-nowrap",
                 isActive ? "text-primary" : "text-muted-foreground"
               )}>{item.name}</span>
             </Link>
