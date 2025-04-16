@@ -11,6 +11,7 @@ import UsersList from './users/UsersList';
 import UsersFilters from './users/UsersFilters';
 import UsersEmptyState from './users/UsersEmptyState';
 import SignalsPagination from './signals/SignalsPagination';
+import { Tables } from '@/integrations/supabase/types';
 
 interface UserData {
   id: string;
@@ -18,7 +19,7 @@ interface UserData {
   email: string | null;
   created_at: string | null;
   is_admin: boolean;
-  role?: string | null;
+  role?: Tables<'profiles'>['role'];
 }
 
 interface UsersManagementProps {

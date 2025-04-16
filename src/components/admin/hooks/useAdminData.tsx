@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { fetchAllSignals } from '@/lib/api/signals';
 import { Signal } from '@/types/signal';
+import { Tables } from '@/integrations/supabase/types';
 
 export interface SignalData {
   id: string;
@@ -24,7 +25,7 @@ export interface UserData {
   email: string | null;
   created_at: string | null;
   is_admin: boolean | null;
-  role?: string | null;
+  role?: Tables<'profiles'>['role'];
 }
 
 export interface PartnerRequestData {
