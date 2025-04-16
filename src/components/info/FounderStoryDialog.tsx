@@ -23,7 +23,7 @@ const FounderStoryDialog: React.FC<FounderStoryDialogProps> = ({ triggerClassNam
         <Button 
           variant="outline" 
           size="sm" 
-          className={`flex items-center gap-2 ${triggerClassName}`}
+          className={`flex items-center gap-2 border-spasi-red hover:bg-spasi-red/10 ${triggerClassName}`}
         >
           <HeartHandshake className="h-4 w-4 text-spasi-red" />
           <span>Защо създадох Spasi.bg</span>

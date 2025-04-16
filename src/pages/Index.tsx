@@ -8,6 +8,7 @@ import BlogSection from '@/components/BlogSection';
 import VideoSection from '@/components/VideoSection';
 import PartnerSection from '@/components/PartnerSection';
 import WitnessesSection from '@/components/witnesses/WitnessesSection';
+import FounderStoryDialog from '@/components/info/FounderStoryDialog';
 import Footer from '@/components/Footer';
 
 const Index = () => {
@@ -17,6 +18,9 @@ const Index = () => {
       
       <main className="flex-grow mt-16">
         <HeroSection />
+        <div className="container mx-auto text-center mt-8 mb-4">
+          <FounderStoryDialog triggerClassName="mx-auto" />
+        </div>
         <SignalsList />
         <WitnessesSection />
         <PartnerCarousel />
