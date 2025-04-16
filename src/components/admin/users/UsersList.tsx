@@ -10,7 +10,16 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import UserActions from './UserActions';
-import { UserData } from '../hooks/types';
+import { Tables } from '@/integrations/supabase/types';
+
+interface UserData {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  created_at: string | null;
+  is_admin: boolean;
+  role?: Tables<'profiles'>['role'];
+}
 
 interface UsersListProps {
   users: UserData[];

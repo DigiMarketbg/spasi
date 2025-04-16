@@ -18,7 +18,6 @@ const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefr
 
   const toggleUserAdminStatus = async () => {
     try {
-      console.log(`Toggling admin status for user ${userId} from ${isAdmin} to ${!isAdmin}`);
       const { error } = await supabase
         .from('profiles')
         .update({ is_admin: !isAdmin })
@@ -36,7 +35,6 @@ const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefr
       // Trigger refresh of users data
       onRefresh();
     } catch (error: any) {
-      console.error('Error toggling admin status:', error);
       toast({
         title: "Грешка",
         description: error.message || "Възникна проблем при обновяването на потребителя.",
@@ -49,7 +47,6 @@ const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefr
     const newRole = isModerator ? 'user' : 'moderator';
     
     try {
-      console.log(`Toggling moderator status for user ${userId} from ${role} to ${newRole}`);
       const { error } = await supabase
         .from('profiles')
         .update({ role: newRole })
@@ -67,7 +64,6 @@ const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefr
       // Trigger refresh of users data
       onRefresh();
     } catch (error: any) {
-      console.error('Error toggling moderator status:', error);
       toast({
         title: "Грешка",
         description: error.message || "Възникна проблем при обновяването на потребителя.",

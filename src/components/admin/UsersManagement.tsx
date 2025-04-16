@@ -11,7 +11,14 @@ import UsersList from './users/UsersList';
 import UsersFilters from './users/UsersFilters';
 import UsersEmptyState from './users/UsersEmptyState';
 import SignalsPagination from './signals/SignalsPagination';
-import { UserData } from './hooks/types';
+
+interface UserData {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  created_at: string | null;
+  is_admin: boolean;
+}
 
 interface UsersManagementProps {
   users: UserData[];
@@ -35,10 +42,8 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   };
 
-  // Enhanced filter for users based on search and role filters
+  // Filter users based on search and role filters
   const filteredUsers = users.filter(user => {
-    console.log("Filtering user:", user.email, "Role:", user.role, "Is Admin:", user.is_admin);
-    
     // Search term filter (name, email)
     const matchesSearch = !searchTerm 
       || (user.full_name && user.full_name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -47,11 +52,9 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
     // Role filter
     let matchesRole = true;
     if (roleFilter === "admin") {
-      matchesRole = !!user.is_admin;
-    } else if (roleFilter === "moderator") {
-      matchesRole = user.role === "moderator";
+      matchesRole = user.is_admin;
     } else if (roleFilter === "user") {
-      matchesRole = !user.is_admin && user.role !== "moderator";
+      matchesRole = !user.is_admin;
     }
     
     return matchesSearch && matchesRole;
@@ -72,8 +75,6 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, roleFilter]);
-
-  console.log("UsersManagement received users:", users.length, users);
 
   return (
     <Card>
