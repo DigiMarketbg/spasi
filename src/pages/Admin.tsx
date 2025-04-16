@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -74,23 +73,13 @@ const Admin = () => {
     
     setLoadingUsers(true);
     try {
-      // First try to fetch from the view
-      let { data, error } = await supabase
-        .from('user_profiles_with_email')
-        .select('*')
+      // Fetch profiles directly with explicit columns to ensure we get the role
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, created_at, is_admin, role')
         .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching from view:', error);
-        // Fallback to direct profiles query if view has issues
-        const { data: profilesData, error: profilesError } = await supabase
-          .from('profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
-          
-        if (profilesError) throw profilesError;
-        data = profilesData;
-      }
+      
+      if (error) throw error;
       
       console.log('Fetched users data:', data);
       setUsers(data || []);
