@@ -4,10 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import SignalsManagement from '@/components/admin/SignalsManagement';
-import DangerousAreasManagement from '@/components/admin/dangerous-areas/DangerousAreasManagement';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
@@ -17,6 +14,8 @@ import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import ErrorAlert from '@/components/signal-form/ErrorAlert';
 import { useIsMobile } from '@/hooks/use-mobile';
+import SignalsTabContent from '@/components/admin/tabs/tab-contents/SignalsTabContent';
+import DangerousAreasTabContent from '@/components/admin/tabs/tab-contents/DangerousAreasTabContent';
 
 const Moderator = () => {
   const {
@@ -160,11 +159,19 @@ const Moderator = () => {
             </TabsList>
             
             <TabsContent value="signals">
-              <SignalsManagement signals={signals} loadingSignals={loadingSignals} onRefresh={refetchSignals} />
+              <SignalsTabContent 
+                signals={signals} 
+                loadingSignals={loadingSignals} 
+                onRefresh={refetchSignals} 
+              />
             </TabsContent>
             
             <TabsContent value="dangerous-areas">
-              <DangerousAreasManagement areas={dangerousAreas} loading={loadingDangerousAreas} onRefresh={refetchDangerousAreas} />
+              <DangerousAreasTabContent 
+                onRefresh={refetchDangerousAreas} 
+                loading={loadingDangerousAreas}
+                pendingCount={0} 
+              />
             </TabsContent>
           </Tabs>
         </div>

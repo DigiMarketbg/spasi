@@ -1,13 +1,12 @@
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import SignalsManagement from '@/components/admin/SignalsManagement';
-import UsersManagement from '@/components/admin/UsersManagement';
-import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagement';
-import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
-import DangerousAreasManagement from '@/components/admin/dangerous-areas/DangerousAreasManagement';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import AdminTabsList from './components/AdminTabsList';
+import SignalsTabContent from './tab-contents/SignalsTabContent';
+import UsersTabContent from './tab-contents/UsersTabContent';
+import PartnersTabContent from './tab-contents/PartnersTabContent';
+import MessagesTabContent from './tab-contents/MessagesTabContent';
+import DangerousAreasTabContent from './tab-contents/DangerousAreasTabContent';
 
 interface AdminTabsProps {
   signals: any[];
@@ -42,151 +41,59 @@ const AdminTabs = ({
   unreadCount,
   pendingRequestsCount,
   pendingDangerousAreasCount,
-  pendingWitnessesCount = 0,
   onRefreshSignals,
   onRefreshUsers,
   onRefreshPartnerRequests,
   onRefreshContactMessages
 }: AdminTabsProps) => {
-  const isMobile = useIsMobile();
-  
   return (
     <Tabs defaultValue="signals">
-      <TabsList className={`${isMobile ? 'w-full grid grid-cols-3 h-auto flex-wrap gap-1 mb-4' : 'mb-4'}`}>
-        <TabsTrigger 
-          value="signals" 
-          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
-        >
-          Сигнали
-        </TabsTrigger>
-        <TabsTrigger 
-          value="users" 
-          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
-        >
-          Потребители
-        </TabsTrigger>
-        <TabsTrigger 
-          value="partners" 
-          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
-        >
-          Партньори
-          {pendingRequestsCount > 0 && (
-            <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-blue-500 rounded-full">
-              {pendingRequestsCount}
-            </span>
-          )}
-        </TabsTrigger>
-        <TabsTrigger 
-          value="messages" 
-          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
-        >
-          Съобщения
-          {unreadCount > 0 && (
-            <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-blue-500 rounded-full">
-              {unreadCount}
-            </span>
-          )}
-        </TabsTrigger>
-        <TabsTrigger 
-          value="dangerous-areas" 
-          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
-        >
-          {isMobile ? 'Участъци' : 'Опасни участъци'}
-          {pendingDangerousAreasCount > 0 && (
-            <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-orange-500 rounded-full">
-              {pendingDangerousAreasCount}
-            </span>
-          )}
-        </TabsTrigger>
-      </TabsList>
+      <AdminTabsList 
+        unreadCount={unreadCount}
+        pendingRequestsCount={pendingRequestsCount}
+        pendingDangerousAreasCount={pendingDangerousAreasCount}
+      />
       
       <TabsContent value="signals" className="mt-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Управление на сигнали</CardTitle>
-            <CardDescription>
-              Преглед на всички сигнали в системата, одобрение и отбелязване като решени.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SignalsManagement 
-              signals={signals} 
-              loadingSignals={loadingSignals} 
-              onRefresh={onRefreshSignals} 
-            />
-          </CardContent>
-        </Card>
+        <SignalsTabContent 
+          signals={signals} 
+          loadingSignals={loadingSignals} 
+          onRefresh={onRefreshSignals} 
+        />
       </TabsContent>
       
       <TabsContent value="users" className="mt-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Управление на потребители</CardTitle>
-            <CardDescription>
-              Преглед и управление на всички регистрирани потребители.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <UsersManagement 
-              users={users} 
-              loadingUsers={loadingUsers} 
-              onRefresh={onRefreshUsers} 
-            />
-          </CardContent>
-        </Card>
+        <UsersTabContent 
+          users={users} 
+          loadingUsers={loadingUsers} 
+          onRefresh={onRefreshUsers} 
+        />
       </TabsContent>
       
       <TabsContent value="partners" className="mt-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Заявки за партньорство</CardTitle>
-            <CardDescription>
-              Преглед и управление на заявките за партньорство.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <PartnerRequestsManagement 
-              requests={partnerRequests} 
-              loadingRequests={loadingPartnerRequests} 
-              onRefresh={onRefreshPartnerRequests} 
-            />
-          </CardContent>
-        </Card>
+        <PartnersTabContent 
+          requests={partnerRequests} 
+          loadingRequests={loadingPartnerRequests} 
+          onRefresh={onRefreshPartnerRequests}
+          pendingRequestsCount={pendingRequestsCount}
+        />
       </TabsContent>
       
       <TabsContent value="messages" className="mt-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Съобщения от контактната форма</CardTitle>
-            <CardDescription>
-              Преглед и управление на съобщенията от контактната форма.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ContactMessagesManagement 
-              messages={contactMessages} 
-              loadingMessages={loadingContactMessages} 
-              onRefresh={onRefreshContactMessages} 
-            />
-          </CardContent>
-        </Card>
+        <MessagesTabContent 
+          messages={contactMessages} 
+          loadingMessages={loadingContactMessages} 
+          onRefresh={onRefreshContactMessages}
+          unreadCount={unreadCount}
+        />
       </TabsContent>
       
       <TabsContent value="dangerous-areas" className="mt-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Управление на опасни участъци</CardTitle>
-            <CardDescription>
-              Преглед и одобрение на подадени опасни участъци.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DangerousAreasManagement 
-              onRefresh={onRefreshSignals} 
-              loading={loadingDangerousAreas} 
-            />
-          </CardContent>
-        </Card>
+        <DangerousAreasTabContent 
+          onRefresh={onRefreshSignals} 
+          loading={loadingDangerousAreas}
+          pendingCount={pendingDangerousAreasCount}
+        />
       </TabsContent>
     </Tabs>
   );
