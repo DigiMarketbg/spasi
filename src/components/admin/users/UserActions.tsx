@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 interface UserActionsProps {
   userId: string;
   isAdmin: boolean;
-  role?: "user" | "moderator" | "admin";
+  role: "user" | "moderator" | "admin";
   onRefresh: () => void;
 }
 
