@@ -9,6 +9,7 @@ import { AuthProvider } from "./components/AuthProvider";
 import { GDPRProvider } from "./components/gdpr/GDPRProvider";
 import MobileNavBar from "./components/MobileNavBar";
 import ScrollToTop from "./components/ScrollToTop";
+import ProfilePanel from "./components/profile/ProfilePanel";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import SubmitSignal from "./pages/SubmitSignal";
@@ -49,6 +50,7 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <ScrollToTop />
+              <ProfilePanel />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
