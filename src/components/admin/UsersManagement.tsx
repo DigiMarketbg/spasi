@@ -20,7 +20,7 @@ interface UserData {
   email: string | null;
   created_at: string | null;
   is_admin: boolean | null;
-  role?: 'admin' | 'moderator' | 'user';
+  role: "user" | "moderator" | "admin" | null;
 }
 
 interface UsersManagementProps {

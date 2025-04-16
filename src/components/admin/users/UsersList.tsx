@@ -58,7 +58,7 @@ const UsersList: React.FC<UsersListProps> = ({ users, onRefresh, formatDate }) =
               <UserActions 
                 userId={user.id} 
                 isAdmin={user.is_admin || false} 
-                role={user.role || 'user'}
+                role={user.role} 
                 onRefresh={onRefresh} 
               />
             </TableCell>
