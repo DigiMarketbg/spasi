@@ -12,15 +12,11 @@ export const MobileActionButtons: React.FC<MobileActionButtonsProps> = ({
   isModerator,
   navigateToPath
 }) => {
-  const handleButtonClick = (path: string) => {
-    navigateToPath(path);
-  };
-
   return (
     <>
       <Button 
         variant="outline"
-        onClick={() => handleButtonClick('/submit-signal')}
+        onClick={() => navigateToPath('/submit-signal')}
         className="flex flex-col items-center justify-center h-24 text-center"
       >
         <Flag className="h-6 w-6 mb-2" />
@@ -29,7 +25,7 @@ export const MobileActionButtons: React.FC<MobileActionButtonsProps> = ({
       
       <Button 
         variant="outline"
-        onClick={() => handleButtonClick('/add-dangerous-area')}
+        onClick={() => navigateToPath('/add-dangerous-area')}
         className="flex flex-col items-center justify-center h-24 text-center"
       >
         <MapPin className="h-6 w-6 mb-2" />
@@ -38,7 +34,7 @@ export const MobileActionButtons: React.FC<MobileActionButtonsProps> = ({
       
       <Button 
         variant="outline"
-        onClick={() => handleButtonClick('/submit-witness')}
+        onClick={() => navigateToPath('/submit-witness')}
         className="flex flex-col items-center justify-center h-24 text-center"
       >
         <Eye className="h-6 w-6 mb-2" />
@@ -48,7 +44,7 @@ export const MobileActionButtons: React.FC<MobileActionButtonsProps> = ({
       {isModerator && (
         <Button 
           variant="outline"
-          onClick={() => handleButtonClick('/moderator')}
+          onClick={() => navigateToPath('/moderator')}
           className="flex flex-col items-center justify-center h-24 text-center"
         >
           <Check className="h-6 w-6 mb-2" />

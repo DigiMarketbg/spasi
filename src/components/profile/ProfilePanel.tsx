@@ -20,7 +20,7 @@ const ProfilePanel = () => {
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Потребител';
   
   const handleNavigate = (path: string) => {
-    // Close the drawer by updating the activeTab to profile
+    // Close the drawer
     setActiveTab('profile');
     // Navigate to the given path
     navigate(path);
