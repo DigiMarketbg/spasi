@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -25,6 +24,7 @@ export interface UserData {
   email: string | null;
   created_at: string | null;
   is_admin: boolean | null;
+  role?: string | null;
 }
 
 export interface PartnerRequestData {
@@ -110,22 +110,29 @@ export const useAdminData = (isAdmin: boolean, user: any) => {
     }
   }, [toast]);
 
-  // Fetch users data
+  // Fetch users data with improved error handling
   const fetchUsers = async () => {
     setLoadingUsers(true);
     try {
+      console.log("Fetching all user profiles...");
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching user profiles:', error);
+        throw error;
+      }
+      
+      console.log("Fetched user profiles:", data?.length || 0);
       setUsers(data || []);
     } catch (error: any) {
       console.error('Error fetching users:', error);
       toast({
         title: "Грешка",
-        description: "Възникна проблем при зареждането на потребителите.",
+        description: "Възникна проблем при зареждането на потребителите: " + (error.message || error),
         variant: "destructive",
       });
       setUsers([]);

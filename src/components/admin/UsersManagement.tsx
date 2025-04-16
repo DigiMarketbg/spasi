@@ -18,6 +18,7 @@ interface UserData {
   email: string | null;
   created_at: string | null;
   is_admin: boolean;
+  role?: string | null;
 }
 
 interface UsersManagementProps {
@@ -42,8 +43,10 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   };
 
-  // Filter users based on search and role filters
+  // Enhanced filter for users based on search and role filters
   const filteredUsers = users.filter(user => {
+    console.log("Filtering user:", user.email, "Role:", user.role, "Is Admin:", user.is_admin);
+    
     // Search term filter (name, email)
     const matchesSearch = !searchTerm 
       || (user.full_name && user.full_name.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -52,9 +55,11 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
     // Role filter
     let matchesRole = true;
     if (roleFilter === "admin") {
-      matchesRole = user.is_admin;
+      matchesRole = !!user.is_admin;
+    } else if (roleFilter === "moderator") {
+      matchesRole = user.role === "moderator";
     } else if (roleFilter === "user") {
-      matchesRole = !user.is_admin;
+      matchesRole = !user.is_admin && user.role !== "moderator";
     }
     
     return matchesSearch && matchesRole;
