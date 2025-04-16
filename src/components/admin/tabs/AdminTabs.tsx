@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -6,7 +7,7 @@ import UsersManagement from '@/components/admin/UsersManagement';
 import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagement';
 import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
 import DangerousAreasManagement from '@/components/admin/dangerous-areas/DangerousAreasManagement';
-import WitnessesManagement from '@/components/admin/witnesses/WitnesssManagement';
+import WitnessesManagement from '@/components/admin/witnesses/WitnessesManagement';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface AdminTabsProps {
