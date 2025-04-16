@@ -3,12 +3,11 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Tables } from '@/integrations/supabase/types';
 
 interface UserActionsProps {
   userId: string;
   isAdmin: boolean;
-  role?: Tables<'profiles'>['role'];
+  role?: "user" | "moderator" | "admin";
   onRefresh: () => void;
 }
 
