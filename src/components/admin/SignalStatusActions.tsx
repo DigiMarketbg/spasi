@@ -8,13 +8,25 @@ interface SignalStatusActionsProps {
   isResolved: boolean;
   onToggleApproval: (currentValue: boolean) => Promise<void>;
   onToggleResolution: (currentValue: boolean) => Promise<void>;
+  labels?: {
+    approve: string;
+    removeApproval: string;
+    markResolved: string;
+    markUnresolved: string;
+  };
 }
 
 const SignalStatusActions: React.FC<SignalStatusActionsProps> = ({
   isApproved,
   isResolved,
   onToggleApproval,
-  onToggleResolution
+  onToggleResolution,
+  labels = {
+    approve: 'Одобри сигнала',
+    removeApproval: 'Премахни одобрение',
+    markResolved: 'Маркирай като разрешен',
+    markUnresolved: 'Маркирай като неразрешен'
+  }
 }) => {
   return (
     <div className="flex gap-4 flex-wrap">
@@ -23,7 +35,7 @@ const SignalStatusActions: React.FC<SignalStatusActionsProps> = ({
         onClick={() => onToggleApproval(isApproved)}
       >
         {isApproved ? <X className="h-4 w-4 mr-2" /> : <Check className="h-4 w-4 mr-2" />}
-        {isApproved ? 'Премахни одобрение' : 'Одобри сигнала'}
+        {isApproved ? labels.removeApproval : labels.approve}
       </Button>
       
       <Button 
@@ -31,7 +43,7 @@ const SignalStatusActions: React.FC<SignalStatusActionsProps> = ({
         onClick={() => onToggleResolution(isResolved)}
       >
         {isResolved ? <X className="h-4 w-4 mr-2" /> : <Check className="h-4 w-4 mr-2" />}
-        {isResolved ? 'Маркирай като неразрешен' : 'Маркирай като разрешен'}
+        {isResolved ? labels.markUnresolved : labels.markResolved}
       </Button>
     </div>
   );
