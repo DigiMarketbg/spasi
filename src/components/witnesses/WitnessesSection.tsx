@@ -21,8 +21,6 @@ const WitnessesSection = () => {
 
   // Get only the latest 3 witnesses
   const recentWitnesses = witnesses.slice(0, 3);
-  return <section className="py-16 px-4 bg-muted/30">
-      
-    </section>;
+  return;
 };
 export default WitnessesSection;
