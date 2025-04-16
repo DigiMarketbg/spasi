@@ -1,16 +1,18 @@
 
 import React from 'react';
-import { Flag, MapPin, Eye, Check, Bell } from 'lucide-react';
+import { Flag, MapPin, Eye, Bell, Shield, Settings } from 'lucide-react';
 import HubButton from './HubButton';
 
 interface MobileActionButtonsProps {
   isModerator: boolean;
   navigateToPath: (path: string) => void;
+  isAdmin?: boolean;
 }
 
 export const MobileActionButtons: React.FC<MobileActionButtonsProps> = ({
   isModerator,
-  navigateToPath
+  navigateToPath,
+  isAdmin = false
 }) => {
   return (
     <>
@@ -37,15 +39,6 @@ export const MobileActionButtons: React.FC<MobileActionButtonsProps> = ({
         label="Известия"
         onClick={() => navigateToPath('/notifications')}
       />
-      
-      {isModerator && (
-        <HubButton 
-          icon={Check}
-          label="Одобрения"
-          onClick={() => navigateToPath('/moderator')}
-          variant="primary"
-        />
-      )}
     </>
   );
 };

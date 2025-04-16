@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserProfileCard } from './UserProfileCard';
 import HubButton from './HubButton';
 import { Badge } from '@/components/ui/badge';
+import { MobileActionButtons } from './MobileActionButtons';
 
 interface MobileProfileDrawerProps {
   displayName: string;
@@ -43,6 +44,7 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
   triggerButton,
 }) => {
   const [open, setOpen] = useState(false);
+  const [localActiveTab, setLocalActiveTab] = useState<string>(activeTab || 'profile');
   
   // Create a handler that will both navigate and close the drawer
   const handleNavigateAndClose = (path: string) => {
@@ -56,6 +58,12 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
     setTimeout(() => {
       navigateToPath(path);
     }, 150);
+  };
+
+  // Handle tab change
+  const handleTabChange = (tab: string) => {
+    setLocalActiveTab(tab);
+    setActiveTab(tab);
   };
 
   return (
@@ -76,7 +84,7 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
         </DrawerHeader>
         
         <div className="px-4 pb-4">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs value={localActiveTab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid grid-cols-2 mb-4">
               <TabsTrigger value="profile">Профил</TabsTrigger>
               <TabsTrigger value="actions">Действия</TabsTrigger>
@@ -117,30 +125,11 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
               )}
             </TabsContent>
             
-            <TabsContent value="actions">
+            <TabsContent value="actions" className="space-y-4">
               <div className="grid grid-cols-2 gap-3 mb-4">
-                <HubButton 
-                  icon={Flag}
-                  label="Подай сигнал"
-                  onClick={() => handleNavigateAndClose('/submit-signal')}
-                />
-                
-                <HubButton 
-                  icon={MapPin}
-                  label="Опасен участък"
-                  onClick={() => handleNavigateAndClose('/add-dangerous-area')}
-                />
-                
-                <HubButton 
-                  icon={Eye}
-                  label="Свидетел"
-                  onClick={() => handleNavigateAndClose('/submit-witness')}
-                />
-                
-                <HubButton 
-                  icon={Bell}
-                  label="Известия"
-                  onClick={() => handleNavigateAndClose('/notifications')}
+                <MobileActionButtons 
+                  isModerator={isModerator} 
+                  navigateToPath={handleNavigateAndClose} 
                 />
               </div>
               
