@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  User, MessageSquare, Bell, Flag, MapPin, Eye, 
+  User, Bell, Flag, MapPin, Eye, 
   Check, Users, Plus, Menu, X
 } from 'lucide-react';
 import { useAuth } from '@/components/AuthProvider';
@@ -36,7 +36,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from '@/hooks/use-mobile';
 import ProfileHubButton from './ProfileHubButton';
-import ContactAdminForm from './ContactAdminForm';
 
 const ProfilePanel = () => {
   const { user, profile, isModerator, signOut } = useAuth();
@@ -67,12 +66,6 @@ const ProfilePanel = () => {
         { label: 'Опасни места', onClick: () => navigate('/add-dangerous-area') },
         { label: 'Свидетели', onClick: () => navigate('/submit-witness') },
       ]
-    },
-    {
-      id: 'messages',
-      label: 'Съобщения',
-      icon: MessageSquare,
-      onClick: () => setActiveTab('messages'),
     }
   ];
 
@@ -120,9 +113,8 @@ const ProfilePanel = () => {
         
         <div className="px-4 py-2">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-3 mb-4">
+            <TabsList className="grid grid-cols-2 mb-4">
               <TabsTrigger value="profile">Профил</TabsTrigger>
-              <TabsTrigger value="messages">Съобщения</TabsTrigger>
               <TabsTrigger value="actions">Действия</TabsTrigger>
             </TabsList>
             
@@ -140,10 +132,6 @@ const ProfilePanel = () => {
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
-            
-            <TabsContent value="messages" className="space-y-4">
-              <ContactAdminForm />
             </TabsContent>
             
             <TabsContent value="actions" className="grid grid-cols-2 gap-2">
