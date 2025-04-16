@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { User } from 'lucide-react';
+import { User, Shield } from 'lucide-react';
 import {
   Drawer,
   DrawerClose,
@@ -79,6 +79,18 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
             
             <TabsContent value="profile" className="space-y-4">
               <UserProfileCard email={userEmail} fullName={fullName} />
+              
+              {/* Moderator access button - visible only to moderators */}
+              {isModerator && (
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4" 
+                  onClick={() => handleNavigateAndClose('/moderator')}
+                >
+                  <Shield className="h-4 w-4 mr-2" />
+                  Модераторски панел
+                </Button>
+              )}
             </TabsContent>
             
             <TabsContent value="actions">
@@ -88,6 +100,18 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
                   navigateToPath={handleNavigateAndClose}
                 />
               </div>
+              
+              {/* Moderator access button - visible only to moderators */}
+              {isModerator && (
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-4" 
+                  onClick={() => handleNavigateAndClose('/moderator')}
+                >
+                  <Shield className="h-4 w-4 mr-2" />
+                  Модераторски панел
+                </Button>
+              )}
             </TabsContent>
           </Tabs>
         </div>
