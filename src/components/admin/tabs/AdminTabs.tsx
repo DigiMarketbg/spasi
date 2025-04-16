@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -6,7 +7,6 @@ import UsersManagement from '@/components/admin/UsersManagement';
 import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagement';
 import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
 import DangerousAreasManagement from '@/components/admin/dangerous-areas/DangerousAreasManagement';
-import WitnessesManagement from '@/components/admin/witnesses/WitnessesManagement';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface AdminTabsProps {
@@ -98,17 +98,6 @@ const AdminTabs = ({
             </span>
           )}
         </TabsTrigger>
-        <TabsTrigger 
-          value="witnesses" 
-          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
-        >
-          Свидетели
-          {pendingWitnessesCount > 0 && (
-            <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-purple-500 rounded-full">
-              {pendingWitnessesCount}
-            </span>
-          )}
-        </TabsTrigger>
       </TabsList>
       
       <TabsContent value="signals" className="mt-6">
@@ -196,20 +185,6 @@ const AdminTabs = ({
               onRefresh={onRefreshSignals} 
               loading={loadingDangerousAreas} 
             />
-          </CardContent>
-        </Card>
-      </TabsContent>
-      
-      <TabsContent value="witnesses" className="mt-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Управление на обяви за свидетели</CardTitle>
-            <CardDescription>
-              Преглед и одобрение на обяви за търсене на свидетели.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <WitnessesManagement onRefresh={onRefreshSignals} />
           </CardContent>
         </Card>
       </TabsContent>

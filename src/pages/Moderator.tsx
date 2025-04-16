@@ -6,14 +6,12 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SignalsManagement from '@/components/admin/SignalsManagement';
 import DangerousAreasManagement from '@/components/admin/dangerous-areas/DangerousAreasManagement';
-import WitnessesManagement from '@/components/admin/witnesses/WitnessesManagement';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
 import { fetchAllSignals } from '@/lib/api/signals';
-import { fetchAllWitnesses } from '@/lib/api/witnesses';
 import { Signal } from '@/types/signal';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
@@ -108,33 +106,6 @@ const Moderator = () => {
     }
   });
 
-  // Fetch witnesses for moderators
-  const {
-    data: witnesses = [],
-    isLoading: loadingWitnesses,
-    error: witnessesError,
-    refetch: refetchWitnesses
-  } = useQuery({
-    queryKey: ['moderator-witnesses', refreshKey],
-    queryFn: async () => {
-      if (!user || !isModerator) return [];
-      try {
-        // Get all witnesses
-        return await fetchAllWitnesses();
-      } catch (error: any) {
-        console.error("Error fetching witnesses for moderator:", error);
-        setError(`Грешка при зареждане на обявите за свидетели: ${error.message || error}`);
-        return [];
-      }
-    },
-    enabled: !!user && isModerator,
-    meta: {
-      onError: (err: any) => {
-        setError(`Грешка при зареждане на обявите за свидетели: ${err.message || 'Неизвестна грешка'}`);
-      }
-    }
-  });
-
   // Display toast for errors
   useEffect(() => {
     if (signalsError) {
@@ -147,12 +118,7 @@ const Moderator = () => {
         description: 'Моля, опитайте отново чрез бутона за обновяване'
       });
     }
-    if (witnessesError) {
-      toast.error('Възникна проблем при зареждането на обявите за свидетели', {
-        description: 'Моля, опитайте отново чрез бутона за обновяване'
-      });
-    }
-  }, [signalsError, dangerousAreasError, witnessesError]);
+  }, [signalsError, dangerousAreasError]);
 
   // If not logged in or not a moderator
   if (!user || !isModerator) {
@@ -184,15 +150,12 @@ const Moderator = () => {
             </div>}
           
           <Tabs defaultValue="signals" className="w-full">
-            <TabsList className={`mb-6 ${isMobile ? 'w-full grid grid-cols-3 h-auto gap-1' : ''}`}>
+            <TabsList className={`mb-6 ${isMobile ? 'w-full grid grid-cols-2 h-auto gap-1' : ''}`}>
               <TabsTrigger value="signals" className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}>
                 Сигнали
               </TabsTrigger>
               <TabsTrigger value="dangerous-areas" className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}>
                 Участъци
-              </TabsTrigger>
-              <TabsTrigger value="witnesses" className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}>
-                Свидетели
               </TabsTrigger>
             </TabsList>
             
@@ -202,10 +165,6 @@ const Moderator = () => {
             
             <TabsContent value="dangerous-areas">
               <DangerousAreasManagement areas={dangerousAreas} loading={loadingDangerousAreas} onRefresh={refetchDangerousAreas} />
-            </TabsContent>
-            
-            <TabsContent value="witnesses">
-              <WitnessesManagement onRefresh={refetchWitnesses} />
             </TabsContent>
           </Tabs>
         </div>
