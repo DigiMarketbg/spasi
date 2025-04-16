@@ -73,6 +73,8 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
     setCurrentPage(1);
   }, [searchTerm, roleFilter]);
 
+  console.log("UsersManagement received users:", users.length, users);
+
   return (
     <Card>
       <CardHeader>

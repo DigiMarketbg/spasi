@@ -11,6 +11,12 @@ export const useUsers = (isAdmin: boolean, user: any) => {
 
   // Fetch users data with improved error handling
   const fetchUsers = async () => {
+    if (!user || !isAdmin) {
+      setUsers([]);
+      setLoadingUsers(false);
+      return;
+    }
+    
     setLoadingUsers(true);
     try {
       console.log("Fetching all user profiles...");
@@ -25,7 +31,7 @@ export const useUsers = (isAdmin: boolean, user: any) => {
         throw error;
       }
       
-      console.log("Fetched user profiles:", data?.length || 0);
+      console.log("Fetched user profiles:", data?.length || 0, data);
       setUsers(data || []);
     } catch (error: any) {
       console.error('Error fetching users:', error);

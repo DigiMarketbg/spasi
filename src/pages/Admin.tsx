@@ -20,7 +20,7 @@ const Admin = () => {
   const [pendingDangerousAreas, setPendingDangerousAreas] = useState(0);
   const [loadingDangerousAreas, setLoadingDangerousAreas] = useState(true);
 
-  // Use individual hooks instead of the composed useAdminData hook
+  // Use individual hooks 
   const { signals, loadingSignals, fetchSignals } = useSignals(isAdmin, user);
   const { users, loadingUsers, fetchUsers } = useUsers(isAdmin, user);
   const { 
@@ -61,6 +61,7 @@ const Admin = () => {
   // Use the individual hooks to fetch data when component mounts
   useEffect(() => {
     if (user && isAdmin) {
+      console.log("Admin component mounted, fetching data...");
       fetchSignals();
       fetchUsers();
       fetchPartnerRequests();
