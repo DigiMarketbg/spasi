@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -18,6 +19,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import ErrorAlert from '@/components/signal-form/ErrorAlert';
 import { useIsMobile } from '@/hooks/use-mobile';
+
 const Moderator = () => {
   const {
     user,
@@ -186,7 +188,9 @@ const Moderator = () => {
               <TabsTrigger value="signals" className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}>
                 Сигнали
               </TabsTrigger>
-              <TabsTrigger value="dangerous-areas" className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}>Участъци</TabsTrigger>
+              <TabsTrigger value="dangerous-areas" className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}>
+                Участъци
+              </TabsTrigger>
               <TabsTrigger value="witnesses" className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}>
                 Свидетели
               </TabsTrigger>

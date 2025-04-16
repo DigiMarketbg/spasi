@@ -13,7 +13,7 @@ import MobileProfileDrawer from './profile/MobileProfileDrawer';
 
 const MobileNavBar = () => {
   const location = useLocation();
-  const { user, profile, isModerator, signOut } = useAuth();
+  const { user, profile, isModerator, isAdmin, signOut } = useAuth();
   const isMobile = useIsMobile();
   const { theme, toggleTheme } = useTheme();
 
@@ -48,7 +48,7 @@ const MobileNavBar = () => {
       path: '/info',
     },
     {
-      name: user ? 'Профил' : 'Вход', // Fixed: added the full ternary
+      name: user ? 'Профил' : 'Вход',
       icon: User,
       path: '#',
       isProfileButton: true,
@@ -88,6 +88,7 @@ const MobileNavBar = () => {
                 activeTab="profile"
                 setActiveTab={() => {}}
                 isModerator={!!isModerator}
+                isAdmin={!!isAdmin}
                 signOut={signOut}
                 navigateToPath={handleNavigate}
                 triggerButton={

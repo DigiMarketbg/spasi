@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { User, Shield, Flag, MapPin, Eye, Bell } from 'lucide-react';
+import { User, Shield, Flag, MapPin, Eye, Bell, Settings } from 'lucide-react';
 import {
   Drawer,
   DrawerClose,
@@ -24,6 +24,7 @@ interface MobileProfileDrawerProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   isModerator: boolean;
+  isAdmin?: boolean;
   signOut: () => Promise<void>;
   navigateToPath: (path: string) => void;
   triggerButton?: React.ReactNode;
@@ -36,6 +37,7 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
   activeTab,
   setActiveTab,
   isModerator,
+  isAdmin = false,
   signOut,
   navigateToPath,
   triggerButton,
@@ -83,20 +85,33 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
             <TabsContent value="profile" className="space-y-4">
               <UserProfileCard email={userEmail} fullName={fullName} />
               
-              {/* Moderator hub section - visible only to moderators */}
-              {isModerator && (
+              {/* Admin/Moderator hub section */}
+              {(isModerator || isAdmin) && (
                 <div className="mt-6 space-y-3">
                   <div className="flex items-center gap-2 mb-2">
                     <Shield className="h-4 w-4 text-primary" />
-                    <h3 className="font-medium">Модераторски достъп</h3>
-                    <Badge variant="outline" className="ml-auto bg-primary/10 text-xs">Модератор</Badge>
+                    <h3 className="font-medium">
+                      {isAdmin ? 'Администраторски достъп' : 'Модераторски достъп'}
+                    </h3>
+                    <Badge variant="outline" className="ml-auto bg-primary/10 text-xs">
+                      {isAdmin ? 'Админ' : 'Модератор'}
+                    </Badge>
                   </div>
+                  
+                  {isAdmin && (
+                    <HubButton 
+                      icon={Settings}
+                      label="Админ панел"
+                      onClick={() => handleNavigateAndClose('/admin')}
+                      variant="primary"
+                    />
+                  )}
                   
                   <HubButton 
                     icon={Shield}
                     label="Модераторски панел"
                     onClick={() => handleNavigateAndClose('/moderator')}
-                    variant="primary"
+                    variant={isAdmin ? 'default' : 'primary'}
                   />
                 </div>
               )}
@@ -129,19 +144,30 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
                 />
               </div>
               
-              {/* Moderator section - visible only to moderators */}
-              {isModerator && (
+              {/* Admin/Moderator section */}
+              {(isModerator || isAdmin) && (
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center gap-2 mb-2">
                     <Shield className="h-4 w-4 text-primary" />
-                    <h3 className="font-medium">Модераторски достъп</h3>
+                    <h3 className="font-medium">
+                      {isAdmin ? 'Администраторски достъп' : 'Модераторски достъп'}
+                    </h3>
                   </div>
+                  
+                  {isAdmin && (
+                    <HubButton 
+                      icon={Settings}
+                      label="Админ панел"
+                      onClick={() => handleNavigateAndClose('/admin')}
+                      variant="primary"
+                    />
+                  )}
                   
                   <HubButton 
                     icon={Shield}
                     label="Модераторски панел"
                     onClick={() => handleNavigateAndClose('/moderator')}
-                    variant="primary"
+                    variant={isAdmin ? 'default' : 'primary'}
                   />
                 </div>
               )}
