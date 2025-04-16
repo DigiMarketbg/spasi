@@ -86,8 +86,9 @@ const ProfilePanel = () => {
     });
   }
   
-  // Check if the user is a volunteer
-  const isVolunteer = !!profile?.is_volunteer;
+  // Since profile.is_volunteer doesn't exist, we'll use a separate check for volunteer status
+  // We'll use the role from profile to determine if the user is a volunteer
+  const isVolunteer = profile?.role === 'volunteer' || false;
   
   if (isVolunteer) {
     buttons.push({
@@ -131,7 +132,7 @@ const ProfilePanel = () => {
                   <div className="space-y-2">
                     <p><strong>Имейл:</strong> {user.email}</p>
                     {profile?.full_name && <p><strong>Име:</strong> {profile.full_name}</p>}
-                    {profile?.city && <p><strong>Град:</strong> {profile.city}</p>}
+                    {/* Removed the city display since it doesn't exist on the profile */}
                   </div>
                 </CardContent>
               </Card>
