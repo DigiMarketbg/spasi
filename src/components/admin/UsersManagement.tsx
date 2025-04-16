@@ -11,13 +11,16 @@ import UsersList from './users/UsersList';
 import UsersFilters from './users/UsersFilters';
 import UsersEmptyState from './users/UsersEmptyState';
 import SignalsPagination from './signals/SignalsPagination';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface UserData {
   id: string;
   full_name: string | null;
   email: string | null;
   created_at: string | null;
-  is_admin: boolean;
+  is_admin: boolean | null;
+  role?: 'admin' | 'moderator' | 'user';
 }
 
 interface UsersManagementProps {
@@ -52,9 +55,11 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
     // Role filter
     let matchesRole = true;
     if (roleFilter === "admin") {
-      matchesRole = user.is_admin;
+      matchesRole = Boolean(user.is_admin);
+    } else if (roleFilter === "moderator") {
+      matchesRole = user.role === 'moderator';
     } else if (roleFilter === "user") {
-      matchesRole = !user.is_admin;
+      matchesRole = !user.is_admin && user.role === 'user';
     }
     
     return matchesSearch && matchesRole;
@@ -77,52 +82,44 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
   }, [searchTerm, roleFilter]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Управление на потребители</CardTitle>
-        <CardDescription>
-          Преглеждайте и управлявайте всички потребители в системата
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {/* Filters */}
-        <UsersFilters 
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          roleFilter={roleFilter}
-          setRoleFilter={setRoleFilter}
-          itemsPerPage={itemsPerPage}
-          setItemsPerPage={setItemsPerPage}
-          totalItems={filteredUsers.length}
-          currentPage={currentPage}
-          indexOfFirstItem={indexOfFirstItem}
-          indexOfLastItem={indexOfLastItem}
-        />
+    <div>
+      {/* Filters */}
+      <UsersFilters 
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        roleFilter={roleFilter}
+        setRoleFilter={setRoleFilter}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        totalItems={filteredUsers.length}
+        currentPage={currentPage}
+        indexOfFirstItem={indexOfFirstItem}
+        indexOfLastItem={indexOfLastItem}
+      />
 
-        {loadingUsers ? (
-          <UsersEmptyState loading={true} />
-        ) : filteredUsers.length === 0 ? (
-          <UsersEmptyState loading={false} />
-        ) : (
-          <div className="overflow-x-auto">
-            <UsersList 
-              users={currentUsers}
-              onRefresh={onRefresh}
-              formatDate={formatDate}
+      {loadingUsers ? (
+        <UsersEmptyState loading={true} />
+      ) : filteredUsers.length === 0 ? (
+        <UsersEmptyState loading={false} />
+      ) : (
+        <div className="overflow-x-auto">
+          <UsersList 
+            users={currentUsers}
+            onRefresh={onRefresh}
+            formatDate={formatDate}
+          />
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <SignalsPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={paginate}
             />
-            
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <SignalsPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={paginate}
-              />
-            )}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -17,7 +17,7 @@ interface UserData {
   full_name: string | null;
   email: string | null;
   created_at: string | null;
-  is_admin: boolean;
+  is_admin: boolean | null;
   role?: Tables<'profiles'>['role'];
 }
 
@@ -57,7 +57,7 @@ const UsersList: React.FC<UsersListProps> = ({ users, onRefresh, formatDate }) =
             <TableCell>
               <UserActions 
                 userId={user.id} 
-                isAdmin={user.is_admin} 
+                isAdmin={user.is_admin || false} 
                 role={user.role}
                 onRefresh={onRefresh} 
               />

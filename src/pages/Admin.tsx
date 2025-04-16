@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -6,33 +7,128 @@ import Footer from '@/components/Footer';
 import AdminDashboardGrid from '@/components/admin/dashboard/AdminDashboardGrid';
 import AdminTabs from '@/components/admin/tabs/AdminTabs';
 import { Button } from '@/components/ui/button';
-import { useAdminData } from '@/components/admin/hooks/useAdminData';
 import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const Admin = () => {
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [pendingDangerousAreas, setPendingDangerousAreas] = useState(0);
   const [loadingDangerousAreas, setLoadingDangerousAreas] = useState(true);
+  
+  // State for admin data
+  const [signals, setSignals] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [partnerRequests, setPartnerRequests] = useState([]);
+  const [contactMessages, setContactMessages] = useState([]);
+  const [loadingSignals, setLoadingSignals] = useState(true);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [loadingPartnerRequests, setLoadingPartnerRequests] = useState(true);
+  const [loadingContactMessages, setLoadingContactMessages] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
 
-  // Use the custom hook to manage all admin data
-  const {
-    signals,
-    users,
-    partnerRequests,
-    contactMessages,
-    loadingSignals,
-    loadingUsers,
-    loadingPartnerRequests,
-    loadingContactMessages,
-    fetchSignals,
-    fetchUsers,
-    fetchPartnerRequests,
-    fetchContactMessages,
-    unreadCount,
-    pendingRequestsCount
-  } = useAdminData(isAdmin, user);
+  // Fetch signals
+  const fetchSignals = async () => {
+    if (!user || !isAdmin) return;
+    
+    setLoadingSignals(true);
+    try {
+      const { data: signalsData, error } = await supabase
+        .from('signals')
+        .select('*, profiles!signals_user_id_fkey(full_name, email)')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      const processedSignals = signalsData.map(signal => ({
+        ...signal,
+        user_full_name: signal.profiles?.full_name || 'Неизвестен',
+        user_email: signal.profiles?.email || 'Неизвестен имейл'
+      }));
+      
+      setSignals(processedSignals);
+    } catch (error) {
+      console.error('Error fetching signals:', error);
+      toast.error('Грешка при зареждане на сигналите');
+    } finally {
+      setLoadingSignals(false);
+    }
+  };
+
+  // Fetch users
+  const fetchUsers = async () => {
+    if (!user || !isAdmin) return;
+    
+    setLoadingUsers(true);
+    try {
+      // Use the view that joins profiles with auth.users to get emails
+      const { data, error } = await supabase
+        .from('user_profiles_with_email')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      console.log('Fetched users from view:', data);
+      setUsers(data || []);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast.error('Грешка при зареждане на потребителите');
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  // Fetch partner requests
+  const fetchPartnerRequests = async () => {
+    if (!user || !isAdmin) return;
+    
+    setLoadingPartnerRequests(true);
+    try {
+      const { data, error } = await supabase
+        .from('partners_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPartnerRequests(data || []);
+      
+      // Count pending requests
+      const pendingCount = (data || []).filter(req => !req.is_approved).length;
+      setPendingRequestsCount(pendingCount);
+    } catch (error) {
+      console.error('Error fetching partner requests:', error);
+      toast.error('Грешка при зареждане на партньорските заявки');
+    } finally {
+      setLoadingPartnerRequests(false);
+    }
+  };
+
+  // Fetch contact messages
+  const fetchContactMessages = async () => {
+    if (!user || !isAdmin) return;
+    
+    setLoadingContactMessages(true);
+    try {
+      const { data, error } = await supabase
+        .from('contact_messages')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setContactMessages(data || []);
+      
+      // Count unread messages
+      const unreadMessagesCount = (data || []).filter(msg => !msg.is_read).length;
+      setUnreadCount(unreadMessagesCount);
+    } catch (error) {
+      console.error('Error fetching contact messages:', error);
+      toast.error('Грешка при зареждане на съобщенията');
+    } finally {
+      setLoadingContactMessages(false);
+    }
+  };
 
   // Fetch pending dangerous areas count
   useEffect(() => {
@@ -53,6 +149,16 @@ const Admin = () => {
       };
       
       getPendingDangerousAreas();
+    }
+  }, [user, isAdmin]);
+
+  // Load admin data when component mounts
+  useEffect(() => {
+    if (user && isAdmin) {
+      fetchSignals();
+      fetchUsers();
+      fetchPartnerRequests();
+      fetchContactMessages();
     }
   }, [user, isAdmin]);
 
