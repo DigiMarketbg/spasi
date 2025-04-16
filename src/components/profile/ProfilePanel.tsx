@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   User, MessageSquare, Bell, Flag, MapPin, Eye, 
@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/integrations/supabase/client';
 import ProfileHubButton from './ProfileHubButton';
 import ContactAdminForm from './ContactAdminForm';
 
@@ -43,6 +44,29 @@ const ProfilePanel = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = React.useState('profile');
+  const [isVolunteer, setIsVolunteer] = useState(false);
+
+  useEffect(() => {
+    const checkVolunteerStatus = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('volunteers')
+          .select('id')
+          .eq('user_id', user.id)
+          .single();
+          
+        if (data) {
+          setIsVolunteer(true);
+        }
+      } catch (error) {
+        console.error('Error checking volunteer status:', error);
+      }
+    };
+    
+    checkVolunteerStatus();
+  }, [user]);
 
   if (!user) {
     return null;
@@ -85,10 +109,6 @@ const ProfilePanel = () => {
       onClick: () => navigate('/moderator'),
     });
   }
-  
-  // Since profile.is_volunteer doesn't exist, we'll use a separate check for volunteer status
-  // We'll use the role from profile to determine if the user is a volunteer
-  const isVolunteer = profile?.role === 'volunteer' || false;
   
   if (isVolunteer) {
     buttons.push({
@@ -233,3 +253,4 @@ const ProfilePanel = () => {
 };
 
 export default ProfilePanel;
+
