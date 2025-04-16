@@ -11,7 +11,7 @@ import { useDangerousAreas } from '@/components/admin/hooks/useDangerousAreas';
 const Admin = () => {
   const { user, isAdmin } = useAuth();
   
-  // Use our custom hook to fetch admin data
+  // Use our composite hook to fetch admin data
   const {
     signals,
     users,
