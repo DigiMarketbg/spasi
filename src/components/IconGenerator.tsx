@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 
-// This component is for generating PWA icons from our logo
 const IconGenerator: React.FC = () => {
   const canvasRef192 = useRef<HTMLCanvasElement>(null);
   const canvasRef512 = useRef<HTMLCanvasElement>(null);
@@ -25,8 +24,8 @@ const IconGenerator: React.FC = () => {
           const ctx = canvasRef192.current.getContext('2d');
           if (ctx) {
             ctx.clearRect(0, 0, 192, 192);
-            // Fill with white background
-            ctx.fillStyle = '#ffffff';
+            // Fill with black background instead of white
+            ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, 192, 192);
             
             // Draw with padding to make sure logo fits nicely
@@ -42,8 +41,8 @@ const IconGenerator: React.FC = () => {
           const ctx = canvasRef512.current.getContext('2d');
           if (ctx) {
             ctx.clearRect(0, 0, 512, 512);
-            // Fill with white background
-            ctx.fillStyle = '#ffffff';
+            // Fill with black background instead of white
+            ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, 512, 512);
             
             // Draw with padding
@@ -59,7 +58,7 @@ const IconGenerator: React.FC = () => {
         setIsGenerating(false);
         toast({
           title: "Icons Generated Successfully",
-          description: "Your PWA icons have been generated. Click the download buttons to save them.",
+          description: "Your PWA icons have been generated with a black background. Click the download buttons to save them.",
         });
       } catch (error) {
         console.error("Error generating icons:", error);
@@ -152,3 +151,4 @@ const IconGenerator: React.FC = () => {
 };
 
 export default IconGenerator;
+
