@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import ContactCollapsible from '@/components/info/ContactCollapsible';
 import PlatformDescription from '@/components/info/PlatformDescription';
 import TermsAccordion from '@/components/info/TermsAccordion';
+import FounderStoryDialog from '@/components/info/FounderStoryDialog';
 import { useGDPR } from '@/components/gdpr/GDPRProvider';
 import { Button } from '@/components/ui/button';
 import { Shield, SquareCode, Share2, AlertTriangle, HeartHandshake, Lightbulb, Heart } from 'lucide-react';
@@ -56,6 +57,10 @@ const Info = () => {
           
           {/* Contact Section */}
           <ContactCollapsible />
+          
+          <div className="flex justify-center my-4">
+            <FounderStoryDialog />
+          </div>
           
           <Separator className="my-8" />
           
