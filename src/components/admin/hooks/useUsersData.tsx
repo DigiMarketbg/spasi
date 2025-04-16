@@ -23,12 +23,16 @@ export const useUsersData = (isEnabled: boolean) => {
 
     setLoadingUsers(true);
     try {
+      // Changed to use user_profiles_with_email view instead of profiles table
+      // This view should contain all user data including emails
       const { data, error } = await supabase
-        .from('profiles')
+        .from('user_profiles_with_email')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      
+      console.log('Fetched user profiles:', data);
       setUsers(data || []);
     } catch (error: any) {
       console.error('Error fetching users:', error);
