@@ -63,11 +63,13 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
               <UserProfileCard email={userEmail} fullName={fullName} />
             </TabsContent>
             
-            <TabsContent value="actions" className="grid grid-cols-2 gap-2">
-              <MobileActionButtons 
-                isModerator={isModerator}
-                navigateToPath={navigateToPath}
-              />
+            <TabsContent value="actions">
+              <div className="grid grid-cols-2 gap-2">
+                <MobileActionButtons 
+                  isModerator={isModerator}
+                  navigateToPath={navigateToPath}
+                />
+              </div>
             </TabsContent>
           </Tabs>
         </div>
