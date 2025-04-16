@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { User, Shield, Flag, MapPin, Eye, Bell, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import {
   Drawer,
   DrawerClose,
@@ -45,19 +46,28 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [localActiveTab, setLocalActiveTab] = useState<string>(activeTab || 'profile');
+  const navigate = useNavigate();
   
-  // Create a handler that will both navigate and close the drawer
+  // Create an improved handler that will close the drawer and then navigate without page reload
   const handleNavigateAndClose = (path: string) => {
-    // Close the drawer by using DrawerClose ref
-    const closeButton = document.querySelector('[data-drawer-close="true"]') as HTMLElement;
-    if (closeButton) {
-      closeButton.click();
-    }
+    // First close the drawer
+    setOpen(false);
     
-    // Navigate after a short delay to ensure drawer closes first
+    // Then navigate after drawer is closed
     setTimeout(() => {
-      navigateToPath(path);
-    }, 150);
+      navigate(path);
+    }, 300);
+  };
+
+  // Handle sign out with proper drawer closing
+  const handleSignOut = async () => {
+    setOpen(false);
+    
+    // Wait for drawer to close before signing out
+    setTimeout(async () => {
+      await signOut();
+      navigate('/');
+    }, 300);
   };
 
   // Handle tab change
@@ -128,7 +138,8 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
             <TabsContent value="actions" className="space-y-4">
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <MobileActionButtons 
-                  isModerator={isModerator} 
+                  isModerator={isModerator}
+                  isAdmin={isAdmin} 
                   navigateToPath={handleNavigateAndClose} 
                 />
               </div>
@@ -168,16 +179,13 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
           <Button 
             variant="outline" 
             className="w-full" 
-            onClick={async () => {
-              await signOut();
-              handleNavigateAndClose('/');
-            }}
+            onClick={handleSignOut}
           >
             Изход
           </Button>
-          <DrawerClose asChild data-drawer-close="true">
-            <Button variant="outline">Затвори</Button>
-          </DrawerClose>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Затвори
+          </Button>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

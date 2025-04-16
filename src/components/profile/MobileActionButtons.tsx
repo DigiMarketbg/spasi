@@ -39,6 +39,24 @@ export const MobileActionButtons: React.FC<MobileActionButtonsProps> = ({
         label="Известия"
         onClick={() => navigateToPath('/notifications')}
       />
+      
+      {isAdmin && (
+        <HubButton 
+          icon={Settings}
+          label="Админ панел"
+          onClick={() => navigateToPath('/admin')}
+          variant="primary"
+        />
+      )}
+      
+      {isModerator && (
+        <HubButton 
+          icon={Shield}
+          label="Модератор"
+          onClick={() => navigateToPath('/moderator')}
+          variant={isAdmin ? "default" : "primary"}
+        />
+      )}
     </>
   );
 };
