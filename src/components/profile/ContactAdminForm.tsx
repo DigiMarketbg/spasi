@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 const formSchema = z.object({
@@ -27,6 +27,7 @@ type FormValues = z.infer<typeof formSchema>;
 const ContactAdminForm: React.FC = () => {
   const { user, profile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -41,14 +42,19 @@ const ContactAdminForm: React.FC = () => {
     setIsSubmitting(true);
     
     try {
+      // Get the user's name from the profile or fallback to email
+      const userName = profile?.full_name || user.email?.split('@')[0] || 'Потребител';
+      
+      // Insert the message into the contact_messages table
       const { error } = await supabase
         .from('contact_messages')
         .insert({
           user_id: user.id,
-          name: profile?.full_name || user.email?.split('@')[0] || 'Потребител',
+          name: userName,
           email: user.email,
           message: data.message,
-          status: 'new'
+          is_read: false,
+          subject: `Съобщение от потребител: ${userName}`
         });
         
       if (error) throw error;
@@ -59,7 +65,7 @@ const ContactAdminForm: React.FC = () => {
       });
       
       form.reset();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
       toast({
         title: 'Грешка',
