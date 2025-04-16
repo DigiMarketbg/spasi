@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -11,16 +10,7 @@ import UsersList from './users/UsersList';
 import UsersFilters from './users/UsersFilters';
 import UsersEmptyState from './users/UsersEmptyState';
 import SignalsPagination from './signals/SignalsPagination';
-import { Tables } from '@/integrations/supabase/types';
-
-interface UserData {
-  id: string;
-  full_name: string | null;
-  email: string | null;
-  created_at: string | null;
-  is_admin: boolean;
-  role?: Tables<'profiles'>['role'];
-}
+import { UserData } from './hooks/types';
 
 interface UsersManagementProps {
   users: UserData[];
