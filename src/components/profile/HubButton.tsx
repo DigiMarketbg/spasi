@@ -45,10 +45,15 @@ const HubButton: React.FC<HubButtonProps> = ({
   };
   
   const textSizes = {
-    small: "text-xs",
-    default: "text-sm",
-    large: "text-base"
+    small: "text-[10px] leading-tight truncate max-w-full",
+    default: "text-xs leading-tight truncate max-w-full",
+    large: "text-sm leading-tight truncate max-w-full"
   };
+  
+  // Shorten labels for better mobile fit
+  const shortenedLabel = label.length > 12 
+    ? label.substring(0, 10) + '...' 
+    : label;
   
   return (
     <Button
@@ -64,7 +69,15 @@ const HubButton: React.FC<HubButtonProps> = ({
       )}
     >
       <Icon className={iconSizes[size]} />
-      <span className={cn("font-medium text-center", textSizes[size])}>{label}</span>
+      <span 
+        className={cn(
+          "font-medium text-center overflow-hidden whitespace-nowrap", 
+          textSizes[size]
+        )}
+        title={label} // Show full label on hover
+      >
+        {shortenedLabel}
+      </span>
     </Button>
   );
 };
