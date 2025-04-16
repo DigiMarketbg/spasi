@@ -1,5 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import UsersList from './users/UsersList';
 import UsersFilters from './users/UsersFilters';
 import UsersEmptyState from './users/UsersEmptyState';
@@ -38,11 +45,6 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
   };
 
-  // Debug users data
-  useEffect(() => {
-    console.log('Users data in UsersManagement:', users);
-  }, [users]);
-
   // Filter users based on search and role filters
   const filteredUsers = users.filter(user => {
     // Search term filter (name, email)
@@ -57,7 +59,7 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
     } else if (roleFilter === "moderator") {
       matchesRole = user.role === 'moderator';
     } else if (roleFilter === "user") {
-      matchesRole = !user.is_admin && user.role !== 'moderator';
+      matchesRole = !user.is_admin && user.role === 'user';
     }
     
     return matchesSearch && matchesRole;
@@ -92,7 +94,7 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
         totalItems={filteredUsers.length}
         currentPage={currentPage}
         indexOfFirstItem={indexOfFirstItem}
-        indexOfLastItem={Math.min(indexOfLastItem, filteredUsers.length)}
+        indexOfLastItem={indexOfLastItem}
       />
 
       {loadingUsers ? (

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -73,15 +74,14 @@ const Admin = () => {
     
     setLoadingUsers(true);
     try {
-      // Fetch all profiles without filtering
+      // Use the view that joins profiles with auth.users to get emails
       const { data, error } = await supabase
-        .from('profiles')
+        .from('user_profiles_with_email')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
-      
-      console.log('Fetched users data:', data);
+      console.log('Fetched users from view:', data);
       setUsers(data || []);
     } catch (error) {
       console.error('Error fetching users:', error);
