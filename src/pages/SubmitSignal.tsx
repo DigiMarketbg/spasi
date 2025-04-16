@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -12,18 +12,28 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 const SubmitSignal = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    if (!user) {
-      toast({
-        title: "Достъп забранен",
-        description: "За да подадете сигнал, трябва да влезете в профила си.",
-        variant: "destructive",
-      });
-      navigate('/auth');
+    // Wait for authentication to complete loading
+    if (!loading) {
+      setCheckingAuth(false);
+      
+      // Only redirect if user is definitely not logged in
+      if (!user) {
+        console.log('User not authenticated, redirecting to auth page');
+        toast({
+          title: "Достъп забранен",
+          description: "За да подадете сигнал, трябва да влезете в профила си.",
+          variant: "destructive",
+        });
+        navigate('/auth');
+      } else {
+        console.log('User is authenticated:', user.id);
+      }
     }
-  }, [user, navigate, toast]);
+  }, [user, loading, navigate, toast]);
 
   const handleFormSuccess = () => {
     toast({
@@ -37,6 +47,22 @@ const SubmitSignal = () => {
       navigate('/');
     }, 2000);
   };
+
+  // Show loading state while checking authentication
+  if (loading || checkingAuth) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Navbar />
+        <main className="flex-grow mt-20 container mx-auto px-4 py-10 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Проверка на потребителски достъп...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   // Only render the form if the user is logged in
   if (!user) return null;
