@@ -18,12 +18,14 @@ import { Signal } from '@/types/signal';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import ErrorAlert from '@/components/signal-form/ErrorAlert';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Moderator = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [refreshKey, setRefreshKey] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const isMobile = useIsMobile();
   
   // Check if the user is a moderator or admin
   const isModerator = profile?.role === 'moderator' || profile?.role === 'admin';
@@ -196,10 +198,10 @@ const Moderator = () => {
           )}
           
           <Tabs defaultValue="signals" className="w-full">
-            <TabsList className="mb-6">
-              <TabsTrigger value="signals">Сигнали</TabsTrigger>
-              <TabsTrigger value="dangerous-areas">Опасни участъци</TabsTrigger>
-              <TabsTrigger value="witnesses">Свидетели</TabsTrigger>
+            <TabsList className={`mb-6 ${isMobile ? 'w-full grid grid-cols-3 h-auto gap-1' : ''}`}>
+              <TabsTrigger value="signals" className={isMobile ? 'py-2 text-sm' : ''}>Сигнали</TabsTrigger>
+              <TabsTrigger value="dangerous-areas" className={isMobile ? 'py-2 text-sm' : ''}>Опасни участъци</TabsTrigger>
+              <TabsTrigger value="witnesses" className={isMobile ? 'py-2 text-sm' : ''}>Свидетели</TabsTrigger>
             </TabsList>
             
             <TabsContent value="signals">

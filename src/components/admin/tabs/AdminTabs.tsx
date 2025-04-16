@@ -8,6 +8,7 @@ import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagem
 import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
 import DangerousAreasManagement from '@/components/admin/dangerous-areas/DangerousAreasManagement';
 import WitnessesManagement from '@/components/admin/witnesses/WitnessesManagement';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface AdminTabsProps {
   signals: any[];
@@ -48,39 +49,45 @@ const AdminTabs = ({
   onRefreshPartnerRequests,
   onRefreshContactMessages
 }: AdminTabsProps) => {
+  const isMobile = useIsMobile();
+  
   return (
     <Tabs defaultValue="signals">
-      <TabsList className="mb-4">
-        <TabsTrigger value="signals">Сигнали</TabsTrigger>
-        <TabsTrigger value="users">Потребители</TabsTrigger>
-        <TabsTrigger value="partners">
+      <TabsList className={`${isMobile ? 'w-full grid grid-cols-3 h-auto flex-wrap gap-1 mb-4' : 'mb-4'}`}>
+        <TabsTrigger value="signals" className={isMobile ? 'py-2 text-sm' : ''}>
+          Сигнали
+        </TabsTrigger>
+        <TabsTrigger value="users" className={isMobile ? 'py-2 text-sm' : ''}>
+          Потребители
+        </TabsTrigger>
+        <TabsTrigger value="partners" className={isMobile ? 'py-2 text-sm' : ''}>
           Партньори
           {pendingRequestsCount > 0 && (
-            <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-500 rounded-full">
+            <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-blue-500 rounded-full">
               {pendingRequestsCount}
             </span>
           )}
         </TabsTrigger>
-        <TabsTrigger value="messages">
+        <TabsTrigger value="messages" className={isMobile ? 'py-2 text-sm' : ''}>
           Съобщения
           {unreadCount > 0 && (
-            <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-500 rounded-full">
+            <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-blue-500 rounded-full">
               {unreadCount}
             </span>
           )}
         </TabsTrigger>
-        <TabsTrigger value="dangerous-areas">
+        <TabsTrigger value="dangerous-areas" className={isMobile ? 'py-2 text-sm' : ''}>
           Опасни участъци
           {pendingDangerousAreasCount > 0 && (
-            <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-orange-500 rounded-full">
+            <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-orange-500 rounded-full">
               {pendingDangerousAreasCount}
             </span>
           )}
         </TabsTrigger>
-        <TabsTrigger value="witnesses">
+        <TabsTrigger value="witnesses" className={isMobile ? 'py-2 text-sm' : ''}>
           Свидетели
           {pendingWitnessesCount > 0 && (
-            <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-purple-500 rounded-full">
+            <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-purple-500 rounded-full">
               {pendingWitnessesCount}
             </span>
           )}

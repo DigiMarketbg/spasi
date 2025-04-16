@@ -10,6 +10,8 @@ interface HubButtonProps {
   onClick: () => void;
   variant?: 'default' | 'primary' | 'secondary' | 'danger';
   active?: boolean;
+  fullWidth?: boolean;
+  size?: 'default' | 'large' | 'small';
 }
 
 const HubButton: React.FC<HubButtonProps> = ({ 
@@ -17,7 +19,9 @@ const HubButton: React.FC<HubButtonProps> = ({
   label, 
   onClick, 
   variant = 'default',
-  active = false
+  active = false,
+  fullWidth = true,
+  size = 'default'
 }) => {
   // Color variants mapping
   const variantStyles = {
@@ -27,19 +31,40 @@ const HubButton: React.FC<HubButtonProps> = ({
     danger: "bg-destructive text-destructive-foreground hover:bg-destructive/90"
   };
   
+  // Size variants
+  const sizeStyles = {
+    small: "h-16 p-1 gap-1",
+    default: "h-24 p-2 gap-2",
+    large: "h-32 p-3 gap-3"
+  };
+  
+  const iconSizes = {
+    small: "h-6 w-6",
+    default: "h-8 w-8",
+    large: "h-10 w-10"
+  };
+  
+  const textSizes = {
+    small: "text-xs",
+    default: "text-sm",
+    large: "text-base"
+  };
+  
   return (
     <Button
       variant="outline"
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center justify-center h-24 w-full p-2 gap-2 shadow-sm border",
+        "flex flex-col items-center justify-center w-full p-2 gap-2 shadow-sm border",
         "transition-all duration-200 hover:shadow-md",
         variantStyles[variant],
-        active && "ring-2 ring-primary ring-offset-2"
+        sizeStyles[size],
+        active && "ring-2 ring-primary ring-offset-2",
+        fullWidth ? "w-full" : ""
       )}
     >
-      <Icon className="h-8 w-8" />
-      <span className="text-sm font-medium text-center">{label}</span>
+      <Icon className={iconSizes[size]} />
+      <span className={cn("font-medium text-center", textSizes[size])}>{label}</span>
     </Button>
   );
 };

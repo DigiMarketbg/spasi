@@ -9,6 +9,7 @@ import SignalFilters from './signals/SignalFilters';
 import { RefreshCcw, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { updateSignalStatus } from '@/lib/api/signals';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh }) => {
   const { toast: hookToast } = useToast();
@@ -16,6 +17,7 @@ const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh 
   const [signals, setSignals] = useState(initialSignals || []);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const isMobile = useIsMobile();
 
   // Pagination and filter states
   const [currentPage, setCurrentPage] = useState(1);
@@ -99,17 +101,19 @@ const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh 
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-2">
+      <div className={`flex ${isMobile ? 'flex-col' : 'justify-between'} items-center mb-4 gap-2`}>
+        <div className={`flex gap-2 ${isMobile ? 'w-full grid grid-cols-2' : ''}`}>
           <Button 
             variant={statusFilter === 'pending' ? 'default' : 'outline'}
             onClick={() => setStatusFilter('pending')}
+            className={isMobile ? 'w-full' : ''}
           >
             Чакащи сигнали
           </Button>
           <Button 
             variant={statusFilter === 'all' ? 'default' : 'outline'}
             onClick={() => setStatusFilter('all')}
+            className={isMobile ? 'w-full' : ''}
           >
             Всички сигнали
           </Button>
@@ -120,7 +124,7 @@ const SignalsManagement = ({ signals: initialSignals, loadingSignals, onRefresh 
           size="sm" 
           onClick={handleManualRefresh}
           disabled={isRefreshing}
-          className="ml-auto"
+          className={isMobile ? 'w-full mt-2' : 'ml-auto'}
         >
           <RefreshCcw className={`h-4 w-4 mr-1 ${isRefreshing ? 'animate-spin' : ''}`} />
           {isRefreshing ? 'Обновяване...' : 'Обнови'}
