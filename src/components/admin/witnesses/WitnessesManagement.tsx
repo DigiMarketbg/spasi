@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { RefreshCcw, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { fetchAllWitnesses, updateWitnessStatus, deleteWitness } from '@/lib/api/witnesses';
 import WitnessesTable from './WitnessesTable';
 import WitnessesEmpty from './WitnessesEmpty';
+import WitnessFilters from './WitnessFilters';
+import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WitnessesManagementProps {
@@ -85,7 +86,7 @@ const WitnessesManagement: React.FC<WitnessesManagementProps> = ({ onRefresh }) 
           size="sm" 
           onClick={handleRefresh}
         >
-          <RefreshCcw className="h-4 w-4 mr-1" />
+          <AlertCircle className="h-4 w-4 mr-1" />
           Опитай отново
         </Button>
       </div>
@@ -98,45 +99,12 @@ const WitnessesManagement: React.FC<WitnessesManagementProps> = ({ onRefresh }) 
   
   return (
     <div>
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
-        <div className="grid grid-cols-3 gap-2 w-full sm:w-auto">
-          <Button 
-            variant={statusFilter === 'pending' ? 'default' : 'outline'}
-            onClick={() => setStatusFilter('pending')}
-            size="sm"
-            className="text-xs py-1.5 px-2 w-full"
-          >
-            Чакащи
-          </Button>
-          <Button 
-            variant={statusFilter === 'approved' ? 'default' : 'outline'}
-            onClick={() => setStatusFilter('approved')}
-            size="sm"
-            className="text-xs py-1.5 px-2 w-full"
-          >
-            Одобрени
-          </Button>
-          <Button 
-            variant={statusFilter === 'all' ? 'default' : 'outline'}
-            onClick={() => setStatusFilter('all')}
-            size="sm"
-            className="text-xs py-1.5 px-2 w-full"
-          >
-            Всички
-          </Button>
-        </div>
-        
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={handleRefresh}
-          disabled={isLoading}
-          className="flex items-center gap-1 text-xs py-1.5 px-2 w-full sm:w-auto mt-2 sm:mt-0"
-        >
-          <RefreshCcw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
-          {isLoading ? 'Обновяване...' : 'Обнови'}
-        </Button>
-      </div>
+      <WitnessFilters 
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        onRefresh={handleRefresh}
+        isLoading={isLoading}
+      />
       
       <WitnessesTable 
         witnesses={filteredWitnesses}
