@@ -28,7 +28,11 @@ interface UsersListProps {
 }
 
 const UsersList: React.FC<UsersListProps> = ({ users, onRefresh, formatDate }) => {
-  console.log('All users in UsersList:', users); // Add this to debug what users are being rendered
+  console.log('Users in UsersList component:', users); // Debug log
+  
+  if (!users || users.length === 0) {
+    return <div className="py-4 text-center">Няма намерени потребители.</div>;
+  }
   
   return (
     <Table>
@@ -43,7 +47,7 @@ const UsersList: React.FC<UsersListProps> = ({ users, onRefresh, formatDate }) =
       </TableHeader>
       <TableBody>
         {users.map((user) => {
-          console.log(`User ${user.id} role:`, user.role);
+          console.log(`User ${user.id}:`, user); // Debug log for each user
           
           return (
             <TableRow key={user.id}>

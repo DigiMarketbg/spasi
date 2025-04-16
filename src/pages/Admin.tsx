@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -77,7 +76,7 @@ const Admin = () => {
       // Fetch all profiles without filtering
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, email, created_at, is_admin, role')
+        .select('*')
         .order('created_at', { ascending: false });
       
       if (error) throw error;

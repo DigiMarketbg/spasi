@@ -92,7 +92,7 @@ const UsersManagement = ({ users, loadingUsers, onRefresh }: UsersManagementProp
         totalItems={filteredUsers.length}
         currentPage={currentPage}
         indexOfFirstItem={indexOfFirstItem}
-        indexOfLastItem={indexOfLastItem}
+        indexOfLastItem={Math.min(indexOfLastItem, filteredUsers.length)}
       />
 
       {loadingUsers ? (
