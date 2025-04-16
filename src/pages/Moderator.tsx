@@ -6,16 +6,14 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import SignalsManagement from '@/components/admin/SignalsManagement';
 import DangerousAreasManagement from '@/components/admin/dangerous-areas/DangerousAreasManagement';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
-import { fetchAllSignals } from '@/lib/api/signals';
-import { Signal } from '@/types/signal';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import ErrorAlert from '@/components/signal-form/ErrorAlert';
+import { useSignals } from '@/components/admin/hooks/useSignals';
+import { useQuery } from '@tanstack/react-query';
 
 const Moderator = () => {
   const { user, profile } = useAuth();
@@ -33,49 +31,21 @@ const Moderator = () => {
     setError(null); // Clear errors on refresh
   }, [refreshKey]);
   
-  // Fetch signals for moderators
+  // Use the useSignals hook directly
   const { 
-    data: signals = [], 
-    isLoading: loadingSignals,
-    error: signalsError,
-    refetch: refetchSignals
-  } = useQuery({
-    queryKey: ['moderator-signals', refreshKey],
-    queryFn: async () => {
-      if (!user || !isModerator) return [];
-      
-      try {
-        // Get all signals using our dedicated function
-        const signalsData = await fetchAllSignals();
-        
-        if (!signalsData || signalsData.length === 0) {
-          return [];
-        }
-        
-        // Process the data for display
-        const enrichedSignals = signalsData.map((signal: Signal) => {
-          return {
-            ...signal,
-            user_full_name: signal.profiles?.full_name || 'Неизвестен',
-            user_email: signal.profiles?.email || 'Неизвестен имейл'
-          };
-        });
-        
-        console.log("Successfully processed signals for moderator view:", enrichedSignals);
-        return enrichedSignals;
-      } catch (error: any) {
-        console.error("Error fetching signals for moderator:", error);
-        setError(`Грешка при зареждане на сигналите: ${error.message || error}`);
-        return [];
-      }
-    },
-    enabled: !!user && isModerator,
-    meta: {
-      onError: (err: any) => {
+    signals, 
+    loadingSignals, 
+    fetchSignals 
+  } = useSignals(isModerator, user);
+  
+  // Fetch signals when component mounts
+  useEffect(() => {
+    if (user && isModerator) {
+      fetchSignals().catch(err => {
         setError(`Грешка при зареждане на сигналите: ${err.message || 'Неизвестна грешка'}`);
-      }
+      });
     }
-  });
+  }, [user, isModerator, fetchSignals, refreshKey]);
 
   // Fetch dangerous areas for moderators
   const {
@@ -107,8 +77,8 @@ const Moderator = () => {
 
   // Display toast for errors
   useEffect(() => {
-    if (signalsError) {
-      toast.error('Възникна проблем при зареждането на сигналите', {
+    if (error) {
+      toast.error('Възникна проблем при зареждането на данните', {
         description: 'Моля, опитайте отново чрез бутона за обновяване',
       });
     }
@@ -118,7 +88,7 @@ const Moderator = () => {
         description: 'Моля, опитайте отново чрез бутона за обновяване',
       });
     }
-  }, [signalsError, dangerousAreasError]);
+  }, [error, dangerousAreasError]);
 
   // If not logged in or not a moderator
   if (!user || !isModerator) {
@@ -169,7 +139,7 @@ const Moderator = () => {
               <SignalsManagement 
                 signals={signals}
                 loadingSignals={loadingSignals}
-                onRefresh={refetchSignals}
+                onRefresh={fetchSignals}
               />
             </TabsContent>
             

@@ -1,6 +1,5 @@
 
 import { useEffect } from 'react';
-import { Signal } from '@/types/signal';
 import { useSignals } from './useSignals';
 import { useUsers } from './useUsers';
 import { usePartnerRequests } from './usePartnerRequests';
@@ -34,7 +33,7 @@ export const useAdminData = (isAdmin: boolean, user: any) => {
       fetchPartnerRequests();
       fetchContactMessages();
     }
-  }, [user, isAdmin, fetchSignals]);
+  }, [user, isAdmin, fetchSignals, fetchUsers, fetchPartnerRequests, fetchContactMessages]);
 
   return {
     signals,

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -6,9 +7,12 @@ import Footer from '@/components/Footer';
 import AdminDashboardGrid from '@/components/admin/dashboard/AdminDashboardGrid';
 import AdminTabs from '@/components/admin/tabs/AdminTabs';
 import { Button } from '@/components/ui/button';
-import { useAdminData } from '@/components/admin/hooks/useAdminData';
 import { fetchAllDangerousAreas } from '@/lib/api/dangerous-areas';
 import { toast } from 'sonner';
+import { useSignals } from '@/components/admin/hooks/useSignals';
+import { useUsers } from '@/components/admin/hooks/useUsers';
+import { usePartnerRequests } from '@/components/admin/hooks/usePartnerRequests';
+import { useContactMessages } from '@/components/admin/hooks/useContactMessages';
 
 const Admin = () => {
   const { user, isAdmin } = useAuth();
@@ -16,23 +20,21 @@ const Admin = () => {
   const [pendingDangerousAreas, setPendingDangerousAreas] = useState(0);
   const [loadingDangerousAreas, setLoadingDangerousAreas] = useState(true);
 
-  // Use the custom hook to manage all admin data
-  const {
-    signals,
-    users,
-    partnerRequests,
-    contactMessages,
-    loadingSignals,
-    loadingUsers,
-    loadingPartnerRequests,
-    loadingContactMessages,
-    fetchSignals,
-    fetchUsers,
+  // Use individual hooks instead of the composed useAdminData hook
+  const { signals, loadingSignals, fetchSignals } = useSignals(isAdmin, user);
+  const { users, loadingUsers, fetchUsers } = useUsers(isAdmin, user);
+  const { 
+    partnerRequests, 
+    loadingPartnerRequests, 
     fetchPartnerRequests,
+    pendingRequestsCount 
+  } = usePartnerRequests(isAdmin, user);
+  const { 
+    contactMessages, 
+    loadingContactMessages, 
     fetchContactMessages,
-    unreadCount,
-    pendingRequestsCount
-  } = useAdminData(isAdmin, user);
+    unreadCount 
+  } = useContactMessages(isAdmin, user);
 
   // Fetch pending dangerous areas count
   useEffect(() => {
@@ -55,6 +57,16 @@ const Admin = () => {
       getPendingDangerousAreas();
     }
   }, [user, isAdmin]);
+
+  // Use the individual hooks to fetch data when component mounts
+  useEffect(() => {
+    if (user && isAdmin) {
+      fetchSignals();
+      fetchUsers();
+      fetchPartnerRequests();
+      fetchContactMessages();
+    }
+  }, [user, isAdmin, fetchSignals, fetchUsers, fetchPartnerRequests, fetchContactMessages]);
 
   // If not logged in or not admin
   if (!user || !isAdmin) {
