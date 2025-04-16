@@ -461,7 +461,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      admin_update_user_role: {
+        Args: { admin_id: string; target_user_id: string; new_role: string }
+        Returns: boolean
+      }
     }
     Enums: {
       user_role: "admin" | "moderator" | "user"

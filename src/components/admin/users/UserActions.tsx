@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/components/AuthProvider';
 
 interface UserActionsProps {
   userId: string;
@@ -13,16 +14,25 @@ interface UserActionsProps {
 
 const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefresh }) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const isModerator = role === 'moderator';
 
   const toggleUserAdminStatus = async () => {
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_admin: !isAdmin })
-        .eq('id', userId);
+      if (!user) throw new Error("You must be logged in to perform this action");
+
+      const { data, error } = await supabase
+        .rpc('admin_update_user_role', {
+          admin_id: user.id,
+          target_user_id: userId,
+          new_role: isAdmin ? 'user' : 'admin'
+        });
 
       if (error) throw error;
+      
+      if (!data) {
+        throw new Error("Failed to update user admin status. You may not have permission.");
+      }
 
       toast({
         title: "Успешно",
@@ -34,6 +44,7 @@ const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefr
       // Trigger refresh of users data
       onRefresh();
     } catch (error: any) {
+      console.error("Error updating admin status:", error);
       toast({
         title: "Грешка",
         description: error.message || "Възникна проблем при обновяването на потребителя.",
@@ -46,12 +57,20 @@ const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefr
     const newRole = isModerator ? 'user' : 'moderator';
     
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ role: newRole })
-        .eq('id', userId);
+      if (!user) throw new Error("You must be logged in to perform this action");
 
+      const { data, error } = await supabase
+        .rpc('admin_update_user_role', {
+          admin_id: user.id,
+          target_user_id: userId,
+          new_role: newRole
+        });
+      
       if (error) throw error;
+      
+      if (!data) {
+        throw new Error("Failed to update user role. You may not have permission.");
+      }
 
       toast({
         title: "Успешно",
@@ -63,6 +82,7 @@ const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefr
       // Trigger refresh of users data
       onRefresh();
     } catch (error: any) {
+      console.error("Error updating moderator status:", error);
       toast({
         title: "Грешка",
         description: error.message || "Възникна проблем при обновяването на потребителя.",
