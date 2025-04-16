@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { RefreshCcw, AlertCircle } from 'lucide-react';
 import { fetchAllWitnesses, updateWitnessStatus, deleteWitness } from '@/lib/api/witnesses';
 import WitnessesTable from './WitnessesTable';
 import WitnessesEmpty from './WitnessesEmpty';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WitnessesManagementProps {
   onRefresh?: () => void;
@@ -15,6 +15,7 @@ interface WitnessesManagementProps {
 const WitnessesManagement: React.FC<WitnessesManagementProps> = ({ onRefresh }) => {
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'pending' | 'all' | 'approved'>('pending');
+  const isMobile = useIsMobile();
   
   const { 
     data: witnesses = [], 
@@ -97,25 +98,31 @@ const WitnessesManagement: React.FC<WitnessesManagementProps> = ({ onRefresh }) 
   
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
+        <div className="grid grid-cols-3 gap-2 w-full sm:w-auto">
           <Button 
             variant={statusFilter === 'pending' ? 'default' : 'outline'}
             onClick={() => setStatusFilter('pending')}
+            size="sm"
+            className="text-xs py-1.5 px-2 w-full"
           >
-            Чакащи обяви
+            Чакащи
           </Button>
           <Button 
             variant={statusFilter === 'approved' ? 'default' : 'outline'}
             onClick={() => setStatusFilter('approved')}
+            size="sm"
+            className="text-xs py-1.5 px-2 w-full"
           >
-            Одобрени обяви
+            Одобрени
           </Button>
           <Button 
             variant={statusFilter === 'all' ? 'default' : 'outline'}
             onClick={() => setStatusFilter('all')}
+            size="sm"
+            className="text-xs py-1.5 px-2 w-full"
           >
-            Всички обяви
+            Всички
           </Button>
         </div>
         
@@ -124,8 +131,9 @@ const WitnessesManagement: React.FC<WitnessesManagementProps> = ({ onRefresh }) 
           size="sm" 
           onClick={handleRefresh}
           disabled={isLoading}
+          className="flex items-center gap-1 text-xs py-1.5 px-2 w-full sm:w-auto mt-2 sm:mt-0"
         >
-          <RefreshCcw className={`h-4 w-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCcw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
           {isLoading ? 'Обновяване...' : 'Обнови'}
         </Button>
       </div>
