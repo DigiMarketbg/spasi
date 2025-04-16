@@ -12,28 +12,11 @@ export const MobileActionButtons: React.FC<MobileActionButtonsProps> = ({
   isModerator,
   navigateToPath
 }) => {
-  // Direct navigation handlers
-  const handleSignalClick = () => {
-    navigateToPath('/submit-signal');
-  };
-  
-  const handleDangerousAreaClick = () => {
-    navigateToPath('/add-dangerous-area');
-  };
-  
-  const handleWitnessClick = () => {
-    navigateToPath('/submit-witness');
-  };
-  
-  const handleModeratorClick = () => {
-    navigateToPath('/moderator');
-  };
-
   return (
     <>
       <Button 
         variant="outline"
-        onClick={handleSignalClick}
+        onClick={() => navigateToPath('/submit-signal')}
         className="flex flex-col items-center justify-center h-24 text-center"
       >
         <Flag className="h-6 w-6 mb-2" />
@@ -42,7 +25,7 @@ export const MobileActionButtons: React.FC<MobileActionButtonsProps> = ({
       
       <Button 
         variant="outline"
-        onClick={handleDangerousAreaClick}
+        onClick={() => navigateToPath('/add-dangerous-area')}
         className="flex flex-col items-center justify-center h-24 text-center"
       >
         <MapPin className="h-6 w-6 mb-2" />
@@ -51,7 +34,7 @@ export const MobileActionButtons: React.FC<MobileActionButtonsProps> = ({
       
       <Button 
         variant="outline"
-        onClick={handleWitnessClick}
+        onClick={() => navigateToPath('/submit-witness')}
         className="flex flex-col items-center justify-center h-24 text-center"
       >
         <Eye className="h-6 w-6 mb-2" />
@@ -61,7 +44,7 @@ export const MobileActionButtons: React.FC<MobileActionButtonsProps> = ({
       {isModerator && (
         <Button 
           variant="outline"
-          onClick={handleModeratorClick}
+          onClick={() => navigateToPath('/moderator')}
           className="flex flex-col items-center justify-center h-24 text-center"
         >
           <Check className="h-6 w-6 mb-2" />

@@ -37,6 +37,20 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
   signOut,
   navigateToPath,
 }) => {
+  // Create a handler that will both navigate and close the drawer
+  const handleNavigateAndClose = (path: string) => {
+    // Close the drawer by using DrawerClose ref
+    const closeButton = document.querySelector('[data-drawer-close="true"]') as HTMLElement;
+    if (closeButton) {
+      closeButton.click();
+    }
+    
+    // Navigate after a short delay to ensure drawer closes first
+    setTimeout(() => {
+      navigateToPath(path);
+    }, 150);
+  };
+
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -67,7 +81,7 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
               <div className="grid grid-cols-2 gap-2">
                 <MobileActionButtons 
                   isModerator={isModerator}
-                  navigateToPath={navigateToPath}
+                  navigateToPath={handleNavigateAndClose}
                 />
               </div>
             </TabsContent>
@@ -80,12 +94,12 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
             className="w-full" 
             onClick={async () => {
               await signOut();
-              navigateToPath('/');
+              handleNavigateAndClose('/');
             }}
           >
             Изход
           </Button>
-          <DrawerClose asChild>
+          <DrawerClose asChild data-drawer-close="true">
             <Button variant="outline">Затвори</Button>
           </DrawerClose>
         </DrawerFooter>

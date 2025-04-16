@@ -19,13 +19,9 @@ const ProfilePanel = () => {
 
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Потребител';
   
+  // Simple direct navigation without manipulating tabs
   const handleNavigate = (path: string) => {
-    // First navigate to the path
     navigate(path);
-    // Then close the drawer
-    setTimeout(() => {
-      setActiveTab('profile');
-    }, 100);
   };
   
   // Mobile panel
