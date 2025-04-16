@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { User, Shield } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Shield, Flag, MapPin, Eye, Bell } from 'lucide-react';
 import {
   Drawer,
   DrawerClose,
@@ -14,7 +14,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserProfileCard } from './UserProfileCard';
-import { MobileActionButtons } from './MobileActionButtons';
+import HubButton from './HubButton';
+import { Badge } from '@/components/ui/badge';
 
 interface MobileProfileDrawerProps {
   displayName: string;
@@ -39,6 +40,8 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
   navigateToPath,
   triggerButton,
 }) => {
+  const [open, setOpen] = useState(false);
+  
   // Create a handler that will both navigate and close the drawer
   const handleNavigateAndClose = (path: string) => {
     // Close the drawer by using DrawerClose ref
@@ -54,7 +57,7 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
   };
 
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         {triggerButton || (
           <Button variant="outline" size="icon" className="rounded-full fixed bottom-20 right-4 z-50 bg-card shadow-lg">
@@ -62,7 +65,7 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
           </Button>
         )}
       </DrawerTrigger>
-      <DrawerContent className="min-h-[65vh]">
+      <DrawerContent className="min-h-[80vh]">
         <DrawerHeader>
           <DrawerTitle>Здравей, {displayName}!</DrawerTitle>
           <DrawerDescription>
@@ -70,7 +73,7 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
           </DrawerDescription>
         </DrawerHeader>
         
-        <div className="px-4 py-2">
+        <div className="px-4 pb-4">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid grid-cols-2 mb-4">
               <TabsTrigger value="profile">Профил</TabsTrigger>
@@ -80,37 +83,67 @@ const MobileProfileDrawer: React.FC<MobileProfileDrawerProps> = ({
             <TabsContent value="profile" className="space-y-4">
               <UserProfileCard email={userEmail} fullName={fullName} />
               
-              {/* Moderator access button - visible only to moderators */}
+              {/* Moderator hub section - visible only to moderators */}
               {isModerator && (
-                <Button 
-                  variant="outline" 
-                  className="w-full mt-4" 
-                  onClick={() => handleNavigateAndClose('/moderator')}
-                >
-                  <Shield className="h-4 w-4 mr-2" />
-                  Модераторски панел
-                </Button>
+                <div className="mt-6 space-y-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shield className="h-4 w-4 text-primary" />
+                    <h3 className="font-medium">Модераторски достъп</h3>
+                    <Badge variant="outline" className="ml-auto bg-primary/10 text-xs">Модератор</Badge>
+                  </div>
+                  
+                  <HubButton 
+                    icon={Shield}
+                    label="Модераторски панел"
+                    onClick={() => handleNavigateAndClose('/moderator')}
+                    variant="primary"
+                  />
+                </div>
               )}
             </TabsContent>
             
             <TabsContent value="actions">
-              <div className="grid grid-cols-2 gap-2">
-                <MobileActionButtons 
-                  isModerator={isModerator}
-                  navigateToPath={handleNavigateAndClose}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <HubButton 
+                  icon={Flag}
+                  label="Подай сигнал"
+                  onClick={() => handleNavigateAndClose('/submit-signal')}
+                />
+                
+                <HubButton 
+                  icon={MapPin}
+                  label="Опасен участък"
+                  onClick={() => handleNavigateAndClose('/add-dangerous-area')}
+                />
+                
+                <HubButton 
+                  icon={Eye}
+                  label="Свидетел"
+                  onClick={() => handleNavigateAndClose('/submit-witness')}
+                />
+                
+                <HubButton 
+                  icon={Bell}
+                  label="Известия"
+                  onClick={() => handleNavigateAndClose('/notifications')}
                 />
               </div>
               
-              {/* Moderator access button - visible only to moderators */}
+              {/* Moderator section - visible only to moderators */}
               {isModerator && (
-                <Button 
-                  variant="outline" 
-                  className="w-full mt-4" 
-                  onClick={() => handleNavigateAndClose('/moderator')}
-                >
-                  <Shield className="h-4 w-4 mr-2" />
-                  Модераторски панел
-                </Button>
+                <div className="mt-4 space-y-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shield className="h-4 w-4 text-primary" />
+                    <h3 className="font-medium">Модераторски достъп</h3>
+                  </div>
+                  
+                  <HubButton 
+                    icon={Shield}
+                    label="Модераторски панел"
+                    onClick={() => handleNavigateAndClose('/moderator')}
+                    variant="primary"
+                  />
+                </div>
               )}
             </TabsContent>
           </Tabs>
