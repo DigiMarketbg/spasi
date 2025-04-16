@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -92,7 +91,7 @@ const AdminTabs = ({
           value="dangerous-areas" 
           className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
         >
-          {isMobile ? 'Опасни' : 'Опасни участъци'}
+          {isMobile ? 'Уч.' : 'Опасни участъци'}
           {pendingDangerousAreasCount > 0 && (
             <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-orange-500 rounded-full">
               {pendingDangerousAreasCount}
@@ -219,4 +218,3 @@ const AdminTabs = ({
 };
 
 export default AdminTabs;
-
