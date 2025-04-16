@@ -49,6 +49,17 @@ const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefr
     try {
       console.log(`Updating user ${userId} to role: ${newRole}`);
       
+      // Check the current user role first
+      const { data: currentUser, error: fetchError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single();
+        
+      if (fetchError) throw fetchError;
+      
+      console.log('Current user role:', currentUser?.role);
+      
       // Make sure we're updating the 'role' column with the new role value
       const { data, error } = await supabase
         .from('profiles')

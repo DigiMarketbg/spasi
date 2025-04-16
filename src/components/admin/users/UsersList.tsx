@@ -40,30 +40,34 @@ const UsersList: React.FC<UsersListProps> = ({ users, onRefresh, formatDate }) =
         </TableRow>
       </TableHeader>
       <TableBody>
-        {users.map((user) => (
-          <TableRow key={user.id}>
-            <TableCell className="font-medium">{user.full_name || 'Неизвестно'}</TableCell>
-            <TableCell>{user.email || 'Неизвестно'}</TableCell>
-            <TableCell>{formatDate(user.created_at)}</TableCell>
-            <TableCell>
-              {user.is_admin ? (
-                <Badge>Администратор</Badge>
-              ) : user.role === 'moderator' ? (
-                <Badge variant="secondary">Модератор</Badge>
-              ) : (
-                <Badge variant="outline">Потребител</Badge>
-              )}
-            </TableCell>
-            <TableCell>
-              <UserActions 
-                userId={user.id} 
-                isAdmin={user.is_admin || false} 
-                role={user.role}
-                onRefresh={onRefresh} 
-              />
-            </TableCell>
-          </TableRow>
-        ))}
+        {users.map((user) => {
+          console.log(`User ${user.id} role:`, user.role);
+          
+          return (
+            <TableRow key={user.id}>
+              <TableCell className="font-medium">{user.full_name || 'Неизвестно'}</TableCell>
+              <TableCell>{user.email || 'Неизвестно'}</TableCell>
+              <TableCell>{formatDate(user.created_at)}</TableCell>
+              <TableCell>
+                {user.is_admin ? (
+                  <Badge>Администратор</Badge>
+                ) : user.role === 'moderator' ? (
+                  <Badge variant="secondary">Модератор</Badge>
+                ) : (
+                  <Badge variant="outline">Потребител</Badge>
+                )}
+              </TableCell>
+              <TableCell>
+                <UserActions 
+                  userId={user.id} 
+                  isAdmin={user.is_admin || false} 
+                  role={user.role}
+                  onRefresh={onRefresh} 
+                />
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );

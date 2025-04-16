@@ -74,14 +74,25 @@ const Admin = () => {
     
     setLoadingUsers(true);
     try {
-      // Use the view that joins profiles with auth.users to get emails and role
-      const { data, error } = await supabase
+      // First try to fetch from the view
+      let { data, error } = await supabase
         .from('user_profiles_with_email')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      console.log('Fetched users from view:', data);
+      if (error) {
+        console.error('Error fetching from view:', error);
+        // Fallback to direct profiles query if view has issues
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        if (profilesError) throw profilesError;
+        data = profilesData;
+      }
+      
+      console.log('Fetched users data:', data);
       setUsers(data || []);
     } catch (error) {
       console.error('Error fetching users:', error);
