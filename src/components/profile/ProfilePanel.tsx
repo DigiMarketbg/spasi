@@ -20,10 +20,12 @@ const ProfilePanel = () => {
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Потребител';
   
   const handleNavigate = (path: string) => {
-    // Close the drawer
-    setActiveTab('profile');
-    // Navigate to the given path
+    // First navigate to the path
     navigate(path);
+    // Then close the drawer
+    setTimeout(() => {
+      setActiveTab('profile');
+    }, 100);
   };
   
   // Mobile panel
