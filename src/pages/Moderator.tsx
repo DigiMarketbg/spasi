@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -199,9 +198,24 @@ const Moderator = () => {
           
           <Tabs defaultValue="signals" className="w-full">
             <TabsList className={`mb-6 ${isMobile ? 'w-full grid grid-cols-3 h-auto gap-1' : ''}`}>
-              <TabsTrigger value="signals" className={isMobile ? 'py-2 text-sm' : ''}>Сигнали</TabsTrigger>
-              <TabsTrigger value="dangerous-areas" className={isMobile ? 'py-2 text-sm' : ''}>Опасни участъци</TabsTrigger>
-              <TabsTrigger value="witnesses" className={isMobile ? 'py-2 text-sm' : ''}>Свидетели</TabsTrigger>
+              <TabsTrigger 
+                value="signals" 
+                className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
+              >
+                Сигнали
+              </TabsTrigger>
+              <TabsTrigger 
+                value="dangerous-areas" 
+                className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
+              >
+                Опасни участъци
+              </TabsTrigger>
+              <TabsTrigger 
+                value="witnesses" 
+                className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
+              >
+                Свидетели
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="signals">

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -7,7 +6,7 @@ import UsersManagement from '@/components/admin/UsersManagement';
 import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagement';
 import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
 import DangerousAreasManagement from '@/components/admin/dangerous-areas/DangerousAreasManagement';
-import WitnessesManagement from '@/components/admin/witnesses/WitnessesManagement';
+import WitnessesManagement from '@/components/admin/witnesses/WitnesssManagement';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface AdminTabsProps {
@@ -54,13 +53,22 @@ const AdminTabs = ({
   return (
     <Tabs defaultValue="signals">
       <TabsList className={`${isMobile ? 'w-full grid grid-cols-3 h-auto flex-wrap gap-1 mb-4' : 'mb-4'}`}>
-        <TabsTrigger value="signals" className={isMobile ? 'py-2 text-sm' : ''}>
+        <TabsTrigger 
+          value="signals" 
+          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
+        >
           Сигнали
         </TabsTrigger>
-        <TabsTrigger value="users" className={isMobile ? 'py-2 text-sm' : ''}>
+        <TabsTrigger 
+          value="users" 
+          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
+        >
           Потребители
         </TabsTrigger>
-        <TabsTrigger value="partners" className={isMobile ? 'py-2 text-sm' : ''}>
+        <TabsTrigger 
+          value="partners" 
+          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
+        >
           Партньори
           {pendingRequestsCount > 0 && (
             <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-blue-500 rounded-full">
@@ -68,7 +76,10 @@ const AdminTabs = ({
             </span>
           )}
         </TabsTrigger>
-        <TabsTrigger value="messages" className={isMobile ? 'py-2 text-sm' : ''}>
+        <TabsTrigger 
+          value="messages" 
+          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
+        >
           Съобщения
           {unreadCount > 0 && (
             <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-blue-500 rounded-full">
@@ -76,7 +87,10 @@ const AdminTabs = ({
             </span>
           )}
         </TabsTrigger>
-        <TabsTrigger value="dangerous-areas" className={isMobile ? 'py-2 text-sm' : ''}>
+        <TabsTrigger 
+          value="dangerous-areas" 
+          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
+        >
           Опасни участъци
           {pendingDangerousAreasCount > 0 && (
             <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-orange-500 rounded-full">
@@ -84,7 +98,10 @@ const AdminTabs = ({
             </span>
           )}
         </TabsTrigger>
-        <TabsTrigger value="witnesses" className={isMobile ? 'py-2 text-sm' : ''}>
+        <TabsTrigger 
+          value="witnesses" 
+          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
+        >
           Свидетели
           {pendingWitnessesCount > 0 && (
             <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-purple-500 rounded-full">
