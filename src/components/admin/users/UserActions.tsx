@@ -43,15 +43,22 @@ const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefr
   };
 
   const toggleModeratorStatus = async () => {
+    // Use the actual role value from the 'role' column
     const newRole = isModerator ? 'user' : 'moderator';
     
     try {
-      const { error } = await supabase
+      console.log(`Updating user ${userId} to role: ${newRole}`);
+      
+      // Make sure we're updating the 'role' column with the new role value
+      const { data, error } = await supabase
         .from('profiles')
         .update({ role: newRole })
-        .eq('id', userId);
+        .eq('id', userId)
+        .select();
 
       if (error) throw error;
+      
+      console.log('Update response:', data);
 
       toast({
         title: "Успешно",
@@ -63,6 +70,7 @@ const UserActions: React.FC<UserActionsProps> = ({ userId, isAdmin, role, onRefr
       // Trigger refresh of users data
       onRefresh();
     } catch (error: any) {
+      console.error('Error toggling moderator status:', error);
       toast({
         title: "Грешка",
         description: error.message || "Възникна проблем при обновяването на потребителя.",

@@ -74,7 +74,7 @@ const Admin = () => {
     
     setLoadingUsers(true);
     try {
-      // Use the view that joins profiles with auth.users to get emails
+      // Use the view that joins profiles with auth.users to get emails and role
       const { data, error } = await supabase
         .from('user_profiles_with_email')
         .select('*')
