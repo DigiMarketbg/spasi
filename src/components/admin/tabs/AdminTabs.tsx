@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import AdminTabsList from './components/AdminTabsList';
@@ -7,6 +6,7 @@ import UsersTabContent from './tab-contents/UsersTabContent';
 import PartnersTabContent from './tab-contents/PartnersTabContent';
 import MessagesTabContent from './tab-contents/MessagesTabContent';
 import DangerousAreasTabContent from './tab-contents/DangerousAreasTabContent';
+import NotificationsTabContent from './tab-contents/NotificationsTabContent';
 
 interface AdminTabsProps {
   signals: any[];
@@ -94,6 +94,10 @@ const AdminTabs = ({
           loading={loadingDangerousAreas}
           pendingCount={pendingDangerousAreasCount}
         />
+      </TabsContent>
+
+      <TabsContent value="notifications" className="mt-6">
+        <NotificationsTabContent />
       </TabsContent>
     </Tabs>
   );
