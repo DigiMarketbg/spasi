@@ -1,6 +1,6 @@
 
 // Cache name - update version to force refresh
-const CACHE_NAME = 'spasi-bg-v11';
+const CACHE_NAME = 'spasi-bg-v12';
 
 // Files to cache
 const urlsToCache = [
@@ -11,19 +11,19 @@ const urlsToCache = [
   '/icon-512.png'
 ];
 
-console.log('🟢 Service Worker зареден, версия:', CACHE_NAME);
+console.log('🟢 Service Worker loaded, version:', CACHE_NAME);
 
 // Install event
 self.addEventListener('install', (event) => {
   // Force the waiting service worker to become the active service worker
   self.skipWaiting();
   
-  console.log('🟢 Service Worker: инсталиране...');
+  console.log('🟢 Service Worker: installing...');
   
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('🟢 Service Worker: кеширане на статични ресурси');
+        console.log('🟢 Service Worker: caching static resources');
         return cache.addAll(urlsToCache);
       })
   );
@@ -31,7 +31,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches and claim clients
 self.addEventListener('activate', (event) => {
-  console.log('🟢 Service Worker: активиране...');
+  console.log('🟢 Service Worker: activating...');
   
   // Take control of all clients immediately
   event.waitUntil(clients.claim());
@@ -42,7 +42,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('🟢 Service Worker: изчистване на стар кеш', cacheName);
+            console.log('🟢 Service Worker: clearing old cache', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -102,9 +102,14 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-// Service Worker handling of OneSignal initialization
+// Service Worker handling of OneSignal push notifications
 self.addEventListener('push', function(event) {
   console.log('🟢 Service Worker: push notification received:', event);
+  
+  // Let OneSignal handle the push event
+  if (self.registration.pushManager) {
+    console.log('🟢 Push Manager is available');
+  }
 });
 
 // Service Worker handling of notification clicks

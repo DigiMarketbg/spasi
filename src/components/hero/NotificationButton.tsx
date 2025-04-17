@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bell } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 const NotificationButton = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -11,37 +11,33 @@ const NotificationButton = () => {
   const { toast } = useToast();
   
   useEffect(() => {
-    // Проверяваме дали OneSignal е зареден
+    // Check if OneSignal is loaded
     if (window.OneSignal) {
       try {
         window.OneSignal.push(() => {
-          console.log("OneSignal инициализиран успешно");
+          console.log("OneSignal successfully initialized");
           setIsInitialized(true);
           
-          // Проверка на статуса на абонамента
-          window.OneSignal.getNotificationPermission((permission) => {
-            console.log("Текущи разрешения за известия:", permission);
-          });
-          
-          window.OneSignal.isPushNotificationsEnabled((isEnabled) => {
-            console.log("Push notifications активирани:", isEnabled);
+          // Check subscription status
+          window.OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+            console.log("Push notifications enabled:", isEnabled);
             setIsSubscribed(isEnabled);
           });
           
-          // Добавяме слушател за промени в статуса
+          // Add listener for subscription changes
           window.OneSignal.on('subscriptionChange', function(isSubscribed) {
-            console.log("Статус на абонамента променен:", isSubscribed);
+            console.log("Subscription status changed:", isSubscribed);
             setIsSubscribed(isSubscribed);
             
             if (isSubscribed) {
-              window.OneSignal.getUserId((userId) => {
+              window.OneSignal.getUserId(function(userId) {
                 console.log("OneSignal User ID:", userId);
               });
             }
           });
         });
       } catch (error) {
-        console.error("Грешка при инициализация на OneSignal:", error);
+        console.error("Error initializing OneSignal:", error);
       }
     }
   }, []);
@@ -60,24 +56,24 @@ const NotificationButton = () => {
     
     try {
       if (!isSubscribed) {
-        // Регистриране за известия
-        window.OneSignal.push(() => {
-          console.log("Опит за регистрация за известия");
+        // Register for notifications
+        window.OneSignal.push(function() {
+          console.log("Attempting to register for notifications");
           
-          // Изрично регистриране и активиране на известията
+          // Explicitly register and activate notifications
           window.OneSignal.registerForPushNotifications();
           window.OneSignal.setSubscription(true);
           
-          // Обновяваме статуса след кратко забавяне
-          setTimeout(() => {
-            window.OneSignal.isPushNotificationsEnabled((isEnabled) => {
+          // Update status after a brief delay
+          setTimeout(function() {
+            window.OneSignal.isPushNotificationsEnabled(function(isEnabled) {
               setIsSubscribed(isEnabled);
               setIsLoading(false);
               
               if (isEnabled) {
-                // Запазваме ID на потребителя за проследяване
-                window.OneSignal.getUserId((userId) => {
-                  console.log("Потребител регистриран с ID:", userId);
+                // Save user ID for tracking
+                window.OneSignal.getUserId(function(userId) {
+                  console.log("User registered with ID:", userId);
                 });
                 
                 toast({
@@ -94,14 +90,14 @@ const NotificationButton = () => {
           }, 1500);
         });
       } else {
-        // Отписване от известия
-        window.OneSignal.push(() => {
-          console.log("Отписване от известия");
+        // Unsubscribe from notifications
+        window.OneSignal.push(function() {
+          console.log("Unsubscribing from notifications");
           window.OneSignal.setSubscription(false);
           
-          // Обновяваме статуса след кратко забавяне
-          setTimeout(() => {
-            window.OneSignal.isPushNotificationsEnabled((isEnabled) => {
+          // Update status after a brief delay
+          setTimeout(function() {
+            window.OneSignal.isPushNotificationsEnabled(function(isEnabled) {
               setIsSubscribed(isEnabled);
               setIsLoading(false);
               
@@ -116,11 +112,11 @@ const NotificationButton = () => {
         });
       }
     } catch (error) {
-      console.error("Грешка при промяна на абонамента:", error);
+      console.error("Error changing subscription:", error);
       setIsLoading(false);
       toast({
         title: "Грешка",
-        description: "Възникна проблем при обработката на заявката за абонамент.",
+        description: "Възникна проблем при обработката на заявката.",
         variant: "destructive",
       });
     }

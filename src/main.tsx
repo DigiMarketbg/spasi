@@ -9,18 +9,24 @@ window.supabase = supabase;
 
 // OneSignal integration helper
 const setupOneSignalHelpers = () => {
-  // Добавяме помощна функция за проверка на статуса
   if (window.OneSignal) {
-    console.info("Настройка на OneSignal помощници...");
+    console.info("Setting up OneSignal helpers...");
     
-    // Проверяваме статуса на инициализацията
+    // Check the initialization status
     window.addEventListener('load', () => {
       setTimeout(() => {
         if (window.OneSignal) {
           window.OneSignal.push(() => {
-            window.OneSignal.isPushNotificationsEnabled((isEnabled) => {
-              console.log("OneSignal статус при зареждане:", isEnabled ? "Активен" : "Неактивен");
-            });
+            console.log("OneSignal SDK loaded and ready");
+            
+            // Check if notifications are enabled
+            if (typeof window.OneSignal.isPushNotificationsEnabled === 'function') {
+              window.OneSignal.isPushNotificationsEnabled((isEnabled) => {
+                console.log("OneSignal subscription status:", isEnabled ? "Active" : "Inactive");
+              });
+            } else {
+              console.warn("OneSignal isPushNotificationsEnabled function not available yet");
+            }
           });
         }
       }, 2000);

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bg">
   <head>
@@ -30,12 +29,12 @@
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
+      OneSignalDeferred.push(async function() {
         await OneSignal.init({
           appId: "5e8423e4-9749-42ba-b564-f4dc70d93066",
           allowLocalhostAsSecureOrigin: true,
           notifyButton: {
-            enable: false, // Изключваме вградения бутон, използваме нашия
+            enable: false, // Disable the built-in button, use our own
           },
           persistNotification: false,
           promptOptions: {
@@ -55,32 +54,13 @@
           },
           serviceWorkerParam: { scope: "/" },
           serviceWorkerPath: "/sw.js",
-          // За по-добра съвместимост с различни браузъри
+          // For better compatibility with different browsers
           welcomeNotification: {
             disable: true
           }
         });
         
-        console.log("OneSignal инициализиран с конфигурацията");
-        
-        // Проверяваме текущото състояние
-        const isPushSupported = await OneSignal.isPushNotificationsSupported();
-        if (isPushSupported) {
-          console.log("Push известията се поддържат в този браузър");
-          
-          const notificationPermission = await OneSignal.getNotificationPermission();
-          console.log("Текущи разрешения:", notificationPermission);
-          
-          const isSubscribed = await OneSignal.isPushNotificationsEnabled();
-          console.log("Потребителят абониран:", isSubscribed);
-          
-          if (isSubscribed) {
-            const userId = await OneSignal.getUserId();
-            console.log("OneSignal User ID:", userId);
-          }
-        } else {
-          console.log("Push известията НЕ се поддържат в този браузър");
-        }
+        console.log("OneSignal initialized with config");
       });
     </script>
     
@@ -139,7 +119,7 @@
             window.addEventListener('load', () => {
               setTimeout(() => {
                 splashScreen.style.display = 'none';
-              }, 2000); // Показва се за 2 секунди
+              }, 2000); // Show for 2 seconds
             });
           }
         }
@@ -147,12 +127,12 @@
         // Define a function to handle updates
         const registerServiceWorker = async () => {
           try {
-            console.log("Регистриране на Service Worker...");
+            console.log("Registering Service Worker...");
             // Register the service worker
             const registration = await navigator.serviceWorker.register('/sw.js', {
               scope: '/' // Explicit scope setting
             });
-            console.log('Service worker регистриран успешно.', registration);
+            console.log('Service worker registered successfully.', registration);
             
             // Check for updates immediately
             registration.update();
@@ -160,7 +140,7 @@
             // Setup periodic checks for updates (every 30 minutes)
             setInterval(() => {
               registration.update();
-              console.log('Проверка за обновления на Service Worker...');
+              console.log('Checking for Service Worker updates...');
             }, 30 * 60 * 1000);
             
             // Listen for the updatefound event
@@ -170,7 +150,7 @@
               // Listen for state changes on the new worker
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  console.log('Налично е ново съдържание, презареждане...');
+                  console.log('New content is available, reloading...');
                   // Force reload the page to get the new version
                   window.location.reload(true);
                 }
@@ -180,18 +160,20 @@
             // Listen for messages from the service worker
             navigator.serviceWorker.addEventListener('message', (event) => {
               if (event.data && event.data.type === 'UPDATE_READY') {
-                console.log('Нова версия е готова, презареждане...');
+                console.log('New version is ready, reloading...');
                 window.location.reload(true);
               }
             });
             
           } catch (error) {
-            console.error('Регистрацията на Service Worker не успя:', error);
+            console.error('Service Worker registration failed:', error);
           }
         };
         
         // Run the service worker registration
-        registerServiceWorker();
+        window.addEventListener('load', () => {
+          registerServiceWorker();
+        });
       }
     </script>
     
