@@ -33,14 +33,54 @@
       OneSignalDeferred.push(async function(OneSignal) {
         await OneSignal.init({
           appId: "5e8423e4-9749-42ba-b564-f4dc70d93066",
+          allowLocalhostAsSecureOrigin: true,
           notifyButton: {
-            enable: true,
+            enable: false, // Изключваме вградения бутон, използваме нашия
           },
-          // Използваме subdomain fallback за решаване на проблема със Service Worker
-          subdomainName: "spasi-bg",
-          serviceWorkerPath: "/",
-          serviceWorkerParam: { scope: "/" }
+          persistNotification: false,
+          promptOptions: {
+            slidedown: {
+              prompts: [
+                {
+                  type: "push",
+                  autoPrompt: false,
+                  text: {
+                    actionMessage: "Искате ли да получавате известия за спешни случаи?",
+                    acceptButton: "Разреши",
+                    cancelButton: "Не сега",
+                  },
+                }
+              ]
+            }
+          },
+          serviceWorkerParam: { scope: "/" },
+          serviceWorkerPath: "/sw.js",
+          // За по-добра съвместимост с различни браузъри
+          welcomeNotification: {
+            disable: true
+          }
         });
+        
+        console.log("OneSignal инициализиран с конфигурацията");
+        
+        // Проверяваме текущото състояние
+        const isPushSupported = await OneSignal.isPushNotificationsSupported();
+        if (isPushSupported) {
+          console.log("Push известията се поддържат в този браузър");
+          
+          const notificationPermission = await OneSignal.getNotificationPermission();
+          console.log("Текущи разрешения:", notificationPermission);
+          
+          const isSubscribed = await OneSignal.isPushNotificationsEnabled();
+          console.log("Потребителят абониран:", isSubscribed);
+          
+          if (isSubscribed) {
+            const userId = await OneSignal.getUserId();
+            console.log("OneSignal User ID:", userId);
+          }
+        } else {
+          console.log("Push известията НЕ се поддържат в този браузър");
+        }
       });
     </script>
     

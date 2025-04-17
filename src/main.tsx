@@ -7,6 +7,27 @@ import { supabase } from './integrations/supabase/client'
 // Make Supabase available globally
 window.supabase = supabase;
 
+// OneSignal integration helper
+const setupOneSignalHelpers = () => {
+  // Добавяме помощна функция за проверка на статуса
+  if (window.OneSignal) {
+    console.info("Настройка на OneSignal помощници...");
+    
+    // Проверяваме статуса на инициализацията
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        if (window.OneSignal) {
+          window.OneSignal.push(() => {
+            window.OneSignal.isPushNotificationsEnabled((isEnabled) => {
+              console.log("OneSignal статус при зареждане:", isEnabled ? "Активен" : "Неактивен");
+            });
+          });
+        }
+      }, 2000);
+    });
+  }
+};
+
 // Add cache busting mechanism
 const addCacheBusting = () => {
   // Add a version query parameter to all fetch requests
@@ -16,7 +37,7 @@ const addCacheBusting = () => {
     const url = input instanceof Request ? input.url : String(input);
     const isSameOrigin = url.startsWith(window.location.origin) || url.startsWith('/');
     
-    if (isSameOrigin && !url.includes('socket')) {
+    if (isSameOrigin && !url.includes('socket') && !url.includes('onesignal')) {
       const separator = url.includes('?') ? '&' : '?';
       const cacheBuster = `v=${new Date().getTime()}`;
       
@@ -40,5 +61,8 @@ const addCacheBusting = () => {
 if (import.meta.env.PROD) {
   addCacheBusting();
 }
+
+// Setup OneSignal helpers
+setupOneSignalHelpers();
 
 createRoot(document.getElementById("root")!).render(<App />);
