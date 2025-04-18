@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { SignalFormValues } from '@/types/signal';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface SignalFormProps {
   form: UseFormReturn<SignalFormValues>;
@@ -47,7 +48,21 @@ const SignalForm: React.FC<SignalFormProps> = ({ form, onSubmit, onCancel }) => 
               <FormItem>
                 <FormLabel>Категория</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Select 
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Изберете категория" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="blood">Нужда от кръводарители</SelectItem>
+                      <SelectItem value="missing">Изчезнал човек</SelectItem>
+                      <SelectItem value="stolen">Откраднат автомобил</SelectItem>
+                      <SelectItem value="help">Хора в беда</SelectItem>
+                      <SelectItem value="other">Друго</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -113,10 +128,16 @@ const SignalForm: React.FC<SignalFormProps> = ({ form, onSubmit, onCancel }) => 
           />
         </div>
         
-        <Button type="submit">
-          <Save className="h-4 w-4 mr-2" />
-          Запази промените
-        </Button>
+        <div className="flex space-x-2">
+          <Button type="submit">
+            <Save className="h-4 w-4 mr-2" />
+            Запази промените
+          </Button>
+          <Button type="button" variant="outline" onClick={onCancel}>
+            <X className="h-4 w-4 mr-2" />
+            Отказ
+          </Button>
+        </div>
       </form>
     </Form>
   );

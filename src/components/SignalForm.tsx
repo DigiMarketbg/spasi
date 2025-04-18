@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,7 +36,7 @@ const SignalForm = ({ onSuccess }: SignalFormProps) => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      category: '',
+      category: 'other', // Changed from empty string to a valid enum value
       title: '',
       city: '',
       description: '',

@@ -8,7 +8,7 @@ export const signalSchema = z.object({
   description: z.string().min(10, {
     message: "Описанието трябва да бъде поне 10 символа.",
   }),
-  category: z.string().min(1, {
+  category: z.enum(['blood', 'missing', 'stolen', 'help', 'other'], {
     message: "Моля, изберете категория.",
   }),
   city: z.string().min(1, {
