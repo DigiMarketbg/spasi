@@ -14,8 +14,12 @@ const setupOneSignalHelpers = () => {
     
     // Check the initialization status
     window.addEventListener('load', () => {
-      setTimeout(() => {
-        if (window.OneSignal) {
+      let attempts = 0;
+      const checkOneSignalReady = setInterval(() => {
+        attempts++;
+        if (window.OneSignal && typeof window.OneSignal.push === 'function') {
+          console.log("OneSignal SDK found, checking initialization");
+          
           window.OneSignal.push(() => {
             console.log("OneSignal SDK loaded and ready");
             
@@ -23,13 +27,30 @@ const setupOneSignalHelpers = () => {
             if (typeof window.OneSignal.isPushNotificationsEnabled === 'function') {
               window.OneSignal.isPushNotificationsEnabled((isEnabled) => {
                 console.log("OneSignal subscription status:", isEnabled ? "Active" : "Inactive");
+                
+                // Get OneSignal playerId (subscriber ID)
+                if (isEnabled) {
+                  window.OneSignal.getUserId((userId) => {
+                    console.log("OneSignal User ID:", userId);
+                  });
+                }
               });
             } else {
               console.warn("OneSignal isPushNotificationsEnabled function not available yet");
             }
           });
+          
+          clearInterval(checkOneSignalReady);
+        } else {
+          console.log("Waiting for OneSignal to be ready...");
         }
-      }, 2000);
+        
+        // Stop checking after 20 attempts (10 seconds)
+        if (attempts >= 20) {
+          console.warn("Failed to initialize OneSignal helper after multiple attempts");
+          clearInterval(checkOneSignalReady);
+        }
+      }, 500);
     });
   }
 };

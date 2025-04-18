@@ -10,7 +10,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/integrations/supabase/client'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Loader2 } from 'lucide-react'
+import { AlertTriangle, Loader2 } from 'lucide-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 // Schema for form validation
 const notificationSchema = z.object({
@@ -31,6 +32,8 @@ type NotificationFormData = z.infer<typeof notificationSchema>;
 export const SendNotificationForm = () => {
   const { toast } = useToast()
   const [isSending, setIsSending] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
+  const [lastResponse, setLastResponse] = useState<any>(null)
   
   // Initialize form
   const form = useForm<NotificationFormData>({
@@ -44,6 +47,8 @@ export const SendNotificationForm = () => {
   const onSubmit = async (data: NotificationFormData) => {
     try {
       setIsSending(true)
+      setApiError(null)
+      setLastResponse(null)
       
       console.log('Sending notification:', data);
       
@@ -53,17 +58,23 @@ export const SendNotificationForm = () => {
 
       if (error) {
         console.error('Supabase function error:', error);
+        setApiError(`Error calling Supabase function: ${error.message}`);
         throw new Error(error.message);
       }
 
+      // Store the complete response for debugging
+      setLastResponse(response);
+      console.log('OneSignal API response:', response);
+
       if (response.error) {
         console.error('OneSignal API error:', response.error);
-        throw new Error(response.error);
+        setApiError(`OneSignal API error: ${JSON.stringify(response.error)}`);
+        throw new Error(typeof response.error === 'string' ? response.error : JSON.stringify(response.error));
       }
 
       toast({
         title: "Успешно изпратено",
-        description: "Известието е изпратено до всички абонирани потребители.",
+        description: `Известието е изпратено до ${response.result?.recipients || 0} абонирани потребители.`,
       })
       
       form.reset();
@@ -82,6 +93,22 @@ export const SendNotificationForm = () => {
   return (
     <Card>
       <CardContent className="pt-6">
+        {apiError && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>{apiError}</AlertDescription>
+          </Alert>
+        )}
+        
+        {lastResponse && lastResponse.success && (
+          <Alert className="mb-6">
+            <AlertDescription>
+              Известието е изпратено успешно до {lastResponse.result?.recipients || 0} абонирани потребители.
+              {lastResponse.result?.id && ` ID на известието: ${lastResponse.result.id}`}
+            </AlertDescription>
+          </Alert>
+        )}
+        
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField

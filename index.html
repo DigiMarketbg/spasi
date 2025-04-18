@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bg">
   <head>
@@ -33,6 +34,7 @@
         await OneSignal.init({
           appId: "5e8423e4-9749-42ba-b564-f4dc70d93066",
           allowLocalhostAsSecureOrigin: true,
+          autoResubscribe: true,
           notifyButton: {
             enable: false, // Disable the built-in button, use our own
           },
@@ -52,6 +54,8 @@
               ]
             }
           },
+          // The key changes: allow any origin for development
+          subdomainName: "spasi", 
           serviceWorkerParam: { scope: "/" },
           serviceWorkerPath: "/sw.js",
           // For better compatibility with different browsers
@@ -61,6 +65,13 @@
         });
         
         console.log("OneSignal initialized with config");
+        
+        // Check subscription status after initialization
+        setTimeout(() => {
+          OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+            console.log("OneSignal subscription status:", isEnabled ? "Active" : "Inactive");
+          });
+        }, 2000);
       });
     </script>
     

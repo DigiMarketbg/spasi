@@ -40,6 +40,26 @@ serve(async (req) => {
       )
     }
 
+    console.log('Preparing OneSignal API request...')
+    
+    // Create OneSignal notification payload
+    const notificationPayload = {
+      app_id: ONESIGNAL_APP_ID,
+      included_segments: ['Subscribed Users'],
+      contents: { en: message },
+      headings: { en: title },
+      // Add a web button to direct users to the homepage
+      web_buttons: [
+        {
+          id: "view-site",
+          text: "Отвори сайта",
+          url: "https://spasi.bg"
+        }
+      ]
+    }
+    
+    console.log('OneSignal request payload:', JSON.stringify(notificationPayload))
+
     // Make request to OneSignal API
     const response = await fetch('https://onesignal.com/api/v1/notifications', {
       method: 'POST',
@@ -47,21 +67,39 @@ serve(async (req) => {
         'Authorization': `Basic ${ONESIGNAL_REST_API_KEY}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        app_id: ONESIGNAL_APP_ID,
-        included_segments: ['Subscribed Users'],
-        contents: { en: message },
-        headings: { en: title }
-      })
+      body: JSON.stringify(notificationPayload)
     })
 
-    const result = await response.json()
+    const responseText = await response.text()
+    console.log('OneSignal API raw response:', responseText)
+    
+    let result
+    try {
+      result = JSON.parse(responseText)
+    } catch (e) {
+      console.error('Error parsing OneSignal response:', e)
+      return new Response(
+        JSON.stringify({ 
+          error: 'Error parsing OneSignal response', 
+          details: responseText,
+          statusCode: response.status 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500
+        }
+      )
+    }
     
     console.log('OneSignal API response:', result)
 
-    if (result.errors) {
+    if (!response.ok || result.errors) {
       return new Response(
-        JSON.stringify({ error: 'OneSignal API error', details: result.errors }),
+        JSON.stringify({ 
+          error: 'OneSignal API error', 
+          details: result.errors || `HTTP status: ${response.status}`,
+          statusCode: response.status 
+        }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 400 
@@ -80,7 +118,10 @@ serve(async (req) => {
     console.error('Error sending notification:', error)
     
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        stack: error.stack
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,

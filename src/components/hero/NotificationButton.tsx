@@ -14,27 +14,40 @@ const NotificationButton = () => {
     // Check if OneSignal is loaded
     if (window.OneSignal) {
       try {
-        window.OneSignal.push(() => {
-          console.log("OneSignal successfully initialized");
-          setIsInitialized(true);
+        window.OneSignal.push(function() {
+          console.log("Checking OneSignal initialization status");
           
-          // Check subscription status
-          window.OneSignal.isPushNotificationsEnabled(function(isEnabled) {
-            console.log("Push notifications enabled:", isEnabled);
-            setIsSubscribed(isEnabled);
-          });
-          
-          // Add listener for subscription changes
-          window.OneSignal.on('subscriptionChange', function(isSubscribed) {
-            console.log("Subscription status changed:", isSubscribed);
-            setIsSubscribed(isSubscribed);
-            
-            if (isSubscribed) {
-              window.OneSignal.getUserId(function(userId) {
-                console.log("OneSignal User ID:", userId);
+          // Ensure initialization is complete before checking subscription
+          const checkInitialization = setInterval(() => {
+            // Check if OneSignal SDK is fully initialized
+            if (typeof window.OneSignal.isPushNotificationsEnabled === 'function') {
+              clearInterval(checkInitialization);
+              setIsInitialized(true);
+              
+              // Check subscription status
+              window.OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+                console.log("Push notifications enabled:", isEnabled);
+                setIsSubscribed(isEnabled);
               });
+              
+              // Add listener for subscription changes
+              window.OneSignal.on('subscriptionChange', function(isSubscribed) {
+                console.log("Subscription status changed:", isSubscribed);
+                setIsSubscribed(isSubscribed);
+                
+                if (isSubscribed) {
+                  window.OneSignal.getUserId(function(userId) {
+                    console.log("OneSignal User ID:", userId);
+                  });
+                }
+              });
+            } else {
+              console.log("Waiting for OneSignal to initialize...");
             }
-          });
+          }, 1000);
+          
+          // Clear interval after 10 seconds to prevent infinite checking
+          setTimeout(() => clearInterval(checkInitialization), 10000);
         });
       } catch (error) {
         console.error("Error initializing OneSignal:", error);
@@ -46,7 +59,7 @@ const NotificationButton = () => {
     if (!window.OneSignal || !isInitialized) {
       toast({
         title: "Грешка",
-        description: "Услугата за известия не е налична в момента.",
+        description: "Услугата за известия не е налична в момента. Моля, опитайте отново по-късно.",
         variant: "destructive",
       });
       return;
@@ -60,11 +73,10 @@ const NotificationButton = () => {
         window.OneSignal.push(function() {
           console.log("Attempting to register for notifications");
           
-          // Explicitly register and activate notifications
-          window.OneSignal.registerForPushNotifications();
-          window.OneSignal.setSubscription(true);
+          // Show the native prompt
+          window.OneSignal.showSlidedownPrompt();
           
-          // Update status after a brief delay
+          // Check subscription status after a brief delay
           setTimeout(function() {
             window.OneSignal.isPushNotificationsEnabled(function(isEnabled) {
               setIsSubscribed(isEnabled);
@@ -87,7 +99,7 @@ const NotificationButton = () => {
                 });
               }
             });
-          }, 1500);
+          }, 2000);
         });
       } else {
         // Unsubscribe from notifications

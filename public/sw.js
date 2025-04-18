@@ -1,6 +1,5 @@
-
 // Cache name - update version to force refresh
-const CACHE_NAME = 'spasi-bg-v12';
+const CACHE_NAME = 'spasi-bg-v13';
 
 // Files to cache
 const urlsToCache = [
@@ -59,7 +58,11 @@ self.addEventListener('activate', (event) => {
 // Fetch event - add network-first strategy for HTML and API requests
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests and OneSignal requests
-  if (event.request.method !== 'GET' || event.request.url.includes('onesignal')) return;
+  if (event.request.method !== 'GET' || 
+      event.request.url.includes('onesignal') || 
+      event.request.url.includes('OneSignal')) {
+    return;
+  }
   
   // Check if this is a navigation request (HTML)
   const isNavigationRequest = event.request.mode === 'navigate';
@@ -102,13 +105,21 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-// Service Worker handling of OneSignal push notifications
+// Service Worker handling of push notifications
 self.addEventListener('push', function(event) {
   console.log('🟢 Service Worker: push notification received:', event);
   
-  // Let OneSignal handle the push event
+  // Let OneSignal handle the push event if it's from OneSignal
+  if (event.data && event.data.text().includes('onesignal')) {
+    console.log('🟢 OneSignal push event detected');
+    return;
+  }
+  
+  // Otherwise handle it ourselves
   if (self.registration.pushManager) {
     console.log('🟢 Push Manager is available');
+    
+    // You could implement custom notification handling here if needed
   }
 });
 
