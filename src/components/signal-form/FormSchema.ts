@@ -5,7 +5,7 @@ import { z } from 'zod';
 const phoneRegex = /^(\+359|0)[0-9]{9}$/;
 
 export const formSchema = z.object({
-  category: z.string({
+  category: z.enum(['blood', 'missing', 'stolen', 'help', 'other'], {
     required_error: "Моля, изберете категория",
   }),
   title: z.string()

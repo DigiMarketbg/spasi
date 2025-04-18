@@ -7,7 +7,6 @@ const signalCategories = [
   { value: 'blood', label: 'Нужда от кръводарители' },
   { value: 'missing', label: 'Изчезнал човек' },
   { value: 'stolen', label: 'Откраднат автомобил' },
-  { value: 'danger', label: 'Опасен участък' },
   { value: 'help', label: 'Хора в беда' },
   { value: 'other', label: 'Друго' },
 ];
