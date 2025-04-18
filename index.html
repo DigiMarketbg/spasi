@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bg">
   <head>
@@ -54,11 +53,13 @@
               ]
             }
           },
-          // The key changes: allow any origin for development
-          subdomainName: "spasi", 
+          // Updated domain configuration
+          subdomainName: "spasi",
           serviceWorkerParam: { scope: "/" },
           serviceWorkerPath: "/sw.js",
-          // For better compatibility with different browsers
+          safari_web_id: "web.onesignal.auto.2c58bfb7-deb3-4a0c-bd57-09c9e81c4ae0",
+          // Set the allowed origin to spasi.bg
+          allowedOrigins: ["https://spasi.bg"],
           welcomeNotification: {
             disable: true
           }
