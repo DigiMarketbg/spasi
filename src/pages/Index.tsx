@@ -7,7 +7,6 @@ import PartnerCarousel from '@/components/PartnerCarousel';
 import BlogSection from '@/components/BlogSection';
 import VideoSection from '@/components/VideoSection';
 import PartnerSection from '@/components/PartnerSection';
-import WitnessesSection from '@/components/witnesses/WitnessesSection';
 import FounderStoryDialog from '@/components/info/FounderStoryDialog';
 import Footer from '@/components/Footer';
 
@@ -22,7 +21,6 @@ const Index = () => {
           <FounderStoryDialog triggerClassName="mx-auto" />
         </div>
         <SignalsList />
-        <WitnessesSection />
         <PartnerCarousel />
         <VideoSection />
         <BlogSection />
