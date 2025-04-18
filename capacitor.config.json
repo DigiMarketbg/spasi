@@ -1,0 +1,14 @@
+
+{
+  "appId": "app.lovable.fd2e2b32e8754f9fba213cb810f48014",
+  "appName": "Spasi.bg",
+  "server": {
+    "url": "https://spasi.bg",
+    "cleartext": true
+  },
+  "plugins": {
+    "OneSignal": {
+      "appId": "5e8423e4-9749-42ba-b564-f4dc70d93066"
+    }
+  }
+}
