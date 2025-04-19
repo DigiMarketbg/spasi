@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Shield, Users, Star, Eye, HandHeart } from 'lucide-react';
+import { Shield, Users, Star, Eye, HandHeart, Dog } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/components/ThemeProvider';
@@ -9,7 +9,7 @@ const FeatureButtons = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
 
-  // Функции за навигация към различни страници
+  // Navigation functions
   const navigateToRescuers = () => {
     navigate('/rescuers');
   };
@@ -30,7 +30,11 @@ const FeatureButtons = () => {
     navigate('/good-deeds');
   };
 
-  // Updated style for feature buttons based on theme
+  const navigateToPets = () => {
+    navigate('/pets');
+  };
+
+  // Style for feature buttons based on theme
   const featureButtonStyle = theme === 'light' 
     ? "w-[80px] h-[80px] bg-spasi-red/10 backdrop-blur-sm border-2 border-spasi-red text-black rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-spasi-red/20"
     : "w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20";
@@ -87,8 +91,18 @@ const FeatureButtons = () => {
           <span>добрините</span>
         </span>
       </Button>
+
+      {/* Button 6: Домашни любимци */}
+      <Button 
+        className={featureButtonStyle}
+        onClick={navigateToPets}
+      >
+        <Dog className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
+        <span className="text-[0.6rem] truncate w-[60px] text-center">Домашни любимци</span>
+      </Button>
     </div>
   );
 };
 
 export default FeatureButtons;
+
