@@ -1,4 +1,6 @@
 
+// Add a Delete button alongside Approve for pending good deeds and implement handler
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
@@ -38,14 +40,13 @@ const GoodDeedsTabContent = () => {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     loadPendingGoodDeeds();
   }, []);
 
   const handleApprove = async (id: string) => {
     try {
       setLoading(true);
-      // Call the Supabase Edge Function to approve the good deed
       const res = await fetch('https://hmcbxrssyqkiimazipvo.functions.supabase.co/approve-good-deed', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -68,6 +69,37 @@ const GoodDeedsTabContent = () => {
         variant: 'destructive',
         title: 'Грешка при одобрение',
         description: error instanceof Error ? error.message : 'Възникна грешка при одобрението',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      setLoading(true);
+      const res = await fetch('https://hmcbxrssyqkiimazipvo.functions.supabase.co/delete-good-deed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || (json.error && json.error.length > 0)) {
+        throw new Error(json.error || 'Неуспешно изтриване');
+      }
+
+      toast({
+        title: 'Изтрито',
+        description: 'Доброто дело беше успешно изтрито.',
+      });
+      await loadPendingGoodDeeds();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Грешка при изтриване',
+        description: error instanceof Error ? error.message : 'Възникна грешка при изтриването',
       });
     } finally {
       setLoading(false);
@@ -101,9 +133,12 @@ const GoodDeedsTabContent = () => {
                 <TableCell>{deed.description || '-'}</TableCell>
                 <TableCell>{deed.author_name || 'Анонимен'}</TableCell>
                 <TableCell>{deed.created_at ? new Date(deed.created_at).toLocaleDateString('bg-BG') : '-'}</TableCell>
-                <TableCell>
+                <TableCell className="flex space-x-2">
                   <Button onClick={() => handleApprove(deed.id)} size="sm" disabled={loading}>
                     Одобри
+                  </Button>
+                  <Button variant="destructive" onClick={() => handleDelete(deed.id)} size="sm" disabled={loading}>
+                    Изтрий
                   </Button>
                 </TableCell>
               </TableRow>

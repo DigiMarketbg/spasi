@@ -1,8 +1,8 @@
 
 /*
-  Supabase Edge Function: Approve a good deed by id
+  Supabase Edge Function: Delete a good deed by id
   
-  Fixed import for Deno std/http/server.ts module with full URL and supabase-js import.
+  Full URL imports for Deno std and supabase-js.
 */
 import { serve } from "https://deno.land/std@0.178.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js";
@@ -48,11 +48,11 @@ serve(async (req) => {
 
     const { error } = await supabase
       .from("good_deeds")
-      .update({ is_approved: true })
+      .delete()
       .eq("id", id);
 
     if (error) {
-      console.error("Failed to approve good deed:", error.message);
+      console.error("Failed to delete good deed:", error.message);
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,
         headers: {
@@ -70,7 +70,7 @@ serve(async (req) => {
       },
     });
   } catch (err) {
-    console.error("Error in approve-good-deed endpoint:", err);
+    console.error("Error in delete-good-deed endpoint:", err);
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
       {
