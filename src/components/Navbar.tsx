@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
@@ -33,8 +32,7 @@ const Navbar = () => {
 
   const displayName = profile?.full_name || user?.email || 'Потребител';
 
-  // Remove hiding navbar on mobile to fix visibility issue
-  // if (isMobile) return null;
+  // Show navbar always on desktop; do not hide on mobile either to keep current mobile experience
 
   return (
     <header 
