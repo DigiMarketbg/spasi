@@ -120,6 +120,7 @@ export type Database = {
           id: string
           ip_address: string
           is_approved: boolean | null
+          title: string | null
         }
         Insert: {
           author_name?: string | null
@@ -129,6 +130,7 @@ export type Database = {
           id?: string
           ip_address: string
           is_approved?: boolean | null
+          title?: string | null
         }
         Update: {
           author_name?: string | null
@@ -138,6 +140,7 @@ export type Database = {
           id?: string
           ip_address?: string
           is_approved?: boolean | null
+          title?: string | null
         }
         Relationships: []
       }

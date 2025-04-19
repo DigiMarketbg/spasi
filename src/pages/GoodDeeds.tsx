@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,10 +16,12 @@ const GoodDeeds = () => {
       description?: string;
       author_name?: string | null;
       created_at?: string;
+      title?: string | null;
     }>
   >([]);
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [titleSearchTerm, setTitleSearchTerm] = useState('');
+  const [descriptionSearchTerm, setDescriptionSearchTerm] = useState('');
 
   const loadStatsAndDeeds = useCallback(async () => {
     try {
@@ -36,10 +39,11 @@ const GoodDeeds = () => {
 
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Filter approved good deeds by search term in description
+  // Filter approved good deeds by title and description search terms
   const filteredGoodDeeds = approvedGoodDeeds.filter(deed => {
-    if (!searchTerm.trim()) return true;
-    return deed.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    const titleMatch = titleSearchTerm.trim() === '' || deed.title?.toLowerCase().includes(titleSearchTerm.toLowerCase());
+    const descriptionMatch = descriptionSearchTerm.trim() === '' || deed.description?.toLowerCase().includes(descriptionSearchTerm.toLowerCase());
+    return titleMatch && descriptionMatch;
   });
 
   return (
@@ -55,14 +59,12 @@ const GoodDeeds = () => {
             </p>
           </div>
 
-          {/* Pass onAdd to StatsCard to refresh, and show dialog on + button click */}
           <StatsCard
             totalCount={stats.total_count}
             todayCount={stats.today_count}
             onAdd={() => setDialogOpen(true)}
           />
 
-          {/* Keep AddGoodDeedDialog but controlled via state */}
           <AddGoodDeedDialog
             onAdd={loadStatsAndDeeds}
             open={dialogOpen}
@@ -72,11 +74,19 @@ const GoodDeeds = () => {
           <section className="pt-8">
             <h2 className="text-2xl font-semibold mb-4">Одобрени добри дела</h2>
 
-            {/* Search input for filtering */}
+            {/* Search input for filtering by title */}
+            <Input
+              placeholder="Търсене по заглавие..."
+              value={titleSearchTerm}
+              onChange={(e) => setTitleSearchTerm(e.target.value)}
+              className="mb-3 bg-background"
+            />
+
+            {/* Search input for filtering by description */}
             <Input
               placeholder="Търсене по описание..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={descriptionSearchTerm}
+              onChange={(e) => setDescriptionSearchTerm(e.target.value)}
               className="mb-6 bg-background"
             />
 
