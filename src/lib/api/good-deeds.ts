@@ -1,5 +1,5 @@
 
-// Add function to fetch pending good deeds for admin/moderator panel
+// Update the getPendingGoodDeeds function to return deeds where is_approved IS NULL (pending)
 import { supabase } from "@/integrations/supabase/client";
 
 export const getGoodDeedsStats = async () => {
@@ -26,6 +26,7 @@ export const addGoodDeed = async (description?: string, authorName?: string) => 
       ip_address: ip, 
       description,
       author_name: authorName === undefined ? 'Анонимен' : authorName,
+      // Do not set is_approved when inserting, so it remains null / pending
     }]);
 
   if (error) throw error;
@@ -42,12 +43,12 @@ export const getApprovedGoodDeeds = async () => {
   return data;
 };
 
-// New function to fetch pending good deeds for admin/moderator review
+// Adjusted function to fetch pending good deeds for admin/moderator review
 export const getPendingGoodDeeds = async () => {
   const { data, error } = await supabase
     .from('good_deeds')
     .select('id, description, author_name, created_at')
-    .eq('is_approved', false)
+    .is('is_approved', null)
     .order('created_at', { ascending: false });
 
   if (error) throw error;

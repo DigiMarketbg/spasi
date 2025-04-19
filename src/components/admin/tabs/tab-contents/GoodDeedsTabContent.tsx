@@ -1,5 +1,5 @@
 
-// Add a Delete button alongside Approve for pending good deeds and implement handler
+// Adjust the GoodDeedsTabContent component to properly handle pending deeds with is_approved = null
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
