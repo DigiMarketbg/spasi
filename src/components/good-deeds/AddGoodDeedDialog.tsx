@@ -25,8 +25,8 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
 
   // Set author name from profile when component mounts or profile changes
   useEffect(() => {
-    if (profile?.first_name && profile?.last_name) {
-      setAuthorName(`${profile.first_name} ${profile.last_name}`);
+    if (profile?.full_name) {
+      setAuthorName(profile.full_name);
     }
   }, [profile]);
 
@@ -59,8 +59,8 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
   const resetForm = () => {
     setDescription("");
     // Reset author name to profile name
-    if (profile?.first_name && profile?.last_name) {
-      setAuthorName(`${profile.first_name} ${profile.last_name}`);
+    if (profile?.full_name) {
+      setAuthorName(profile.full_name);
     } else {
       setAuthorName("");
     }
