@@ -37,6 +37,7 @@ import Witnesses from "./pages/Witnesses";
 import SubmitWitness from "./pages/SubmitWitness";
 import WitnessDetail from "./pages/WitnessDetail";
 import GoodDeeds from "./pages/GoodDeeds";
+import Pets from "./pages/Pets";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,7 @@ const App = () => (
                 <Route path="/submit-witness" element={<SubmitWitness />} />
                 <Route path="/witness/:id" element={<WitnessDetail />} />
                 <Route path="/good-deeds" element={<GoodDeeds />} />
+                <Route path="/pets" element={<Pets />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <MobileNavBar />
