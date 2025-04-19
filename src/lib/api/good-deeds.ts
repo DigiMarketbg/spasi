@@ -1,5 +1,5 @@
 
-// Update the addGoodDeed function to accept title and use it in the insert
+// Explicitly type parameters for addGoodDeed for clarity and to fix TS errors
 import { supabase } from "@/integrations/supabase/client";
 
 export const getGoodDeedsStats = async () => {
@@ -8,18 +8,20 @@ export const getGoodDeedsStats = async () => {
   return data[0];
 };
 
-export const addGoodDeed = async (description?: string, authorName?: string, title?: string) => {
+export const addGoodDeed = async (
+  description?: string, 
+  authorName?: string, 
+  title?: string
+): Promise<void> => {
   const response = await fetch('https://api.ipify.org?format=json');
   const { ip } = await response.json();
 
-  // Check if user can add a good deed today using policy
   const { data: canAdd, error: checkError } = await supabase
     .rpc('can_add_good_deed', { client_ip: ip });
 
   if (checkError) throw checkError;
   if (!canAdd) throw new Error('Вече сте регистрирали 3 добри дела за днес!');
 
-  // Add the good deed
   const { error } = await supabase
     .from('good_deeds')
     .insert([{ 
@@ -27,7 +29,6 @@ export const addGoodDeed = async (description?: string, authorName?: string, tit
       description,
       author_name: authorName === undefined ? 'Анонимен' : authorName,
       title,
-      // Do not set is_approved when inserting, so it remains null / pending
     }]);
 
   if (error) throw error;
@@ -44,7 +45,6 @@ export const getApprovedGoodDeeds = async () => {
   return data;
 };
 
-// Adjusted function to fetch pending good deeds for admin/moderator review
 export const getPendingGoodDeeds = async () => {
   const { data, error } = await supabase
     .from('good_deeds')

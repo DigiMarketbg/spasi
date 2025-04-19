@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -6,6 +7,7 @@ import AddGoodDeedDialog from "@/components/good-deeds/AddGoodDeedDialog";
 import { getGoodDeedsStats, getApprovedGoodDeeds } from "@/lib/api/good-deeds";
 import GoodDeedItem from "@/components/good-deeds/GoodDeedItem";
 import { Input } from "@/components/ui/input";
+
 const GoodDeeds = () => {
   const [stats, setStats] = useState({
     total_count: 0,
@@ -40,7 +42,9 @@ const GoodDeeds = () => {
     const descriptionMatch = descriptionSearchTerm.trim() === '' || deed.description?.toLowerCase().includes(descriptionSearchTerm.toLowerCase());
     return titleMatch && descriptionMatch;
   });
-  return <div className="min-h-screen flex flex-col">
+
+  return (
+    <div className="min-h-screen flex flex-col">
       <Navbar />
 
       <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10">
@@ -63,16 +67,27 @@ const GoodDeeds = () => {
             <Input placeholder="Търсене по заглавие..." value={titleSearchTerm} onChange={e => setTitleSearchTerm(e.target.value)} className="mb-3 bg-background" />
 
             {/* Search input for filtering by description */}
-            
+            <Input placeholder="Търсене по описание..." value={descriptionSearchTerm} onChange={e => setDescriptionSearchTerm(e.target.value)} className="mb-4 bg-background" />
 
-            {filteredGoodDeeds.length === 0 ? <p className="text-center text-gray-600">Няма одобрени добри дела, които да отговарят на търсенето.</p> : <div className="grid gap-4 md:grid-cols-2">
-                {filteredGoodDeeds.map(deed => <GoodDeedItem key={deed.id} description={deed.description} authorName={deed.author_name} createdAt={deed.created_at} />)}
-              </div>}
+            {filteredGoodDeeds.length === 0 ? (
+              <p className="text-center text-gray-600">Няма одобрени добри дела, които да отговарят на търсенето.</p>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {filteredGoodDeeds.map(deed => (
+                  <div key={deed.id} className="border rounded-md p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
+                    {deed.title && <h3 className="mb-2 font-semibold">{deed.title}</h3>}
+                    <GoodDeedItem description={deed.description} authorName={deed.author_name} createdAt={deed.created_at} />
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         </div>
       </main>
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default GoodDeeds;
