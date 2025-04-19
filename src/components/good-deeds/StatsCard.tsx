@@ -8,8 +8,8 @@ interface StatsCardProps {
 
 const StatsCard = ({ totalCount, todayCount }: StatsCardProps) => {
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <Card>
+    <div className="flex gap-4 w-full">
+      <Card className="flex-1">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Общо добрини</CardTitle>
         </CardHeader>
@@ -18,7 +18,7 @@ const StatsCard = ({ totalCount, todayCount }: StatsCardProps) => {
         </CardContent>
       </Card>
       
-      <Card>
+      <Card className="flex-1">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Добрини днес</CardTitle>
         </CardHeader>
