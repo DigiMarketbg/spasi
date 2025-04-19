@@ -37,17 +37,19 @@ const Pets = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
-      <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10 max-w-5xl">
-        <div className="text-center mb-6">
+      <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10 max-w-6xl">
+        <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-lime-700 mb-2">Домашни Любимци</h1>
-          <p className="text-muted-foreground max-w-xl mx-auto">
+          <p className="text-muted-foreground max-w-xl mx-auto mb-6">
             Тук можете да публикувате сигнали за намерени, изхвърлени или загубени домашни любимци. След преглед и одобрение, публикациите ще се покажат тук и ще помогнат на хората да ги намерят, вземат или осиновят.
           </p>
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild>
-              <Button className="mt-4">Добави домашен любимец</Button>
+              <Button className="mt-4" size="lg" variant="default" >
+                Добави домашен любимец
+              </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="pb-10">
               <SheetHeader>
@@ -59,13 +61,13 @@ const Pets = () => {
           </Sheet>
         </div>
 
-        <section className="mt-8">
+        <section className="mt-6">
           {loading ? (
-            <p className="text-center text-gray-500">Зареждане...</p>
+            <p className="text-center text-gray-500 text-lg">Зареждане...</p>
           ) : pets.length === 0 ? (
-            <p className="text-center text-gray-600">Все още няма добавени домашни любимци.</p>
+            <p className="text-center text-gray-600 text-lg">Все още няма добавени домашни любимци.</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {pets.map(pet => (
                 <PetItem
                   key={pet.id}
@@ -87,3 +89,4 @@ const Pets = () => {
 };
 
 export default Pets;
+
