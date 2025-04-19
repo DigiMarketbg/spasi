@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -37,7 +36,7 @@ const Pets = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-[#1A1F2C]"> {/* Changed bg-gray-50 to dark background */}
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10 max-w-6xl">
         <div className="text-center mb-8">
