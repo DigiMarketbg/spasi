@@ -23,6 +23,16 @@ export const fetchApprovedPetPosts = async (): Promise<PetPost[]> => {
   return data as PetPost[];
 };
 
+// Fetch all pet posts (for admin)
+export const fetchAllPetPosts = async (): Promise<PetPost[]> => {
+  const { data, error } = await supabase
+    .from("pet_posts")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data as PetPost[];
+};
+
 // Add a new pet post
 export const addPetPost = async (
   userId: string,
@@ -40,3 +50,4 @@ export const addPetPost = async (
   });
   if (error) throw error;
 };
+

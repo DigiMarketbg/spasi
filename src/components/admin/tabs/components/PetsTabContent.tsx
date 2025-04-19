@@ -1,81 +1,54 @@
+// Changed PetsTabContent to use supabase directly via lib/api/pets instead of fetch REST API
 
-// Changed to add error handling fix for non-JSON response in fetchAllPetPosts
-
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { useToast } from '@/hooks/use-toast';
-
-interface PetPost {
-  id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  image_url?: string | null;
-  created_at: string;
-  is_approved: boolean;
-  status: string;
-}
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { fetchAllPetPosts, PetPost } from "@/lib/api/pets";
 
 interface PetsTabContentProps {
   onRefresh?: () => void;
 }
 
-// fetch all pet posts for admin (pending and approved)
-async function fetchAllPetPosts(): Promise<PetPost[]> {
-  const res = await fetch('/api/admin/pet-posts');
-  if (!res.ok) {
-    // Try reading text in case it's not JSON (e.g. HTML error page)
-    let errorText = await res.text();
-    // Attempt to extract a meaningful snippet to show
-    errorText = errorText.length > 200 ? errorText.slice(0, 200) + '...' : errorText;
-    throw new Error('Error fetching pet posts: ' + errorText);
-  }
-  // Ensure response content-type is JSON before parsing
-  const contentType = res.headers.get('content-type');
-  if (!contentType || !contentType.includes('application/json')) {
-    const text = await res.text();
-    throw new Error('Expected JSON response but received: ' + (text.length > 200 ? text.slice(0, 200) + '...' : text));
-  }
-  const data = await res.json();
-  return data;
-}
-
-async function approvePetPost(id: string): Promise<void> {
-  const res = await fetch(`/api/admin/pet-posts/${id}/approve`, { method: 'POST' });
-  if (!res.ok) throw new Error('Неуспешно одобрение');
-}
-
-async function rejectPetPost(id: string): Promise<void> {
-  const res = await fetch(`/api/admin/pet-posts/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error('Неуспешно отхвърляне');
-}
+// Use supabase client to fetch all pet posts without relying on REST API
+// We assume fetchAllPetPosts fetches all posts regardless of approval
 
 const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
   const { toast } = useToast();
   const { data: pets = [], isLoading, error, refetch } = useQuery<PetPost[]>({
-    queryKey: ['admin-pet-posts'],
+    queryKey: ["admin-pet-posts"],
     queryFn: fetchAllPetPosts,
   });
 
   const [processingId, setProcessingId] = useState<string | null>(null);
+
+  const approvePetPost = async (id: string): Promise<void> => {
+    // Call supabase function or REST API to approve. Keeping REST API here as it likely does backend logic.
+    const res = await fetch(`/api/admin/pet-posts/${id}/approve`, { method: "POST" });
+    if (!res.ok) throw new Error("Неуспешно одобрение");
+  };
+
+  const rejectPetPost = async (id: string): Promise<void> => {
+    const res = await fetch(`/api/admin/pet-posts/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Неуспешно отхвърляне");
+  };
 
   const approvePet = async (id: string) => {
     setProcessingId(id);
     try {
       await approvePetPost(id);
       toast({
-        title: 'Успешно',
-        description: 'Домашният любимец е одобрен.',
+        title: "Успешно",
+        description: "Домашният любимец е одобрен.",
       });
       await refetch();
       onRefresh?.();
     } catch (e: any) {
       toast({
-        title: 'Грешка',
-        description: e.message || 'Възникна грешка при одобряване.',
-        variant: 'destructive',
+        title: "Грешка",
+        description: e.message || "Възникна грешка при одобряване.",
+        variant: "destructive",
       });
     } finally {
       setProcessingId(null);
@@ -87,16 +60,16 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
     try {
       await rejectPetPost(id);
       toast({
-        title: 'Успешно',
-        description: 'Домашният любимец е отхвърлен.',
+        title: "Успешно",
+        description: "Домашният любимец е отхвърлен.",
       });
       await refetch();
       onRefresh?.();
     } catch (e: any) {
       toast({
-        title: 'Грешка',
-        description: e.message || 'Възникна грешка при отхвърляне.',
-        variant: 'destructive',
+        title: "Грешка",
+        description: e.message || "Възникна грешка при отхвърляне.",
+        variant: "destructive",
       });
     } finally {
       setProcessingId(null);
@@ -108,7 +81,7 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
   }
 
   if (error) {
-    return <p className="text-center text-red-600">Грешка при зареждане: {error.message}</p>;
+    return <p className="text-center text-red-600">Грешка при зареждане: {(error as Error).message}</p>;
   }
 
   if (pets.length === 0) {
@@ -142,16 +115,11 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
                 <span>Няма</span>
               )}
             </TableCell>
-            <TableCell>{new Date(pet.created_at).toLocaleDateString('bg-BG')}</TableCell>
-            <TableCell>{pet.is_approved ? 'Одобрен' : 'В очакване'}</TableCell>
+            <TableCell>{new Date(pet.created_at).toLocaleDateString("bg-BG")}</TableCell>
+            <TableCell>{pet.is_approved ? "Одобрен" : "В очакване"}</TableCell>
             <TableCell>
               {!pet.is_approved && (
-                <Button 
-                  variant="default" 
-                  size="sm" 
-                  disabled={processingId === pet.id} 
-                  onClick={() => approvePet(pet.id)}
-                >
+                <Button variant="default" size="sm" disabled={processingId === pet.id} onClick={() => approvePet(pet.id)}>
                   Одобри
                 </Button>
               )}
@@ -160,9 +128,9 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
                 size="sm"
                 disabled={processingId === pet.id}
                 onClick={() => rejectPet(pet.id)}
-                className={pet.is_approved ? 'ml-2' : 'ml-1'}
+                className={pet.is_approved ? "ml-2" : "ml-1"}
               >
-                {pet.is_approved ? 'Изтрий' : 'Отхвърли'}
+                {pet.is_approved ? "Изтрий" : "Отхвърли"}
               </Button>
             </TableCell>
           </TableRow>
@@ -173,4 +141,3 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
 };
 
 export default PetsTabContent;
-
