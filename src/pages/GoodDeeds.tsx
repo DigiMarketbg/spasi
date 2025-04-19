@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StatsCard from "@/components/good-deeds/StatsCard";
+import AddGoodDeedDialog from "@/components/good-deeds/AddGoodDeedDialog";
 import { getGoodDeedsStats } from "@/lib/api/good-deeds";
 
 const GoodDeeds = () => {
@@ -24,7 +25,7 @@ const GoodDeeds = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
+
       <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center space-y-4">
@@ -39,9 +40,13 @@ const GoodDeeds = () => {
             todayCount={stats.today_count}
             onAdd={loadStats}
           />
+
+          <div className="pt-4 flex justify-center">
+            <AddGoodDeedDialog onAdd={loadStats} />
+          </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
