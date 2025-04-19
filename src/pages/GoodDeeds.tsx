@@ -13,7 +13,6 @@ const GoodDeeds = () => {
   const [approvedGoodDeeds, setApprovedGoodDeeds] = useState<
     Array<{
       id: string;
-      title?: string;
       description?: string;
       author_name?: string | null;
       created_at?: string;
@@ -68,7 +67,6 @@ const GoodDeeds = () => {
                 {approvedGoodDeeds.map((deed) => (
                   <GoodDeedItem
                     key={deed.id}
-                    title={deed.title}
                     description={deed.description}
                     authorName={deed.author_name}
                     createdAt={deed.created_at}
