@@ -7,7 +7,6 @@ import { useContactMessages } from './useContactMessages';
 import { getGoodDeedsStats } from '@/lib/api/good-deeds';
 
 export const useAdminData = (isEnabled: boolean, user: User | null) => {
-  // Use our individual hooks for data fetching
   const { 
     signals, 
     loadingSignals, 
@@ -45,7 +44,6 @@ export const useAdminData = (isEnabled: boolean, user: User | null) => {
     }
   }, []);
 
-  // Initial data fetching
   useEffect(() => {
     if (isEnabled && user) {
       fetchSignals();
@@ -56,7 +54,6 @@ export const useAdminData = (isEnabled: boolean, user: User | null) => {
     }
   }, [isEnabled, user, fetchSignals, fetchUsers, fetchPartnerRequests, fetchContactMessages, fetchGoodDeedsStats]);
 
-  // Return combined data and functions from all hooks
   return {
     // Signals data
     signals,

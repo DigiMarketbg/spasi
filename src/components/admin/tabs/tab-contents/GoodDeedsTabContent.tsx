@@ -45,19 +45,24 @@ const GoodDeedsTabContent = () => {
   const handleApprove = async (id: string) => {
     try {
       setLoading(true);
-      // Approve the good deed by setting is_approved = true
-      // Use Supabase client directly here or add function in api/good-deeds.ts
-      const { error } = await fetch('/api/admin/approve-good-deed', {
+      // Call the Supabase Edge Function to approve the good deed
+      const res = await fetch('https://hmcbxrssyqkiimazipvo.functions.supabase.co/approve-good-deed', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id }),
-      }).then(res => res.json());
-      if (error) throw new Error(error);
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || (json.error && json.error.length > 0)) {
+        throw new Error(json.error || 'Неуспешно одобрение');
+      }
+
       toast({
         title: 'Одобрено',
         description: 'Доброто дело беше успешно одобрено.',
       });
-      loadPendingGoodDeeds();
+      await loadPendingGoodDeeds();
     } catch (error) {
       toast({
         variant: 'destructive',

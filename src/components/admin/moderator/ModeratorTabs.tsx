@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -37,7 +38,6 @@ const ModeratorTabs = ({
         >
           Участъци
         </TabsTrigger>
-        {/* New Good Deeds tab */}
         <TabsTrigger
           value="good-deeds"
           className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
@@ -62,7 +62,6 @@ const ModeratorTabs = ({
         />
       </TabsContent>
 
-      {/* Good Deeds tab content */}
       <TabsContent value="good-deeds">
         <GoodDeedsTabContent />
       </TabsContent>
