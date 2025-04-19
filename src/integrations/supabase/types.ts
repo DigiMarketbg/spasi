@@ -111,6 +111,30 @@ export type Database = {
         }
         Relationships: []
       }
+      good_deeds: {
+        Row: {
+          created_at: string
+          date: string
+          description: string | null
+          id: string
+          ip_address: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          ip_address: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          ip_address?: string
+        }
+        Relationships: []
+      }
       partners: {
         Row: {
           company_name: string
@@ -464,6 +488,17 @@ export type Database = {
       admin_update_user_role: {
         Args: { admin_id: string; target_user_id: string; new_role: string }
         Returns: boolean
+      }
+      can_add_good_deed: {
+        Args: { client_ip: string }
+        Returns: boolean
+      }
+      get_good_deeds_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          total_count: number
+          today_count: number
+        }[]
       }
     }
     Enums: {

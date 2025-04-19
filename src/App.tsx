@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -37,6 +36,7 @@ import AddDangerousArea from "./pages/AddDangerousArea";
 import Witnesses from "./pages/Witnesses";
 import SubmitWitness from "./pages/SubmitWitness";
 import WitnessDetail from "./pages/WitnessDetail";
+import GoodDeeds from "./pages/GoodDeeds";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +78,7 @@ const App = () => (
                 <Route path="/witnesses" element={<Witnesses />} />
                 <Route path="/submit-witness" element={<SubmitWitness />} />
                 <Route path="/witness/:id" element={<WitnessDetail />} />
+                <Route path="/good-deeds" element={<GoodDeeds />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <MobileNavBar />

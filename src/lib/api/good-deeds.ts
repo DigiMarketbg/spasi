@@ -1,0 +1,27 @@
+
+import { supabase } from "@/integrations/supabase/client";
+
+export const getGoodDeedsStats = async () => {
+  const { data, error } = await supabase.rpc('get_good_deeds_stats');
+  if (error) throw error;
+  return data[0];
+};
+
+export const addGoodDeed = async (description?: string) => {
+  const response = await fetch('https://api.ipify.org?format=json');
+  const { ip } = await response.json();
+  
+  // Check if user can add a good deed today
+  const { data: canAdd, error: checkError } = await supabase
+    .rpc('can_add_good_deed', { client_ip: ip });
+    
+  if (checkError) throw checkError;
+  if (!canAdd) throw new Error('Вече сте регистрирали добро дело за днес!');
+  
+  // Add the good deed
+  const { error } = await supabase
+    .from('good_deeds')
+    .insert([{ ip_address: ip, description }]);
+    
+  if (error) throw error;
+};
