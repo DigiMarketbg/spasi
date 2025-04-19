@@ -1,5 +1,6 @@
 
-// Changed to add error from useQuery and fix destructuring
+// Changed to add error handling fix for non-JSON response in fetchAllPetPosts
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,17 @@ interface PetsTabContentProps {
 async function fetchAllPetPosts(): Promise<PetPost[]> {
   const res = await fetch('/api/admin/pet-posts');
   if (!res.ok) {
-    throw new Error('Error fetching pet posts');
+    // Try reading text in case it's not JSON (e.g. HTML error page)
+    let errorText = await res.text();
+    // Attempt to extract a meaningful snippet to show
+    errorText = errorText.length > 200 ? errorText.slice(0, 200) + '...' : errorText;
+    throw new Error('Error fetching pet posts: ' + errorText);
+  }
+  // Ensure response content-type is JSON before parsing
+  const contentType = res.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await res.text();
+    throw new Error('Expected JSON response but received: ' + (text.length > 200 ? text.slice(0, 200) + '...' : text));
   }
   const data = await res.json();
   return data;
@@ -43,7 +54,6 @@ async function rejectPetPost(id: string): Promise<void> {
 
 const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
   const { toast } = useToast();
-  // Corrected destructuring here - added error
   const { data: pets = [], isLoading, error, refetch } = useQuery<PetPost[]>({
     queryKey: ['admin-pet-posts'],
     queryFn: fetchAllPetPosts,
@@ -163,3 +173,4 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
 };
 
 export default PetsTabContent;
+
