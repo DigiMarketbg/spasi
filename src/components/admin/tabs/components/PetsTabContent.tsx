@@ -1,4 +1,5 @@
 
+// Changed to add error from useQuery and fix destructuring
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -42,7 +43,8 @@ async function rejectPetPost(id: string): Promise<void> {
 
 const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
   const { toast } = useToast();
-  const { data: pets = [], isLoading, refetch } = useQuery<PetPost[]>({
+  // Corrected destructuring here - added error
+  const { data: pets = [], isLoading, error, refetch } = useQuery<PetPost[]>({
     queryKey: ['admin-pet-posts'],
     queryFn: fetchAllPetPosts,
   });
@@ -93,6 +95,10 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
 
   if (isLoading) {
     return <p>Зареждане...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center text-red-600">Грешка при зареждане: {error.message}</p>;
   }
 
   if (pets.length === 0) {
@@ -157,4 +163,3 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
 };
 
 export default PetsTabContent;
-
