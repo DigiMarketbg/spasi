@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,6 +37,7 @@ const PetForm: React.FC<PetFormProps> = ({ onSuccess }) => {
     formState: { errors },
     reset,
     setValue,
+    watch,
   } = useForm<PetPostFormValues>({
     resolver: zodResolver(petPostSchema),
     defaultValues: {
@@ -50,6 +50,9 @@ const PetForm: React.FC<PetFormProps> = ({ onSuccess }) => {
       imageUrl: "",
     },
   });
+
+  // Watch petType to set controlled value for Select
+  const petTypeValue = watch("petType");
 
   const onSubmit = async (data: PetPostFormValues) => {
     if (!user) {
@@ -95,7 +98,10 @@ const PetForm: React.FC<PetFormProps> = ({ onSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-lg mx-auto p-6 bg-white rounded shadow">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 max-w-lg mx-auto p-6 bg-white rounded shadow max-h-[80vh] overflow-y-auto mt-20"
+    >
       <div>
         <label htmlFor="title" className="block text-sm font-medium text-gray-700">
           Заглавие
@@ -110,8 +116,7 @@ const PetForm: React.FC<PetFormProps> = ({ onSuccess }) => {
         </label>
         <Select
           onValueChange={(value) => setValue("petType", value as "Куче" | "Котка" | "Друг")}
-          defaultValue="Куче"
-          value={undefined}
+          value={petTypeValue}
         >
           <SelectTrigger id="petType" className="w-full">
             <SelectValue placeholder="Изберете вид" />
