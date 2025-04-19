@@ -48,18 +48,17 @@ const StatsCard = ({ totalCount, todayCount, onAdd }: StatsCardProps) => {
       </Card>
       
       <Card 
-        className="flex-1 flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
-        onClick={handleAddDeed}
+        className="flex-1 p-0"
         role="button"
       >
-        <CardTitle className="text-sm font-medium sm:text-base">Добави</CardTitle>
         <Button 
           variant="destructive" 
-          size="sm" 
-          className="h-8 w-8 p-0"
+          className="w-full h-full flex items-center justify-between px-4 py-3"
+          onClick={handleAddDeed}
           disabled={isLoading}
         >
-          <Plus className="h-4 w-4" />
+          <CardTitle className="text-sm font-medium sm:text-base text-white">Добави</CardTitle>
+          <Plus className="h-5 w-5 text-white" />
         </Button>
       </Card>
     </div>
@@ -67,4 +66,3 @@ const StatsCard = ({ totalCount, todayCount, onAdd }: StatsCardProps) => {
 };
 
 export default StatsCard;
-
