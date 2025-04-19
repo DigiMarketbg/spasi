@@ -118,6 +118,7 @@ export type Database = {
           description: string | null
           id: string
           ip_address: string
+          is_approved: boolean | null
         }
         Insert: {
           created_at?: string
@@ -125,6 +126,7 @@ export type Database = {
           description?: string | null
           id?: string
           ip_address: string
+          is_approved?: boolean | null
         }
         Update: {
           created_at?: string
@@ -132,6 +134,7 @@ export type Database = {
           description?: string | null
           id?: string
           ip_address?: string
+          is_approved?: boolean | null
         }
         Relationships: []
       }
@@ -498,6 +501,7 @@ export type Database = {
         Returns: {
           total_count: number
           today_count: number
+          pending_count: number
         }[]
       }
     }
