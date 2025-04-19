@@ -11,15 +11,14 @@ export const addGoodDeed = async (description?: string, authorName?: string, tit
   const response = await fetch('https://api.ipify.org?format=json');
   const { ip } = await response.json();
 
-  // Call the can_add_good_deed RPC; it returns true or false wrapped in an array or object
   const { data, error: checkError } = await supabase
     .rpc('can_add_good_deed', { client_ip: ip });
   
   if (checkError) throw checkError;
   
-  // Fix TS errors by typing data as any or unknown then narrow down with guards
+  // Fix TS errors by typing data as any and narrowing down
   let canAdd: boolean = false;
-  const resData: unknown = data;
+  const resData: any = data;
 
   if (typeof resData === "boolean") {
     canAdd = resData;
@@ -31,8 +30,8 @@ export const addGoodDeed = async (description?: string, authorName?: string, tit
       if (typeof first === "boolean") {
         canAdd = first;
       } else if (typeof first === "object" && first !== null) {
-        if ("can_add_good_deed" in first && typeof (first as any).can_add_good_deed === "boolean") {
-          canAdd = (first as any).can_add_good_deed;
+        if ("can_add_good_deed" in first && typeof first.can_add_good_deed === "boolean") {
+          canAdd = first.can_add_good_deed;
         } else {
           canAdd = false;
         }
