@@ -1,5 +1,3 @@
-
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,7 +8,7 @@ import { AuthProvider } from "./components/AuthProvider";
 import { GDPRProvider } from "./components/gdpr/GDPRProvider";
 import MobileNavBar from "./components/MobileNavBar";
 import ScrollToTop from "./components/ScrollToTop";
-import ProfilePanel from "@/components/profile/ProfilePanel";
+import ProfilePanel from "./components/profile/ProfilePanel";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import SubmitSignal from "./pages/SubmitSignal";
@@ -38,6 +36,7 @@ import AddDangerousArea from "./pages/AddDangerousArea";
 import Witnesses from "./pages/Witnesses";
 import SubmitWitness from "./pages/SubmitWitness";
 import WitnessDetail from "./pages/WitnessDetail";
+import GoodDeeds from "./pages/GoodDeeds";
 
 const queryClient = new QueryClient();
 
@@ -79,7 +78,7 @@ const App = () => (
                 <Route path="/witnesses" element={<Witnesses />} />
                 <Route path="/submit-witness" element={<SubmitWitness />} />
                 <Route path="/witness/:id" element={<WitnessDetail />} />
-                {/* Removed /good-deeds route */}
+                <Route path="/good-deeds" element={<GoodDeeds />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <MobileNavBar />
@@ -92,4 +91,3 @@ const App = () => (
 );
 
 export default App;
-
