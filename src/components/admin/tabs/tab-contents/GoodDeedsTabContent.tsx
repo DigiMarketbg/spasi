@@ -1,11 +1,9 @@
 
-// Adjust the GoodDeedsTabContent component to properly handle pending deeds with is_approved = null
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { getPendingGoodDeeds, getGoodDeedsStats } from '@/lib/api/good-deeds';
 import { toast } from '@/hooks/use-toast';
+import { getPendingGoodDeeds, getGoodDeedsStats, approveGoodDeedById } from '@/lib/api/good-deeds';
 
 interface GoodDeed {
   id: string;
@@ -40,24 +38,14 @@ const GoodDeedsTabContent = () => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadPendingGoodDeeds();
   }, []);
 
   const handleApprove = async (id: string) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const res = await fetch('https://hmcbxrssyqkiimazipvo.functions.supabase.co/approve-good-deed', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      });
-
-      const json = await res.json();
-
-      if (!res.ok || (json.error && json.error.length > 0)) {
-        throw new Error(json.error || 'Неуспешно одобрение');
-      }
+      await approveGoodDeedById(id);
 
       toast({
         title: 'Одобрено',

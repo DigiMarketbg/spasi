@@ -1,4 +1,3 @@
-
 // Explicitly type parameters for addGoodDeed for clarity and to fix TS errors
 import { supabase } from "@/integrations/supabase/client";
 
@@ -54,4 +53,16 @@ export const getPendingGoodDeeds = async () => {
 
   if (error) throw error;
   return data;
+};
+
+// Approve a good deed by id
+export const approveGoodDeedById = async (id: string): Promise<void> => {
+  if (!id) throw new Error("ID е задължителен");
+
+  const { error } = await supabase
+    .from("good_deeds")
+    .update({ is_approved: true })
+    .eq("id", id);
+
+  if (error) throw error;
 };
