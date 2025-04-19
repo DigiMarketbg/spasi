@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,17 +9,26 @@ import { Plus } from "lucide-react";
 import { addGoodDeed } from "@/lib/api/good-deeds";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { useAuth } from '@/components/AuthProvider';
 
 interface AddGoodDeedDialogProps {
   onAdd: () => void;
 }
 
 const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
+  const { profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Set author name from profile when component mounts or profile changes
+  useEffect(() => {
+    if (profile?.first_name && profile?.last_name) {
+      setAuthorName(`${profile.first_name} ${profile.last_name}`);
+    }
+  }, [profile]);
 
   const handleSubmit = async () => {
     try {
@@ -49,7 +58,12 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
 
   const resetForm = () => {
     setDescription("");
-    setAuthorName("");
+    // Reset author name to profile name
+    if (profile?.first_name && profile?.last_name) {
+      setAuthorName(`${profile.first_name} ${profile.last_name}`);
+    } else {
+      setAuthorName("");
+    }
     setIsAnonymous(false);
   };
 
