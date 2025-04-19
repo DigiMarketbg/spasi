@@ -113,6 +113,7 @@ export type Database = {
       }
       good_deeds: {
         Row: {
+          author_name: string | null
           created_at: string
           date: string
           description: string | null
@@ -121,6 +122,7 @@ export type Database = {
           is_approved: boolean | null
         }
         Insert: {
+          author_name?: string | null
           created_at?: string
           date?: string
           description?: string | null
@@ -129,6 +131,7 @@ export type Database = {
           is_approved?: boolean | null
         }
         Update: {
+          author_name?: string | null
           created_at?: string
           date?: string
           description?: string | null

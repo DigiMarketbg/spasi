@@ -24,7 +24,6 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // When profile changes or form resets, update author name
   useEffect(() => {
     if (profile?.full_name) {
       setAuthorName(profile.full_name);
@@ -45,6 +44,8 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
   };
 
   const handleSubmit = async () => {
+    console.log("Submitting good deed:", { title, description, isAnonymous, authorName });
+
     if (!title.trim()) {
       toast({
         variant: "destructive",
@@ -66,8 +67,9 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
       setIsLoading(true);
       let nameToUse = isAnonymous ? undefined : authorName;
 
+      console.log(`Calling addGoodDeed with description length ${description.trim().length}, authorName: ${nameToUse}, title: ${title.trim()}`);
       await addGoodDeed(description.trim(), nameToUse, title.trim());
-      
+
       toast({
         title: "Благодарим ви!",
         description: "Вашето добро дело беше регистрирано успешно.",
@@ -76,6 +78,7 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
       setIsOpen(false);
       resetForm();
     } catch (error) {
+      console.error("Error adding good deed:", error);
       toast({
         variant: "destructive",
         title: "Грешка",
@@ -87,10 +90,13 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      setIsOpen(open);
-      if (!open) resetForm();
-    }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) resetForm();
+      }}
+    >
       <DialogTrigger asChild>
         <Button className="w-8 h-8 sm:w-full sm:h-full bg-[#ea384c] hover:bg-[#c52c3f] text-white flex items-center justify-center rounded-lg">
           <Plus size={14} strokeWidth={3} className="m-auto" />
@@ -112,6 +118,7 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={isLoading}
+              autoFocus
             />
           </div>
           <div className="space-y-2">
@@ -124,8 +131,8 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
             />
           </div>
           <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="isAnonymous" 
+            <Checkbox
+              id="isAnonymous"
               checked={isAnonymous}
               onCheckedChange={(checked) => setIsAnonymous(checked === true)}
               disabled={isLoading}
@@ -145,7 +152,7 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
               disabled={isLoading}
             />
           </div>
-          <Button 
+          <Button
             onClick={handleSubmit}
             disabled={isLoading || !title.trim() || !description.trim()}
             className="w-full bg-[#ea384c] hover:bg-[#c52c3f] text-white"
@@ -159,3 +166,4 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
 };
 
 export default AddGoodDeedDialog;
+
