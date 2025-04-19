@@ -98,7 +98,10 @@ const FeatureButtons = () => {
         onClick={navigateToPets}
       >
         <Dog className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-        <span className="text-[0.6rem] truncate w-[60px] text-center">Домашни любимци</span>
+        <span className="text-[0.6rem] truncate w-[60px] text-center leading-tight flex flex-col">
+          <span>Домашни</span>
+          <span>любимци</span>
+        </span>
       </Button>
     </div>
   );
