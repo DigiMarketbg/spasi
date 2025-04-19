@@ -37,26 +37,26 @@ const StatsCard = ({ totalCount, todayCount, onAdd }: StatsCardProps) => {
 
   return (
     <div className="grid grid-cols-3 gap-3 w-full">
-      <Card className="flex flex-col items-center justify-center p-3 sm:p-4 text-center">
-        <CardTitle className="text-xs sm:text-sm font-medium mb-1">Общо</CardTitle>
-        <div className="text-lg sm:text-xl font-bold">{totalCount}</div>
+      <Card className="flex items-center justify-between p-2 sm:flex-col sm:items-center sm:justify-center sm:p-4 text-center">
+        <CardTitle className="text-xs sm:text-sm font-medium sm:mb-1">Общо</CardTitle>
+        <div className="text-base sm:text-xl font-bold ml-2 sm:ml-0">{totalCount}</div>
       </Card>
       
-      <Card className="flex flex-col items-center justify-center p-3 sm:p-4 text-center">
-        <CardTitle className="text-xs sm:text-sm font-medium mb-1">Днес</CardTitle>
-        <div className="text-lg sm:text-xl font-bold">{todayCount}</div>
+      <Card className="flex items-center justify-between p-2 sm:flex-col sm:items-center sm:justify-center sm:p-4 text-center">
+        <CardTitle className="text-xs sm:text-sm font-medium sm:mb-1">Днес</CardTitle>
+        <div className="text-base sm:text-xl font-bold ml-2 sm:ml-0">{todayCount}</div>
       </Card>
       
       <Card 
-        className="flex flex-col items-center justify-center p-3 sm:p-4"
+        className="flex items-center justify-center p-2 sm:p-4"
         role="button"
       >
         <Button 
-          className="w-full h-full bg-[#ea384c] hover:bg-[#c52c3f] text-white flex items-center justify-center rounded-lg p-1"
+          className="w-8 h-8 sm:w-full sm:h-full bg-[#ea384c] hover:bg-[#c52c3f] text-white flex items-center justify-center rounded-lg"
           onClick={handleAddDeed}
           disabled={isLoading}
         >
-          <Plus size={16} strokeWidth={3} className="m-auto" />
+          <Plus size={14} strokeWidth={3} className="m-auto" />
         </Button>
       </Card>
     </div>
