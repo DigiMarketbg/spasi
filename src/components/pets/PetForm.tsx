@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -57,8 +58,8 @@ const PetForm: React.FC<PetFormProps> = ({ onSuccess }) => {
   const onSubmit = async (data: PetPostFormValues) => {
     if (!user) {
       toast({
-        title: "Грешка",
-        description: "Трябва да сте влезли, за да добавите домашен любимец.",
+        title: "Не сте влезли в профила си",
+        description: "Моля, влезте в профила си, за да добавите домашен любимец.",
         variant: "destructive",
       });
       return;
@@ -66,11 +67,6 @@ const PetForm: React.FC<PetFormProps> = ({ onSuccess }) => {
 
     setIsSubmitting(true);
     try {
-      // Here we send data.title, data.description, data.imageUrl etc. 
-      // We do not have a petType, city, contactName, contactPhone fields in the API currently.
-      // So for now, we can encode extra info in description or extend the API accordingly.
-      // We'll concatenate petType, city, contactName, and contactPhone into description for demo purposes.
-
       const fullDescription =
         `Вид: ${data.petType}\n` +
         `Град: ${data.city}\n` +

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react";
 import { addGoodDeed } from "@/lib/api/good-deeds";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -22,7 +21,7 @@ const AddGoodDeedDialog = ({
   open,
   onOpenChange
 }: AddGoodDeedDialogProps) => {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = open !== undefined && onOpenChange !== undefined;
   const dialogOpen = isControlled ? open : internalOpen;
@@ -39,6 +38,15 @@ const AddGoodDeedDialog = ({
   }, [profile]);
 
   const handleSubmit = async () => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Не сте влезли в профила си",
+        description: "Моля, влезте в профила си, за да регистрирате добро дело.",
+      });
+      return;
+    }
+
     if (!title.trim()) {
       toast({
         variant: "destructive",
