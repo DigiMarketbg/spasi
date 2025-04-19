@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -32,6 +31,8 @@ const GoodDeeds = () => {
     loadStatsAndDeeds();
   }, [loadStatsAndDeeds]);
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -45,17 +46,24 @@ const GoodDeeds = () => {
             </p>
           </div>
 
+          {/* Pass onAdd to StatsCard to refresh, and show dialog on + button click */}
           <StatsCard
             totalCount={stats.total_count}
             todayCount={stats.today_count}
-            onAdd={loadStatsAndDeeds}
+            onAdd={() => setDialogOpen(true)}
           />
 
-          <div className="pt-4 flex justify-center space-x-4">
-            {/* Removed the small "Регистрирай добро дело" button here */}
-            {/* Диалогът е запазен за по-детайлно добавяне, по желание */}
-            <AddGoodDeedDialog onAdd={loadStatsAndDeeds} />
-          </div>
+          {/* Keep AddGoodDeedDialog but controlled via state */}
+          <AddGoodDeedDialog
+            onAdd={loadStatsAndDeeds}
+            // Controlled via outside for the dialog open state
+            // We'll add isOpen state here
+            // We'll add isOpen and setIsOpen state below
+            // We'll use the same + button inside StatsCard as trigger via onAdd prop
+            // So this dialog is controlled from here
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+          />
 
           <section className="pt-8">
             <h2 className="text-2xl font-semibold mb-4">Одобрени добри дела</h2>
@@ -83,4 +91,3 @@ const GoodDeeds = () => {
 };
 
 export default GoodDeeds;
-
