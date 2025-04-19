@@ -5,6 +5,7 @@ import StatsCard from "@/components/good-deeds/StatsCard";
 import AddGoodDeedDialog from "@/components/good-deeds/AddGoodDeedDialog";
 import { getGoodDeedsStats, getApprovedGoodDeeds } from "@/lib/api/good-deeds";
 import GoodDeedItem from "@/components/good-deeds/GoodDeedItem";
+import { Input } from "@/components/ui/input";
 
 const GoodDeeds = () => {
   const [stats, setStats] = useState({ total_count: 0, today_count: 0 });
@@ -16,6 +17,8 @@ const GoodDeeds = () => {
       created_at?: string;
     }>
   >([]);
+
+  const [searchTerm, setSearchTerm] = useState('');
 
   const loadStatsAndDeeds = useCallback(async () => {
     try {
@@ -32,6 +35,12 @@ const GoodDeeds = () => {
   }, [loadStatsAndDeeds]);
 
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Filter approved good deeds by search term in description
+  const filteredGoodDeeds = approvedGoodDeeds.filter(deed => {
+    if (!searchTerm.trim()) return true;
+    return deed.description?.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -56,22 +65,26 @@ const GoodDeeds = () => {
           {/* Keep AddGoodDeedDialog but controlled via state */}
           <AddGoodDeedDialog
             onAdd={loadStatsAndDeeds}
-            // Controlled via outside for the dialog open state
-            // We'll add isOpen state here
-            // We'll add isOpen and setIsOpen state below
-            // We'll use the same + button inside StatsCard as trigger via onAdd prop
-            // So this dialog is controlled from here
             open={dialogOpen}
             onOpenChange={setDialogOpen}
           />
 
           <section className="pt-8">
             <h2 className="text-2xl font-semibold mb-4">Одобрени добри дела</h2>
-            {approvedGoodDeeds.length === 0 ? (
-              <p className="text-center text-gray-600">Все още няма одобрени добри добри дела.</p>
+
+            {/* Search input for filtering */}
+            <Input
+              placeholder="Търсене по описание..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="mb-6 bg-background"
+            />
+
+            {filteredGoodDeeds.length === 0 ? (
+              <p className="text-center text-gray-600">Няма одобрени добри дела, които да отговарят на търсенето.</p>
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
-                {approvedGoodDeeds.map((deed) => (
+                {filteredGoodDeeds.map((deed) => (
                   <GoodDeedItem
                     key={deed.id}
                     description={deed.description}
