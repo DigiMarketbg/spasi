@@ -1,6 +1,7 @@
 
+
 import React from 'react';
-import { Shield, Users, Star, Eye, HandHeart } from 'lucide-react';
+import { Shield, Users, Star, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/components/ThemeProvider';
@@ -26,9 +27,7 @@ const FeatureButtons = () => {
     navigate('/witnesses');
   };
 
-  const navigateToGoodDeeds = () => {
-    navigate('/good-deeds');
-  };
+  // Removed navigateToGoodDeeds; button removed
 
   // Updated style for feature buttons based on theme
   const featureButtonStyle = theme === 'light' 
@@ -76,19 +75,10 @@ const FeatureButtons = () => {
         <span className="text-[0.6rem] truncate w-[60px] text-center">Свидетели</span>
       </Button>
       
-      {/* Button 5: Към добрините */}
-      <Button 
-        className={featureButtonStyle}
-        onClick={navigateToGoodDeeds}
-      >
-        <HandHeart className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-        <span className="text-[0.5rem] truncate w-[60px] text-center leading-tight flex flex-col">
-          <span>Към</span>
-          <span>добрините</span>
-        </span>
-      </Button>
+      {/* Removed Button 5 - Към добрините */}
     </div>
   );
 };
 
 export default FeatureButtons;
+

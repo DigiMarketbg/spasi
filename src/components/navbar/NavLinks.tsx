@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -20,7 +21,7 @@ const NavLinks = ({ className }: NavLinksProps) => {
   const links = [
     { path: '/', label: 'Начало' },
     { path: '/signals', label: 'Сигнали' },
-    { path: '/good-deeds', label: 'Добрини' },
+    // Removed good-deeds link
     { path: '/info', label: 'Информация' }
   ];
   
@@ -44,3 +45,4 @@ const NavLinks = ({ className }: NavLinksProps) => {
 };
 
 export default NavLinks;
+
