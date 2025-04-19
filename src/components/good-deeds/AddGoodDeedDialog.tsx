@@ -103,7 +103,7 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
               id="authorName"
               value={authorName}
               readOnly
-              className="bg-gray-100"
+              className="bg-[#1A1F2C] text-white"
             />
           </div>
           
