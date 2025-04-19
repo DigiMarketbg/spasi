@@ -1,6 +1,10 @@
 
-// Supabase Edge Function: Approve a good deed by id
-import { serve } from "std/server";
+/*
+  Supabase Edge Function: Approve a good deed by id
+  
+  Fixed import for Deno std/http/server.ts module with full URL.
+*/
+import { serve } from "https://deno.land/std@0.178.0/http/server.ts";
 // Import from ESM URL for Deno Edge Functions environment
 import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
@@ -82,4 +86,3 @@ serve(async (req) => {
     );
   }
 });
-
