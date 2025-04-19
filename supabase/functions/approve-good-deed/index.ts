@@ -1,11 +1,12 @@
 
 // Supabase Edge Function: Approve a good deed by id
 import { serve } from "std/server";
-import { createClient } from "@supabase/supabase-js";
+// Import from ESM URL for Deno Edge Functions environment
+import { createClient } from "https://esm.sh/@supabase/supabase-js";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 serve(async (req) => {
@@ -14,13 +15,13 @@ serve(async (req) => {
       headers: corsHeaders,
     });
   }
-  
+
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method Not Allowed" }), {
       status: 405,
       headers: {
         "Content-Type": "application/json",
-        ...corsHeaders
+        ...corsHeaders,
       },
     });
   }
@@ -33,12 +34,13 @@ serve(async (req) => {
         status: 400,
         headers: {
           "Content-Type": "application/json",
-          ...corsHeaders
+          ...corsHeaders,
         },
       });
     }
 
-    const supabaseAdminUrl = Deno.env.get("SUPABASE_DB_URL") ?? "";
+    // These env vars need to be set correctly in your supabase function environment
+    const supabaseAdminUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
     const supabase = createClient(supabaseAdminUrl, supabaseServiceRoleKey);
 
@@ -54,7 +56,7 @@ serve(async (req) => {
         status: 500,
         headers: {
           "Content-Type": "application/json",
-          ...corsHeaders
+          ...corsHeaders,
         },
       });
     }
@@ -63,10 +65,9 @@ serve(async (req) => {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        ...corsHeaders
+        ...corsHeaders,
       },
     });
-
   } catch (err) {
     console.error("Error in approve-good-deed endpoint:", err);
     return new Response(
@@ -75,9 +76,10 @@ serve(async (req) => {
         status: 500,
         headers: {
           "Content-Type": "application/json",
-          ...corsHeaders
+          ...corsHeaders,
         },
       }
     );
   }
 });
+
