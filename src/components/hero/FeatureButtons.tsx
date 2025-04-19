@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Shield, Users, Star, Eye, HandHeart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -81,7 +82,10 @@ const FeatureButtons = () => {
         onClick={navigateToGoodDeeds}
       >
         <HandHeart className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-        <span className="text-[0.6rem] truncate w-[60px] text-center">Към добрините</span>
+        <span className="text-[0.5rem] truncate w-[60px] text-center leading-tight flex flex-col">
+          <span>Към</span>
+          <span>добрините</span>
+        </span>
       </Button>
     </div>
   );
