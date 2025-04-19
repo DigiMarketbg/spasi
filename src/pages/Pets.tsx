@@ -7,7 +7,7 @@ import PetForm from "@/components/pets/PetForm";
 import { fetchApprovedPetPosts } from "@/lib/api/pets";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from "@/components/ui/sheet";
 
 const Pets = () => {
   const [pets, setPets] = useState<Array<any>>([]);
@@ -51,12 +51,24 @@ const Pets = () => {
                 Добави домашен любимец
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="pb-10">
-              <SheetHeader>
-                <SheetTitle>Добави домашен любимец</SheetTitle>
+            <SheetContent 
+              side="bottom" 
+              className="pb-10 max-h-[85vh] overflow-y-auto bg-white rounded-t-2xl shadow-xl border border-gray-300"
+            >
+              <SheetHeader className="pb-2 border-b border-gray-200">
+                <div className="flex justify-between items-center">
+                  <SheetTitle className="text-xl font-semibold text-lime-700">Добави домашен любимец</SheetTitle>
+                  <SheetClose asChild>
+                    <Button variant="ghost" size="icon" className="text-lime-700 hover:bg-lime-100">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </Button>
+                  </SheetClose>
+                </div>
               </SheetHeader>
               <PetForm onSuccess={onSuccess} />
-              <SheetFooter />
+              <SheetFooter className="pt-4 border-t border-gray-200" />
             </SheetContent>
           </Sheet>
         </div>
@@ -89,4 +101,3 @@ const Pets = () => {
 };
 
 export default Pets;
-
