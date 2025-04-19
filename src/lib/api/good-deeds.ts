@@ -7,7 +7,7 @@ export const getGoodDeedsStats = async () => {
   return data[0];
 };
 
-export const addGoodDeed = async (description?: string) => {
+export const addGoodDeed = async (description?: string, authorName?: string) => {
   const response = await fetch('https://api.ipify.org?format=json');
   const { ip } = await response.json();
   
@@ -21,7 +21,11 @@ export const addGoodDeed = async (description?: string) => {
   // Add the good deed
   const { error } = await supabase
     .from('good_deeds')
-    .insert([{ ip_address: ip, description }]);
+    .insert([{ 
+      ip_address: ip, 
+      description,
+      author_name: authorName 
+    }]);
     
   if (error) throw error;
 };
