@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StatsCard from "@/components/good-deeds/StatsCard";
-import AddGoodDeedButton from "@/components/good-deeds/AddGoodDeedButton";
 import AddGoodDeedDialog from "@/components/good-deeds/AddGoodDeedDialog";
 import { getGoodDeedsStats, getApprovedGoodDeeds } from "@/lib/api/good-deeds";
 import GoodDeedItem from "@/components/good-deeds/GoodDeedItem";
@@ -53,7 +52,7 @@ const GoodDeeds = () => {
           />
 
           <div className="pt-4 flex justify-center space-x-4">
-            <AddGoodDeedButton onAdd={loadStatsAndDeeds} />
+            {/* Removed the small "Регистрирай добро дело" button here */}
             {/* Диалогът е запазен за по-детайлно добавяне, по желание */}
             <AddGoodDeedDialog onAdd={loadStatsAndDeeds} />
           </div>
@@ -61,7 +60,7 @@ const GoodDeeds = () => {
           <section className="pt-8">
             <h2 className="text-2xl font-semibold mb-4">Одобрени добри дела</h2>
             {approvedGoodDeeds.length === 0 ? (
-              <p className="text-center text-gray-600">Все още няма одобрени добри дела.</p>
+              <p className="text-center text-gray-600">Все още няма одобрени добри добри дела.</p>
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
                 {approvedGoodDeeds.map((deed) => (
@@ -84,3 +83,4 @@ const GoodDeeds = () => {
 };
 
 export default GoodDeeds;
+
