@@ -5,23 +5,34 @@ import Footer from "@/components/Footer";
 import StatsCard from "@/components/good-deeds/StatsCard";
 import AddGoodDeedButton from "@/components/good-deeds/AddGoodDeedButton";
 import AddGoodDeedDialog from "@/components/good-deeds/AddGoodDeedDialog";
-import { getGoodDeedsStats } from "@/lib/api/good-deeds";
+import { getGoodDeedsStats, getApprovedGoodDeeds } from "@/lib/api/good-deeds";
+import GoodDeedItem from "@/components/good-deeds/GoodDeedItem";
 
 const GoodDeeds = () => {
   const [stats, setStats] = useState({ total_count: 0, today_count: 0 });
+  const [approvedGoodDeeds, setApprovedGoodDeeds] = useState<
+    Array<{
+      id: string;
+      title?: string;
+      description?: string;
+      author_name?: string | null;
+      created_at?: string;
+    }>
+  >([]);
 
-  const loadStats = useCallback(async () => {
+  const loadStatsAndDeeds = useCallback(async () => {
     try {
-      const data = await getGoodDeedsStats();
-      setStats(data);
+      const [statsData, deedsData] = await Promise.all([getGoodDeedsStats(), getApprovedGoodDeeds()]);
+      setStats(statsData);
+      setApprovedGoodDeeds(deedsData);
     } catch (error) {
-      console.error("Error loading stats:", error);
+      console.error("Error loading stats or deeds:", error);
     }
   }, []);
 
   useEffect(() => {
-    loadStats();
-  }, [loadStats]);
+    loadStatsAndDeeds();
+  }, [loadStatsAndDeeds]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -39,14 +50,33 @@ const GoodDeeds = () => {
           <StatsCard
             totalCount={stats.total_count}
             todayCount={stats.today_count}
-            onAdd={loadStats}
+            onAdd={loadStatsAndDeeds}
           />
 
           <div className="pt-4 flex justify-center space-x-4">
-            <AddGoodDeedButton onAdd={loadStats} />
+            <AddGoodDeedButton onAdd={loadStatsAndDeeds} />
             {/* Диалогът е запазен за по-детайлно добавяне, по желание */}
-            <AddGoodDeedDialog onAdd={loadStats} />
+            <AddGoodDeedDialog onAdd={loadStatsAndDeeds} />
           </div>
+
+          <section className="pt-8">
+            <h2 className="text-2xl font-semibold mb-4">Одобрени добри дела</h2>
+            {approvedGoodDeeds.length === 0 ? (
+              <p className="text-center text-gray-600">Все още няма одобрени добри дела.</p>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {approvedGoodDeeds.map((deed) => (
+                  <GoodDeedItem
+                    key={deed.id}
+                    title={deed.title}
+                    description={deed.description}
+                    authorName={deed.author_name}
+                    createdAt={deed.created_at}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
         </div>
       </main>
 

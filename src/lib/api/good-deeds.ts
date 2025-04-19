@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export const getGoodDeedsStats = async () => {
@@ -29,4 +28,15 @@ export const addGoodDeed = async (description?: string, authorName?: string, tit
     }]);
     
   if (error) throw error;
+};
+
+export const getApprovedGoodDeeds = async () => {
+  const { data, error } = await supabase
+    .from('good_deeds')
+    .select('id, title, description, author_name, created_at')
+    .eq('is_approved', true)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
 };
