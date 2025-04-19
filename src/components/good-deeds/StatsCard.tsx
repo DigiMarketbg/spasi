@@ -48,15 +48,15 @@ const StatsCard = ({ totalCount, todayCount, onAdd }: StatsCardProps) => {
       </Card>
       
       <Card 
-        className="flex flex-col"
+        className="flex flex-col items-center justify-center p-3 sm:p-4"
         role="button"
       >
         <Button 
-          className="w-full h-full bg-[#ea384c] hover:bg-[#c52c3f] text-white flex items-center justify-center rounded-lg p-2"
+          className="w-full h-full bg-[#ea384c] hover:bg-[#c52c3f] text-white flex items-center justify-center rounded-lg p-1"
           onClick={handleAddDeed}
           disabled={isLoading}
         >
-          <Plus size={20} strokeWidth={3} />
+          <Plus size={16} strokeWidth={3} className="m-auto" />
         </Button>
       </Card>
     </div>
