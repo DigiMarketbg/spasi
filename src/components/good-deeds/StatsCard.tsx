@@ -20,12 +20,12 @@ const StatsCard = ({
       <div className="flex space-x-3 flex-grow">
         <Card className="flex items-center justify-center p-2 text-center flex-1">
           <CardTitle className="text-xs sm:text-sm font-medium sm:mb-1">Общо</CardTitle>
-          <div className="text-base sm:text-xl font-bold ml-2 sm:ml-0 px-px">{totalCount}</div>
+          <div className="text-base sm:text-xl font-bold ml-2 sm:ml-0 px-[2px]">{totalCount}</div>
         </Card>
 
         <Card className="flex items-center justify-center p-2 text-center flex-1">
           <CardTitle className="text-xs sm:text-sm font-medium sm:mb-1">Днес</CardTitle>
-          <div className="text-base sm:text-xl font-bold ml-2 sm:ml-0 px-px">{todayCount}</div>
+          <div className="text-base sm:text-xl font-bold ml-2 sm:ml-0 px-[2px]">{todayCount}</div>
         </Card>
       </div>
     </div>;
