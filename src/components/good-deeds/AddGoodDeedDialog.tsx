@@ -13,11 +13,16 @@ import { useAuth } from '@/components/AuthProvider';
 
 interface AddGoodDeedDialogProps {
   onAdd: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
+const AddGoodDeedDialog = ({ onAdd, open, onOpenChange }: AddGoodDeedDialogProps) => {
   const { profile } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = open !== undefined && onOpenChange !== undefined;
+  const dialogOpen = isControlled ? open : internalOpen;
+
   const [description, setDescription] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -33,19 +38,22 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      
+
       // Use authorName only if not anonymous
       const name = isAnonymous ? undefined : authorName;
-      
-      // Removed title parameter as addGoodDeed only accepts 2 args
+
       await addGoodDeed(description, name);
-      
+
       toast({
         title: "Благодарим ви!",
         description: "Вашето добро дело беше регистрирано успешно.",
       });
       onAdd();
-      setIsOpen(false);
+      if (isControlled) {
+        onOpenChange(false);
+      } else {
+        setInternalOpen(false);
+      }
       resetForm();
     } catch (error) {
       toast({
@@ -69,11 +77,19 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
     setIsAnonymous(false);
   };
 
+  const handleOpenChange = (openState: boolean) => {
+    if (isControlled) {
+      onOpenChange(openState);
+    } else {
+      setInternalOpen(openState);
+    }
+    if (!openState) {
+      resetForm();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      setIsOpen(open);
-      if (!open) resetForm();
-    }}>
+    <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="w-8 h-8 sm:w-full sm:h-full bg-[#ea384c] hover:bg-[#c52c3f] text-white flex items-center justify-center rounded-lg">
           <Plus size={14} strokeWidth={3} className="m-auto" />
@@ -96,10 +112,10 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
               className="bg-[#1A1F2C] text-white"
             />
           </div>
-          
+
           <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="isAnonymous" 
+            <Checkbox
+              id="isAnonymous"
               checked={isAnonymous}
               onCheckedChange={(checked) => {
                 setIsAnonymous(checked === true);
@@ -109,7 +125,7 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
               Публикувай анонимно
             </Label>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="description">Описание</Label>
             <Textarea
@@ -120,8 +136,8 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
               className="min-h-[100px]"
             />
           </div>
-          
-          <Button 
+
+          <Button
             onClick={handleSubmit}
             disabled={isLoading || !description}
             className="w-full bg-[#ea384c] hover:bg-[#c52c3f] text-white"
