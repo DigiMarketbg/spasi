@@ -1,8 +1,9 @@
 
+import React, { useState } from 'react';
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { Plus } from 'lucide-react';
 import { addGoodDeed } from "@/lib/api/good-deeds";
 
 interface StatsCardProps {
@@ -51,11 +52,11 @@ const StatsCard = ({ totalCount, todayCount, onAdd }: StatsCardProps) => {
         role="button"
       >
         <Button 
-          className="w-full h-full bg-[#DC2626] hover:bg-[#B91C1C] text-white flex items-center justify-center rounded-lg p-3"
+          className="w-full h-full bg-[#ea384c] hover:bg-[#c52c3f] text-white flex items-center justify-center rounded-lg p-2"
           onClick={handleAddDeed}
           disabled={isLoading}
         >
-          <CardTitle className="text-xs sm:text-sm font-medium text-white">Добави</CardTitle>
+          <Plus size={20} strokeWidth={3} />
         </Button>
       </Card>
     </div>
