@@ -17,25 +17,28 @@ export const addGoodDeed = async (description?: string, authorName?: string, tit
   
   if (checkError) throw checkError;
   
-  // The data might come wrapped; handle different formats:
-  // It can be boolean directly or an array like [true] or [{can_add_good_deed: true}]
-  let canAdd = false;
+  // Fix TS errors by typing data as any or unknown then narrow down with guards
+  let canAdd: boolean = false;
+  const resData: unknown = data;
 
-  if (typeof data === "boolean") {
-    canAdd = data;
-  } else if (Array.isArray(data)) {
-    if (data.length === 0) {
+  if (typeof resData === "boolean") {
+    canAdd = resData;
+  } else if (Array.isArray(resData)) {
+    if (resData.length === 0) {
       canAdd = false;
-    } else if (typeof data[0] === "boolean") {
-      canAdd = data[0];
-    } else if (typeof data[0] === "object" && data[0] !== null) {
-      if ('can_add_good_deed' in data[0]) {
-        canAdd = data[0].can_add_good_deed;
+    } else {
+      const first = resData[0];
+      if (typeof first === "boolean") {
+        canAdd = first;
+      } else if (typeof first === "object" && first !== null) {
+        if ("can_add_good_deed" in first && typeof (first as any).can_add_good_deed === "boolean") {
+          canAdd = (first as any).can_add_good_deed;
+        } else {
+          canAdd = false;
+        }
       } else {
         canAdd = false;
       }
-    } else {
-      canAdd = false;
     }
   } else {
     canAdd = false;
