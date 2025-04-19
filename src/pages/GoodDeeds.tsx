@@ -50,7 +50,8 @@ const GoodDeeds = () => {
       <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold">Добрини</h1>
+            {/* Add text-black class to make the title black */}
+            <h1 className="text-4xl font-bold text-black">Добрини</h1>
             <p className="text-muted-foreground">
               Нека заедно направим света по-добро място, една малка стъпка наведнъж.
             </p>
@@ -63,10 +64,8 @@ const GoodDeeds = () => {
           <section className="pt-8">
             <h2 className="text-2xl font-semibold mb-4">Одобрени добри дела</h2>
 
-            {/* Search input for filtering by title */}
             <Input placeholder="Търсене по заглавие..." value={titleSearchTerm} onChange={e => setTitleSearchTerm(e.target.value)} className="mb-3 bg-background" />
 
-            {/* Search input for filtering by description */}
             <Input placeholder="Търсене по описание..." value={descriptionSearchTerm} onChange={e => setDescriptionSearchTerm(e.target.value)} className="mb-4 bg-background" />
 
             {filteredGoodDeeds.length === 0 ? (
@@ -75,7 +74,7 @@ const GoodDeeds = () => {
               <div className="grid gap-4 md:grid-cols-2">
                 {filteredGoodDeeds.map(deed => (
                   <div key={deed.id} className="border rounded-md p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
-                    {deed.title && <h3 className="mb-2 font-semibold">{deed.title}</h3>}
+                    {deed.title && <h3 className="mb-2 font-semibold text-black">{deed.title}</h3>}
                     <GoodDeedItem description={deed.description} authorName={deed.author_name} createdAt={deed.created_at} />
                   </div>
                 ))}
@@ -91,3 +90,4 @@ const GoodDeeds = () => {
 };
 
 export default GoodDeeds;
+
