@@ -12,14 +12,25 @@ interface PetItemProps {
 
 const PetItem: React.FC<PetItemProps> = ({ title, description, imageUrl, createdAt }) => {
   return (
-    <div className="border rounded-md p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
-      <h3 className="text-lg font-semibold mb-2 text-lime-700">{title}</h3>
+    <div className="border rounded-lg p-4 bg-white shadow-md hover:shadow-lg transition-shadow max-w-md mx-auto">
+      <h3 className="text-lg font-semibold mb-3 text-lime-700">{title}</h3>
       {imageUrl && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={imageUrl} alt={title} className="mb-2 w-full max-h-64 object-cover rounded" />
+        <img
+          src={imageUrl}
+          alt={title}
+          className="mb-4 w-full max-h-64 object-cover rounded"
+        />
       )}
-      <p className="mb-2 text-gray-700">{description}</p>
-      <p className="text-xs text-gray-500">Добавен на: {new Date(createdAt).toLocaleDateString('bg-BG')}</p>
+      <div className="text-gray-800 text-sm space-y-1 mb-2">
+        <p><span className="font-semibold">Вид:</span> {description.split('\n')[0] || '-'}</p>
+        {description.split('\n').slice(1).map((line, index) => (
+          <p key={index}>{line}</p>
+        ))}
+      </div>
+      <p className="text-xs text-gray-500">
+        Добавен на: {new Date(createdAt).toLocaleDateString("bg-BG")}
+      </p>
     </div>
   );
 };
