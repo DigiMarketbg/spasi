@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export const getGoodDeedsStats = async () => {
@@ -15,7 +16,7 @@ export const addGoodDeed = async (description?: string, authorName?: string, tit
     .rpc('can_add_good_deed', { client_ip: ip });
     
   if (checkError) throw checkError;
-  if (!canAdd) throw new Error('Вече сте регистрирали добро дело за днес!');
+  if (!canAdd) throw new Error('Вече сте регистрирали 3 добри дела за днес!');
   
   // Add the good deed
   const { error } = await supabase
