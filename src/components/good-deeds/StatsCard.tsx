@@ -35,27 +35,27 @@ const StatsCard = ({ totalCount, todayCount, onAdd }: StatsCardProps) => {
   };
 
   return (
-    <div className="flex justify-between w-full gap-4">
-      <Card className="flex-1 flex items-center justify-between px-4 py-3">
-        <CardTitle className="text-sm font-medium sm:text-base">Общо добрини</CardTitle>
-        <div className="text-2xl font-bold">{totalCount}</div>
+    <div className="grid grid-cols-3 gap-3 w-full">
+      <Card className="flex flex-col items-center justify-center p-3 sm:p-4 text-center">
+        <CardTitle className="text-xs sm:text-sm font-medium mb-1">Общо</CardTitle>
+        <div className="text-lg sm:text-xl font-bold">{totalCount}</div>
       </Card>
       
-      <Card className="flex-1 flex items-center justify-between px-4 py-3">
-        <CardTitle className="text-sm font-medium sm:text-base">Добрини днес</CardTitle>
-        <div className="text-2xl font-bold">{todayCount}</div>
+      <Card className="flex flex-col items-center justify-center p-3 sm:p-4 text-center">
+        <CardTitle className="text-xs sm:text-sm font-medium mb-1">Днес</CardTitle>
+        <div className="text-lg sm:text-xl font-bold">{todayCount}</div>
       </Card>
       
       <Card 
-        className="flex-1 p-0"
+        className="flex flex-col"
         role="button"
       >
         <Button 
-          className="w-full h-full bg-[#DC2626] hover:bg-[#B91C1C] text-white px-4 py-3 flex items-center justify-center"
+          className="w-full h-full bg-[#DC2626] hover:bg-[#B91C1C] text-white flex items-center justify-center rounded-lg p-3"
           onClick={handleAddDeed}
           disabled={isLoading}
         >
-          <CardTitle className="text-sm font-medium sm:text-base text-white">Добави</CardTitle>
+          <CardTitle className="text-xs sm:text-sm font-medium text-white">Добави</CardTitle>
         </Button>
       </Card>
     </div>
@@ -63,4 +63,3 @@ const StatsCard = ({ totalCount, todayCount, onAdd }: StatsCardProps) => {
 };
 
 export default StatsCard;
-
