@@ -16,7 +16,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
-  
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -33,13 +33,13 @@ const Navbar = () => {
 
   const displayName = profile?.full_name || user?.email || 'Потребител';
 
-  // Hide the navbar completely on mobile screens
-  if (isMobile) return null;
+  // Remove hiding navbar on mobile to fix visibility issue
+  // if (isMobile) return null;
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 py-4 px-4 md:px-6 lg:px-8 transition-all duration-300 ${
-        scrolled ? 'glass backdrop-blur-lg shadow-md' : 'bg-transparent'
+      className={`fixed top-0 left-0 right-0 z-[1000] py-4 px-4 md:px-6 lg:px-8 transition-all duration-300 ${
+        scrolled ? 'glass backdrop-blur-lg shadow-md bg-gray-900/90' : 'bg-gray-900/80'
       }`}
     >
       <div className="container mx-auto">
