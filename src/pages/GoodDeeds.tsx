@@ -21,7 +21,7 @@ const GoodDeeds = () => {
     title?: string | null;
   }>>([]);
   const [titleSearchTerm, setTitleSearchTerm] = useState('');
-  const [descriptionSearchTerm, setDescriptionSearchTerm] = useState('');
+  // Removed descriptionSearchTerm to have only one search input
   const loadStatsAndDeeds = useCallback(async () => {
     try {
       const [statsData, deedsData] = await Promise.all([getGoodDeedsStats(), getApprovedGoodDeeds()]);
@@ -36,11 +36,9 @@ const GoodDeeds = () => {
   }, [loadStatsAndDeeds]);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Filter approved good deeds by title and description search terms
+  // Filter approved good deeds only by title search term now
   const filteredGoodDeeds = approvedGoodDeeds.filter(deed => {
-    const titleMatch = titleSearchTerm.trim() === '' || deed.title?.toLowerCase().includes(titleSearchTerm.toLowerCase());
-    const descriptionMatch = descriptionSearchTerm.trim() === '' || deed.description?.toLowerCase().includes(descriptionSearchTerm.toLowerCase());
-    return titleMatch && descriptionMatch;
+    return titleSearchTerm.trim() === '' || deed.title?.toLowerCase().includes(titleSearchTerm.toLowerCase());
   });
 
   return (
@@ -50,7 +48,6 @@ const GoodDeeds = () => {
       <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center space-y-4">
-            {/* Add text-black class to make the title black */}
             <h1 className="text-4xl font-bold text-black">Добрини</h1>
             <p className="text-muted-foreground">
               Нека заедно направим света по-добро място, една малка стъпка наведнъж.
@@ -64,14 +61,18 @@ const GoodDeeds = () => {
           <section className="pt-8">
             <h2 className="text-2xl font-semibold mb-4">Одобрени добри дела</h2>
 
-            <Input placeholder="Търсене по заглавие..." value={titleSearchTerm} onChange={e => setTitleSearchTerm(e.target.value)} className="mb-3 bg-background" />
-
-            <Input placeholder="Търсене по описание..." value={descriptionSearchTerm} onChange={e => setDescriptionSearchTerm(e.target.value)} className="mb-4 bg-background" />
+            {/* Single search input optimized for mobile */}
+            <Input 
+              placeholder="Търсене по заглавие..." 
+              value={titleSearchTerm} 
+              onChange={e => setTitleSearchTerm(e.target.value)} 
+              className="mb-6 bg-background max-w-md mx-auto block" 
+            />
 
             {filteredGoodDeeds.length === 0 ? (
               <p className="text-center text-gray-600">Няма одобрени добри дела, които да отговарят на търсенето.</p>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
                 {filteredGoodDeeds.map(deed => (
                   <div key={deed.id} className="border rounded-md p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
                     {deed.title && <h3 className="mb-2 font-semibold text-black">{deed.title}</h3>}
