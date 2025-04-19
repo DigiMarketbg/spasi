@@ -24,21 +24,50 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Set author name from profile when component mounts or profile changes
+  // When profile changes or form resets, update author name
   useEffect(() => {
     if (profile?.full_name) {
       setAuthorName(profile.full_name);
+    } else {
+      setAuthorName('');
     }
   }, [profile]);
 
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setIsAnonymous(false);
+    if (profile?.full_name) {
+      setAuthorName(profile.full_name);
+    } else {
+      setAuthorName('');
+    }
+  };
+
   const handleSubmit = async () => {
+    if (!title.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Грешка",
+        description: "Моля, въведете заглавие на доброто дело.",
+      });
+      return;
+    }
+    if (!description.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Грешка",
+        description: "Моля, опишете доброто дело.",
+      });
+      return;
+    }
+
     try {
       setIsLoading(true);
+      let nameToUse = isAnonymous ? undefined : authorName;
+
+      await addGoodDeed(description.trim(), nameToUse, title.trim());
       
-      // Use authorName only if not anonymous
-      const name = isAnonymous ? undefined : authorName;
-      
-      await addGoodDeed(description, name, title);
       toast({
         title: "Благодарим ви!",
         description: "Вашето добро дело беше регистрирано успешно.",
@@ -55,18 +84,6 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    // Reset author name to profile name
-    if (profile?.full_name) {
-      setAuthorName(profile.full_name);
-    } else {
-      setAuthorName("");
-    }
-    setIsAnonymous(false);
   };
 
   return (
@@ -94,9 +111,9 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
               placeholder="Въведете заглавие"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              disabled={isLoading}
             />
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="authorName">Вашето име</Label>
             <Input
@@ -106,20 +123,17 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
               className="bg-[#1A1F2C] text-white"
             />
           </div>
-          
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="isAnonymous" 
               checked={isAnonymous}
-              onCheckedChange={(checked) => {
-                setIsAnonymous(checked === true);
-              }}
+              onCheckedChange={(checked) => setIsAnonymous(checked === true)}
+              disabled={isLoading}
             />
             <Label htmlFor="isAnonymous" className="cursor-pointer">
               Публикувай анонимно
             </Label>
           </div>
-          
           <div className="space-y-2">
             <Label htmlFor="description">Описание</Label>
             <Textarea
@@ -128,15 +142,15 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="min-h-[100px]"
+              disabled={isLoading}
             />
           </div>
-          
           <Button 
             onClick={handleSubmit}
-            disabled={isLoading || !description || !title}
+            disabled={isLoading || !title.trim() || !description.trim()}
             className="w-full bg-[#ea384c] hover:bg-[#c52c3f] text-white"
           >
-            Регистрирай
+            {isLoading ? "Регистриране..." : "Регистрирай"}
           </Button>
         </div>
       </DialogContent>
