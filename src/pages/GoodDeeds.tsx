@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import StatsCard from "@/components/good-deeds/StatsCard";
+import AddGoodDeedButton from "@/components/good-deeds/AddGoodDeedButton";
 import AddGoodDeedDialog from "@/components/good-deeds/AddGoodDeedDialog";
 import { getGoodDeedsStats } from "@/lib/api/good-deeds";
 
@@ -41,7 +42,9 @@ const GoodDeeds = () => {
             onAdd={loadStats}
           />
 
-          <div className="pt-4 flex justify-center">
+          <div className="pt-4 flex justify-center space-x-4">
+            <AddGoodDeedButton onAdd={loadStats} />
+            {/* Диалогът е запазен за по-детайлно добавяне, по желание */}
             <AddGoodDeedDialog onAdd={loadStats} />
           </div>
         </div>
