@@ -6,22 +6,20 @@ import AddGoodDeedDialog from "@/components/good-deeds/AddGoodDeedDialog";
 import { getGoodDeedsStats, getApprovedGoodDeeds } from "@/lib/api/good-deeds";
 import GoodDeedItem from "@/components/good-deeds/GoodDeedItem";
 import { Input } from "@/components/ui/input";
-
 const GoodDeeds = () => {
-  const [stats, setStats] = useState({ total_count: 0, today_count: 0 });
-  const [approvedGoodDeeds, setApprovedGoodDeeds] = useState<
-    Array<{
-      id: string;
-      description?: string;
-      author_name?: string | null;
-      created_at?: string;
-      title?: string | null;
-    }>
-  >([]);
-
+  const [stats, setStats] = useState({
+    total_count: 0,
+    today_count: 0
+  });
+  const [approvedGoodDeeds, setApprovedGoodDeeds] = useState<Array<{
+    id: string;
+    description?: string;
+    author_name?: string | null;
+    created_at?: string;
+    title?: string | null;
+  }>>([]);
   const [titleSearchTerm, setTitleSearchTerm] = useState('');
   const [descriptionSearchTerm, setDescriptionSearchTerm] = useState('');
-
   const loadStatsAndDeeds = useCallback(async () => {
     try {
       const [statsData, deedsData] = await Promise.all([getGoodDeedsStats(), getApprovedGoodDeeds()]);
@@ -31,11 +29,9 @@ const GoodDeeds = () => {
       console.error("Error loading stats or deeds:", error);
     }
   }, []);
-
   useEffect(() => {
     loadStatsAndDeeds();
   }, [loadStatsAndDeeds]);
-
   const [dialogOpen, setDialogOpen] = useState(false);
 
   // Filter approved good deeds by title and description search terms
@@ -44,9 +40,7 @@ const GoodDeeds = () => {
     const descriptionMatch = descriptionSearchTerm.trim() === '' || deed.description?.toLowerCase().includes(descriptionSearchTerm.toLowerCase());
     return titleMatch && descriptionMatch;
   });
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Navbar />
 
       <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10">
@@ -58,58 +52,27 @@ const GoodDeeds = () => {
             </p>
           </div>
 
-          <StatsCard
-            totalCount={stats.total_count}
-            todayCount={stats.today_count}
-            onAdd={() => setDialogOpen(true)}
-          />
+          <StatsCard totalCount={stats.total_count} todayCount={stats.today_count} onAdd={() => setDialogOpen(true)} />
 
-          <AddGoodDeedDialog
-            onAdd={loadStatsAndDeeds}
-            open={dialogOpen}
-            onOpenChange={setDialogOpen}
-          />
+          <AddGoodDeedDialog onAdd={loadStatsAndDeeds} open={dialogOpen} onOpenChange={setDialogOpen} />
 
           <section className="pt-8">
             <h2 className="text-2xl font-semibold mb-4">Одобрени добри дела</h2>
 
             {/* Search input for filtering by title */}
-            <Input
-              placeholder="Търсене по заглавие..."
-              value={titleSearchTerm}
-              onChange={(e) => setTitleSearchTerm(e.target.value)}
-              className="mb-3 bg-background"
-            />
+            <Input placeholder="Търсене по заглавие..." value={titleSearchTerm} onChange={e => setTitleSearchTerm(e.target.value)} className="mb-3 bg-background" />
 
             {/* Search input for filtering by description */}
-            <Input
-              placeholder="Търсене по описание..."
-              value={descriptionSearchTerm}
-              onChange={(e) => setDescriptionSearchTerm(e.target.value)}
-              className="mb-6 bg-background"
-            />
+            
 
-            {filteredGoodDeeds.length === 0 ? (
-              <p className="text-center text-gray-600">Няма одобрени добри дела, които да отговарят на търсенето.</p>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2">
-                {filteredGoodDeeds.map((deed) => (
-                  <GoodDeedItem
-                    key={deed.id}
-                    description={deed.description}
-                    authorName={deed.author_name}
-                    createdAt={deed.created_at}
-                  />
-                ))}
-              </div>
-            )}
+            {filteredGoodDeeds.length === 0 ? <p className="text-center text-gray-600">Няма одобрени добри дела, които да отговарят на търсенето.</p> : <div className="grid gap-4 md:grid-cols-2">
+                {filteredGoodDeeds.map(deed => <GoodDeedItem key={deed.id} description={deed.description} authorName={deed.author_name} createdAt={deed.created_at} />)}
+              </div>}
           </section>
         </div>
       </main>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default GoodDeeds;
