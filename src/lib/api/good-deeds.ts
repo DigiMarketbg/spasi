@@ -1,4 +1,5 @@
 
+// Add function to fetch pending good deeds for admin/moderator panel
 import { supabase } from "@/integrations/supabase/client";
 
 export const getGoodDeedsStats = async () => {
@@ -14,10 +15,10 @@ export const addGoodDeed = async (description?: string, authorName?: string) => 
   // Check if user can add a good deed today using policy
   const { data: canAdd, error: checkError } = await supabase
     .rpc('can_add_good_deed', { client_ip: ip });
-    
+
   if (checkError) throw checkError;
   if (!canAdd) throw new Error('Вече сте регистрирали 3 добри дела за днес!');
-  
+
   // Add the good deed
   const { error } = await supabase
     .from('good_deeds')
@@ -26,7 +27,7 @@ export const addGoodDeed = async (description?: string, authorName?: string) => 
       description,
       author_name: authorName === undefined ? 'Анонимен' : authorName,
     }]);
-    
+
   if (error) throw error;
 };
 
@@ -35,6 +36,18 @@ export const getApprovedGoodDeeds = async () => {
     .from('good_deeds')
     .select('id, description, author_name, created_at')
     .eq('is_approved', true)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data;
+};
+
+// New function to fetch pending good deeds for admin/moderator review
+export const getPendingGoodDeeds = async () => {
+  const { data, error } = await supabase
+    .from('good_deeds')
+    .select('id, description, author_name, created_at')
+    .eq('is_approved', false)
     .order('created_at', { ascending: false });
 
   if (error) throw error;

@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from '@/hooks/use-mobile';
 import SignalsTabContent from '@/components/admin/tabs/tab-contents/SignalsTabContent';
 import DangerousAreasTabContent from '@/components/admin/tabs/tab-contents/DangerousAreasTabContent';
+import GoodDeedsTabContent from '@/components/admin/tabs/tab-contents/GoodDeedsTabContent';
 
 interface ModeratorTabsProps {
   signals: any[];
@@ -37,6 +37,13 @@ const ModeratorTabs = ({
         >
           Участъци
         </TabsTrigger>
+        {/* New Good Deeds tab */}
+        <TabsTrigger
+          value="good-deeds"
+          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
+        >
+          Добри дела
+        </TabsTrigger>
       </TabsList>
       
       <TabsContent value="signals">
@@ -53,6 +60,11 @@ const ModeratorTabs = ({
           loading={loadingDangerousAreas}
           pendingCount={0} 
         />
+      </TabsContent>
+
+      {/* Good Deeds tab content */}
+      <TabsContent value="good-deeds">
+        <GoodDeedsTabContent />
       </TabsContent>
     </Tabs>
   );

@@ -7,26 +7,9 @@ import PartnersTabContent from './tab-contents/PartnersTabContent';
 import MessagesTabContent from './tab-contents/MessagesTabContent';
 import DangerousAreasTabContent from './tab-contents/DangerousAreasTabContent';
 import NotificationsTabContent from './tab-contents/NotificationsTabContent';
+import GoodDeedsTabContent from './tab-contents/GoodDeedsTabContent';
 
-interface AdminTabsProps {
-  signals: any[];
-  users: any[];
-  partnerRequests: any[];
-  contactMessages: any[];
-  loadingSignals: boolean;
-  loadingUsers: boolean;
-  loadingPartnerRequests: boolean;
-  loadingContactMessages: boolean;
-  loadingDangerousAreas?: boolean;
-  unreadCount: number;
-  pendingRequestsCount: number;
-  pendingDangerousAreasCount: number;
-  pendingWitnessesCount?: number;
-  onRefreshSignals: () => void;
-  onRefreshUsers: () => void;
-  onRefreshPartnerRequests: () => void;
-  onRefreshContactMessages: () => void;
-}
+// Add new tab in the AdminTabs component and show badge with pending count
 
 const AdminTabs = ({
   signals,
@@ -41,17 +24,19 @@ const AdminTabs = ({
   unreadCount,
   pendingRequestsCount,
   pendingDangerousAreasCount,
+  pendingGoodDeedsCount = 0,
   onRefreshSignals,
   onRefreshUsers,
   onRefreshPartnerRequests,
-  onRefreshContactMessages
-}: AdminTabsProps) => {
+  onRefreshContactMessages,
+}: any) => {
   return (
     <Tabs defaultValue="signals">
-      <AdminTabsList 
+      <AdminTabsList
         unreadCount={unreadCount}
         pendingRequestsCount={pendingRequestsCount}
         pendingDangerousAreasCount={pendingDangerousAreasCount}
+        pendingGoodDeedsCount={pendingGoodDeedsCount}
       />
       
       <TabsContent value="signals" className="mt-6">
@@ -94,6 +79,10 @@ const AdminTabs = ({
           loading={loadingDangerousAreas}
           pendingCount={pendingDangerousAreasCount}
         />
+      </TabsContent>
+
+      <TabsContent value="good-deeds" className="mt-6">
+        <GoodDeedsTabContent />
       </TabsContent>
 
       <TabsContent value="notifications" className="mt-6">
