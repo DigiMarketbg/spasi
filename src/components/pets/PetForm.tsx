@@ -52,7 +52,6 @@ const PetForm: React.FC<PetFormProps> = ({ onSuccess }) => {
     },
   });
 
-  // Watch petType to set controlled value for Select
   const petTypeValue = watch("petType");
 
   const onSubmit = async (data: PetPostFormValues) => {
@@ -96,78 +95,82 @@ const PetForm: React.FC<PetFormProps> = ({ onSuccess }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4 max-w-lg mx-auto p-6 bg-white rounded shadow max-h-[80vh] overflow-y-auto mt-20"
+      className="space-y-4 max-w-lg mx-auto p-6 bg-gray-900/90 rounded-lg shadow-lg max-h-[80vh] overflow-y-auto mt-20"
     >
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="title" className="block text-sm font-medium text-gray-300">
           Заглавие
         </label>
-        <Input id="title" {...register("title")} />
-        {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title.message}</p>}
+        <Input id="title" {...register("title")} className="bg-gray-800 text-gray-100 border-gray-700 focus:border-spasi-green focus:ring-spasi-green" />
+        {errors.title && <p className="text-spasi-red text-sm mt-1">{errors.title.message}</p>}
       </div>
 
       <div>
-        <label htmlFor="petType" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="petType" className="block text-sm font-medium text-gray-300">
           Вид домашен любимец
         </label>
         <Select
           onValueChange={(value) => setValue("petType", value as "Куче" | "Котка" | "Друг")}
           value={petTypeValue}
         >
-          <SelectTrigger id="petType" className="w-full">
-            <SelectValue placeholder="Изберете вид" />
-          </SelectTrigger>
-          <SelectContent>
+          <SelectTrigger id="petType" className="w-full bg-gray-800 text-gray-100 border border-gray-700 focus:border-spasi-green focus:ring-spasi-green" />
+          <SelectValue placeholder="Изберете вид" />
+          <SelectContent className="bg-gray-800 text-gray-100 border border-gray-700">
             <SelectItem value="Куче">Куче</SelectItem>
             <SelectItem value="Котка">Котка</SelectItem>
             <SelectItem value="Друг">Друг</SelectItem>
           </SelectContent>
         </Select>
-        {errors.petType && <p className="text-red-600 text-sm mt-1">{errors.petType.message}</p>}
+        {errors.petType && <p className="text-spasi-red text-sm mt-1">{errors.petType.message}</p>}
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="description" className="block text-sm font-medium text-gray-300">
           Описание
         </label>
-        <Textarea id="description" rows={4} {...register("description")} />
-        {errors.description && <p className="text-red-600 text-sm mt-1">{errors.description.message}</p>}
+        <Textarea
+          id="description"
+          rows={4}
+          {...register("description")}
+          className="bg-gray-800 text-gray-100 border border-gray-700 focus:border-spasi-green focus:ring-spasi-green"
+        />
+        {errors.description && <p className="text-spasi-red text-sm mt-1">{errors.description.message}</p>}
       </div>
 
       <div>
-        <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="city" className="block text-sm font-medium text-gray-300">
           Град
         </label>
-        <Input id="city" {...register("city")} />
-        {errors.city && <p className="text-red-600 text-sm mt-1">{errors.city.message}</p>}
+        <Input id="city" {...register("city")} className="bg-gray-800 text-gray-100 border-gray-700 focus:border-spasi-green focus:ring-spasi-green" />
+        {errors.city && <p className="text-spasi-red text-sm mt-1">{errors.city.message}</p>}
       </div>
 
       <div>
-        <label htmlFor="contactName" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="contactName" className="block text-sm font-medium text-gray-300">
           Име за връзка
         </label>
-        <Input id="contactName" {...register("contactName")} />
-        {errors.contactName && <p className="text-red-600 text-sm mt-1">{errors.contactName.message}</p>}
+        <Input id="contactName" {...register("contactName")} className="bg-gray-800 text-gray-100 border-gray-700 focus:border-spasi-green focus:ring-spasi-green" />
+        {errors.contactName && <p className="text-spasi-red text-sm mt-1">{errors.contactName.message}</p>}
       </div>
 
       <div>
-        <label htmlFor="contactPhone" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="contactPhone" className="block text-sm font-medium text-gray-300">
           Телефон за връзка
         </label>
-        <Input id="contactPhone" {...register("contactPhone")} />
-        {errors.contactPhone && <p className="text-red-600 text-sm mt-1">{errors.contactPhone.message}</p>}
+        <Input id="contactPhone" {...register("contactPhone")} className="bg-gray-800 text-gray-100 border-gray-700 focus:border-spasi-green focus:ring-spasi-green" />
+        {errors.contactPhone && <p className="text-spasi-red text-sm mt-1">{errors.contactPhone.message}</p>}
       </div>
 
       <div>
-        <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-300">
           Линк към изображение (по желание)
         </label>
-        <Input id="imageUrl" {...register("imageUrl")} placeholder="https://..." />
-        {errors.imageUrl && <p className="text-red-600 text-sm mt-1">{errors.imageUrl.message}</p>}
+        <Input id="imageUrl" {...register("imageUrl")} placeholder="https://..." className="bg-gray-800 text-gray-100 border-gray-700 focus:border-spasi-green focus:ring-spasi-green" />
+        {errors.imageUrl && <p className="text-spasi-red text-sm mt-1">{errors.imageUrl.message}</p>}
       </div>
 
       <div className="text-right">
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting} variant="default" size="default">
           {isSubmitting ? "Изпращане..." : "Добави домашен любимец"}
         </Button>
       </div>
