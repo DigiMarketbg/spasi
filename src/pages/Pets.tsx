@@ -6,11 +6,15 @@ import PetItem from "@/components/pets/PetItem";
 import PetForm from "@/components/pets/PetForm";
 import { fetchApprovedPetPosts } from "@/lib/api/pets";
 import { useAuth } from "@/components/AuthProvider";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from "@/components/ui/sheet";
 
 const Pets = () => {
   const [pets, setPets] = useState<Array<any>>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const [sheetOpen, setSheetOpen] = useState(false);
+
   const loadPets = async () => {
     setLoading(true);
     try {
@@ -27,20 +31,35 @@ const Pets = () => {
     loadPets();
   }, []);
 
+  const onSuccess = () => {
+    setSheetOpen(false);
+    loadPets();
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10 max-w-5xl">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h1 className="text-4xl font-bold text-lime-700 mb-2">Домашни Любимци</h1>
-          <p className="text-muted-foreground">
-            Прегледайте и добавете Вашите любими домашни любимци. След преглед, одобрените публикации ще бъдат показани тук.
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            Тук можете да публикувате сигнали за намерени, изхвърлени или загубени домашни любимци. След преглед и одобрение, публикациите ще се покажат тук и ще помогнат на хората да ги намерят, вземат или осиновят.
           </p>
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+            <SheetTrigger asChild>
+              <Button className="mt-4">Добави домашен любимец</Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="pb-10">
+              <SheetHeader>
+                <SheetTitle>Добави домашен любимец</SheetTitle>
+              </SheetHeader>
+              <PetForm onSuccess={onSuccess} />
+              <SheetFooter />
+            </SheetContent>
+          </Sheet>
         </div>
 
-        <PetForm onSuccess={loadPets} />
-
-        <section className="mt-12">
+        <section className="mt-8">
           {loading ? (
             <p className="text-center text-gray-500">Зареждане...</p>
           ) : pets.length === 0 ? (
