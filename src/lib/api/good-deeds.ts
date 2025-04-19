@@ -1,5 +1,5 @@
 
-// Update the getPendingGoodDeeds function to return deeds where is_approved IS NULL (pending)
+// Update the addGoodDeed function to accept title and use it in the insert
 import { supabase } from "@/integrations/supabase/client";
 
 export const getGoodDeedsStats = async () => {
@@ -8,7 +8,7 @@ export const getGoodDeedsStats = async () => {
   return data[0];
 };
 
-export const addGoodDeed = async (description?: string, authorName?: string) => {
+export const addGoodDeed = async (description?: string, authorName?: string, title?: string) => {
   const response = await fetch('https://api.ipify.org?format=json');
   const { ip } = await response.json();
 
@@ -26,6 +26,7 @@ export const addGoodDeed = async (description?: string, authorName?: string) => 
       ip_address: ip, 
       description,
       author_name: authorName === undefined ? 'Анонимен' : authorName,
+      title,
       // Do not set is_approved when inserting, so it remains null / pending
     }]);
 
@@ -35,7 +36,7 @@ export const addGoodDeed = async (description?: string, authorName?: string) => 
 export const getApprovedGoodDeeds = async () => {
   const { data, error } = await supabase
     .from('good_deeds')
-    .select('id, description, author_name, created_at')
+    .select('id, description, author_name, created_at, title')
     .eq('is_approved', true)
     .order('created_at', { ascending: false });
 
