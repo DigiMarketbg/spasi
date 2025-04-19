@@ -20,7 +20,7 @@ interface PetsTabContentProps {
   onRefresh?: () => void;
 }
 
-// Fix fetchAllPetPosts: only returns PetPost[], throws on error
+// fetch all pet posts for admin (pending and approved)
 async function fetchAllPetPosts(): Promise<PetPost[]> {
   const res = await fetch('/api/admin/pet-posts');
   if (!res.ok) {
@@ -130,7 +130,12 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
             <TableCell>{pet.is_approved ? 'Одобрен' : 'В очакване'}</TableCell>
             <TableCell>
               {!pet.is_approved && (
-                <Button variant="default" size="sm" disabled={processingId === pet.id} onClick={() => approvePet(pet.id)}>
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  disabled={processingId === pet.id} 
+                  onClick={() => approvePet(pet.id)}
+                >
                   Одобри
                 </Button>
               )}
