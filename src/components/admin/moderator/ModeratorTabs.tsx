@@ -5,6 +5,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import SignalsTabContent from '@/components/admin/tabs/tab-contents/SignalsTabContent';
 import DangerousAreasTabContent from '@/components/admin/tabs/tab-contents/DangerousAreasTabContent';
 import GoodDeedsTabContent from '@/components/admin/tabs/tab-contents/GoodDeedsTabContent';
+import PetsTabContent from '@/components/admin/tabs/components/PetsTabContent';
 
 interface ModeratorTabsProps {
   signals: any[];
@@ -44,6 +45,12 @@ const ModeratorTabs = ({
         >
           Добри дела
         </TabsTrigger>
+        <TabsTrigger
+          value="pets"
+          className={isMobile ? 'py-2 text-xs truncate max-w-full whitespace-nowrap overflow-hidden' : ''}
+        >
+          Домашни любимци
+        </TabsTrigger>
       </TabsList>
       
       <TabsContent value="signals">
@@ -64,6 +71,10 @@ const ModeratorTabs = ({
 
       <TabsContent value="good-deeds">
         <GoodDeedsTabContent />
+      </TabsContent>
+
+      <TabsContent value="pets">
+        <PetsTabContent />
       </TabsContent>
     </Tabs>
   );

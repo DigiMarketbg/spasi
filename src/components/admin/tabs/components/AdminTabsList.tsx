@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell, Mail, Users, ListChecks, MapPin } from "lucide-react";
 import { ThumbsUp } from "lucide-react";
+import { PawPrint } from "lucide-react";
 
 interface AdminTabsListProps {
   unreadCount: number;
@@ -17,7 +19,7 @@ const AdminTabsList = ({
   pendingGoodDeedsCount = 0,
 }: AdminTabsListProps) => {
   return (
-    <TabsList className="grid grid-cols-7 w-full"> 
+    <TabsList className="grid grid-cols-8 w-full"> 
       <TabsTrigger value="signals" className="flex items-center gap-2">
         <ListChecks className="h-4 w-4" />
         <span className="hidden sm:inline">Сигнали</span>
@@ -48,6 +50,10 @@ const AdminTabsList = ({
           )}
         </span>
         <span className="hidden sm:inline">Добри дела</span>
+      </TabsTrigger>
+      <TabsTrigger value="pets" className="flex items-center gap-2">
+        <PawPrint className="h-4 w-4" />
+        <span className="hidden sm:inline">Домашни любимци</span>
       </TabsTrigger>
       <TabsTrigger value="notifications" className="flex items-center gap-2">
         <Bell className="h-4 w-4" />

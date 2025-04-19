@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import AdminTabsList from './components/AdminTabsList';
@@ -8,6 +9,7 @@ import MessagesTabContent from './tab-contents/MessagesTabContent';
 import DangerousAreasTabContent from './tab-contents/DangerousAreasTabContent';
 import NotificationsTabContent from './tab-contents/NotificationsTabContent';
 import GoodDeedsTabContent from './tab-contents/GoodDeedsTabContent';
+import PetsTabContent from './components/PetsTabContent';
 
 // Add new tab in the AdminTabs component and show badge with pending count
 
@@ -83,6 +85,10 @@ const AdminTabs = ({
 
       <TabsContent value="good-deeds" className="mt-6">
         <GoodDeedsTabContent />
+      </TabsContent>
+
+      <TabsContent value="pets" className="mt-6">
+        <PetsTabContent />
       </TabsContent>
 
       <TabsContent value="notifications" className="mt-6">
