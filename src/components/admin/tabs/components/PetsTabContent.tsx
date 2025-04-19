@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchApprovedPetPosts, addPetPost } from '@/lib/api/pets';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
@@ -18,25 +17,36 @@ interface PetPost {
 }
 
 interface PetsTabContentProps {
-  // We can extend this later for filters, loading props, etc.
   onRefresh?: () => void;
+}
+
+// Fix fetchAllPetPosts: only returns PetPost[], throws on error
+async function fetchAllPetPosts(): Promise<PetPost[]> {
+  const res = await fetch('/api/admin/pet-posts');
+  if (!res.ok) {
+    throw new Error('Error fetching pet posts');
+  }
+  const data = await res.json();
+  return data;
+}
+
+async function approvePetPost(id: string): Promise<void> {
+  const res = await fetch(`/api/admin/pet-posts/${id}/approve`, { method: 'POST' });
+  if (!res.ok) throw new Error('Неуспешно одобрение');
+}
+
+async function rejectPetPost(id: string): Promise<void> {
+  const res = await fetch(`/api/admin/pet-posts/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Неуспешно отхвърляне');
 }
 
 const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
   const { toast } = useToast();
   const { data: pets = [], isLoading, refetch } = useQuery<PetPost[]>({
     queryKey: ['admin-pet-posts'],
-    queryFn: async () => {
-      // Ideally, we fetch all pet posts, including pending and approved
-      // but fetchApprovedPetPosts only fetches approved.
-      // Let's create a fetch function in API for all pet posts with status.
-      const { data, error } = await fetchAllPetPosts();
-      if (error) throw error;
-      return data;
-    }
+    queryFn: fetchAllPetPosts,
   });
 
-  // We'll implement approved/reject actions here
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   const approvePet = async (id: string) => {
@@ -47,8 +57,8 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
         title: 'Успешно',
         description: 'Домашният любимец е одобрен.',
       });
-      refetch();
-      if (onRefresh) onRefresh();
+      await refetch();
+      onRefresh?.();
     } catch (e: any) {
       toast({
         title: 'Грешка',
@@ -68,8 +78,8 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
         title: 'Успешно',
         description: 'Домашният любимец е отхвърлен.',
       });
-      refetch();
-      if (onRefresh) onRefresh();
+      await refetch();
+      onRefresh?.();
     } catch (e: any) {
       toast({
         title: 'Грешка',
@@ -143,27 +153,3 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
 
 export default PetsTabContent;
 
-// Helper functions to use fetchAllPetPosts, approve and reject pet post API calls
-async function fetchAllPetPosts(): Promise<[PetPost[], Error | null]> {
-  // Fetch all pet posts regardless of approval, ordered newest first
-  try {
-    const res = await fetch('/api/admin/pet-posts');
-    if (!res.ok) {
-      throw new Error('Error fetching pet posts');
-    }
-    const data = await res.json();
-    return [data, null];
-  } catch (error: any) {
-    return [[], error];
-  }
-}
-
-async function approvePetPost(id: string): Promise<void> {
-  const res = await fetch(`/api/admin/pet-posts/${id}/approve`, { method: 'POST' });
-  if (!res.ok) throw new Error('Неуспешно одобрение');
-}
-
-async function rejectPetPost(id: string): Promise<void> {
-  const res = await fetch(`/api/admin/pet-posts/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error('Неуспешно отхвърляне');
-}
