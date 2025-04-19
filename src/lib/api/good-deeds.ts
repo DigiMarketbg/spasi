@@ -11,7 +11,14 @@ export const addGoodDeed = async (description?: string, authorName?: string, tit
   const response = await fetch('https://api.ipify.org?format=json');
   const { ip } = await response.json();
 
-  // Directly insert the good deed without checking limitations
+  // Check if user can add a good deed today using policy
+  const { data: canAdd, error: checkError } = await supabase
+    .rpc('can_add_good_deed', { client_ip: ip });
+    
+  if (checkError) throw checkError;
+  if (!canAdd) throw new Error('Вече сте регистрирали 3 добри дела за днес!');
+  
+  // Add the good deed
   const { error } = await supabase
     .from('good_deeds')
     .insert([{ 
