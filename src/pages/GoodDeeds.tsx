@@ -25,7 +25,7 @@ const GoodDeeds = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 py-8 mt-16 md:mt-0">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold">Добрини</h1>
@@ -48,4 +48,3 @@ const GoodDeeds = () => {
 };
 
 export default GoodDeeds;
-
