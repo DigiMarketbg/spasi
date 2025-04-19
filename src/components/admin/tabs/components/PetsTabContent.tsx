@@ -1,18 +1,16 @@
-// Changed PetsTabContent to use supabase directly via lib/api/pets instead of fetch REST API
+
+// Changed PetsTabContent to use supabase update for approval via lib/api/pets.ts
 
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { fetchAllPetPosts, PetPost } from "@/lib/api/pets";
+import { fetchAllPetPosts, PetPost, approvePetPostById } from "@/lib/api/pets";
 
 interface PetsTabContentProps {
   onRefresh?: () => void;
 }
-
-// Use supabase client to fetch all pet posts without relying on REST API
-// We assume fetchAllPetPosts fetches all posts regardless of approval
 
 const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
   const { toast } = useToast();
@@ -23,21 +21,10 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
 
   const [processingId, setProcessingId] = useState<string | null>(null);
 
-  const approvePetPost = async (id: string): Promise<void> => {
-    // Call supabase function or REST API to approve. Keeping REST API here as it likely does backend logic.
-    const res = await fetch(`/api/admin/pet-posts/${id}/approve`, { method: "POST" });
-    if (!res.ok) throw new Error("Неуспешно одобрение");
-  };
-
-  const rejectPetPost = async (id: string): Promise<void> => {
-    const res = await fetch(`/api/admin/pet-posts/${id}`, { method: "DELETE" });
-    if (!res.ok) throw new Error("Неуспешно отхвърляне");
-  };
-
   const approvePet = async (id: string) => {
     setProcessingId(id);
     try {
-      await approvePetPost(id);
+      await approvePetPostById(id);
       toast({
         title: "Успешно",
         description: "Домашният любимец е одобрен.",
@@ -53,6 +40,11 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
     } finally {
       setProcessingId(null);
     }
+  };
+
+  const rejectPetPost = async (id: string): Promise<void> => {
+    const res = await fetch(`/api/admin/pet-posts/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Неуспешно отхвърляне");
   };
 
   const rejectPet = async (id: string) => {
@@ -141,3 +133,4 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
 };
 
 export default PetsTabContent;
+

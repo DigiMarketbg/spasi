@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface PetPost {
@@ -51,3 +50,17 @@ export const addPetPost = async (
   if (error) throw error;
 };
 
+// Approve a pet post by id (update is_approved and status)
+export const approvePetPostById = async (id: string): Promise<void> => {
+  if (!id) throw new Error("ID is required");
+
+  const { error } = await supabase
+    .from("pet_posts")
+    .update({ 
+      is_approved: true,
+      status: "approved",
+    })
+    .eq("id", id);
+
+  if (error) throw error;
+};
