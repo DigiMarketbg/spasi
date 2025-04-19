@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export const getGoodDeedsStats = async () => {
@@ -7,7 +6,7 @@ export const getGoodDeedsStats = async () => {
   return data[0];
 };
 
-export const addGoodDeed = async (description?: string, authorName?: string) => {
+export const addGoodDeed = async (description?: string, authorName?: string, title?: string) => {
   const response = await fetch('https://api.ipify.org?format=json');
   const { ip } = await response.json();
   
@@ -24,7 +23,8 @@ export const addGoodDeed = async (description?: string, authorName?: string) => 
     .insert([{ 
       ip_address: ip, 
       description,
-      author_name: authorName 
+      author_name: authorName === undefined ? 'Анонимен' : authorName,
+      title 
     }]);
     
   if (error) throw error;

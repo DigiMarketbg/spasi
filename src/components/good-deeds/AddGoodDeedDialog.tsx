@@ -18,6 +18,7 @@ interface AddGoodDeedDialogProps {
 const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
   const { profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -37,7 +38,7 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
       // Use authorName only if not anonymous
       const name = isAnonymous ? undefined : authorName;
       
-      await addGoodDeed(description, name);
+      await addGoodDeed(description, name, title);
       toast({
         title: "Благодарим ви!",
         description: "Вашето добро дело беше регистрирано успешно.",
@@ -57,6 +58,7 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
   };
 
   const resetForm = () => {
+    setTitle("");
     setDescription("");
     // Reset author name to profile name
     if (profile?.full_name) {
@@ -86,13 +88,22 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
         </DialogHeader>
         <div className="space-y-4 pt-4">
           <div className="space-y-2">
+            <Label htmlFor="title">Заглавие</Label>
+            <Input
+              id="title"
+              placeholder="Въведете заглавие"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="authorName">Вашето име</Label>
             <Input
               id="authorName"
-              placeholder="Въведете вашето име"
               value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              disabled={isAnonymous}
+              readOnly
+              className="bg-gray-100"
             />
           </div>
           
@@ -122,7 +133,7 @@ const AddGoodDeedDialog = ({ onAdd }: AddGoodDeedDialogProps) => {
           
           <Button 
             onClick={handleSubmit}
-            disabled={isLoading || (!description)}
+            disabled={isLoading || !description || !title}
             className="w-full bg-[#ea384c] hover:bg-[#c52c3f] text-white"
           >
             Регистрирай
