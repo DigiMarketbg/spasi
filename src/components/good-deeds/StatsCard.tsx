@@ -1,6 +1,5 @@
 
 import { Card, CardTitle } from "@/components/ui/card";
-import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -52,13 +51,11 @@ const StatsCard = ({ totalCount, todayCount, onAdd }: StatsCardProps) => {
         role="button"
       >
         <Button 
-          variant="destructive" 
-          className="w-full h-full flex items-center justify-between px-4 py-3"
+          className="w-full h-full bg-[#DC2626] hover:bg-[#B91C1C] text-white px-4 py-3 flex items-center justify-center"
           onClick={handleAddDeed}
           disabled={isLoading}
         >
           <CardTitle className="text-sm font-medium sm:text-base text-white">Добави</CardTitle>
-          <Plus className="h-5 w-5 text-white" />
         </Button>
       </Card>
     </div>
@@ -66,3 +63,4 @@ const StatsCard = ({ totalCount, todayCount, onAdd }: StatsCardProps) => {
 };
 
 export default StatsCard;
+
