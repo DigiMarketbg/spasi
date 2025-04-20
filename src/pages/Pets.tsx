@@ -45,7 +45,7 @@ const Pets = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#1A1F2C] relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-black relative overflow-hidden">
       <PetsBackgroundEffects />
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10 max-w-6xl relative z-10">
@@ -124,4 +124,3 @@ const Pets = () => {
 };
 
 export default Pets;
-
