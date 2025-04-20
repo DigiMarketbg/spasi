@@ -47,7 +47,7 @@ const Pets = () => {
     <div className="min-h-screen flex flex-col bg-black relative overflow-hidden">
       <PetsBackgroundEffects />
       <Navbar />
-      <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10 max-w-6xl relative z-10">
+      <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10 max-w-6xl relative z-10 bg-black text-white">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-lime-700 mb-2">Домашни Любимци</h1>
           <p className="text-muted-foreground max-w-xl mx-auto mb-6">
