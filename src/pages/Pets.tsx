@@ -15,6 +15,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
+import PetsBackgroundEffects from "@/components/pets/PetsBackgroundEffects";
 
 const Pets = () => {
   const [pets, setPets] = useState<Array<any>>([]);
@@ -44,9 +45,10 @@ const Pets = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#1A1F2C]">
+    <div className="min-h-screen flex flex-col bg-[#1A1F2C] relative overflow-hidden">
+      <PetsBackgroundEffects />
       <Navbar />
-      <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10 max-w-6xl">
+      <main className="flex-grow container mx-auto px-4 py-8 mt-20 pt-10 max-w-6xl relative z-10">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-lime-700 mb-2">Домашни Любимци</h1>
           <p className="text-muted-foreground max-w-xl mx-auto mb-6">
@@ -122,3 +124,4 @@ const Pets = () => {
 };
 
 export default Pets;
+
