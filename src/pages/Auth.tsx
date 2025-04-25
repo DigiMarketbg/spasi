@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -329,33 +330,35 @@ const Auth = () => {
                       />
                     </div>
                     
-                <div className="space-y-2">
-                  <Label htmlFor="register-phone">Телефонен номер (по желание)</Label>
-                  <Input
-                    id="register-phone"
-                    type="tel"
-                    placeholder="+359887123456"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="bg-background/50"
-                    pattern="^(\+359|0)?(87|88|89|98|99|42|43|48|49|35|37|39|52|53|54|55|56|57|58|59)\d{7}$"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Форматът трябва да бъде +359887123456 или 0887123456
-                  </p>
-                </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-phone">Телефонен номер (по желание)</Label>
+                      <Input
+                        id="register-phone"
+                        type="tel"
+                        placeholder="+359887123456"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        className="bg-background/50"
+                        pattern="^(\+359|0)?(87|88|89|98|99|42|43|48|49|35|37|39|52|53|54|55|56|57|58|59)\d{7}$"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Форматът трябва да бъде +359887123456 или 0887123456
+                      </p>
+                    </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full bg-spasi-green hover:bg-spasi-green/90"
-                  disabled={loading}
-                >
-                  {loading ? "Регистриране..." : "Регистрирай се"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-spasi-green hover:bg-spasi-green/90"
+                      disabled={loading}
+                    >
+                      {loading ? "Регистриране..." : "Регистрирай се"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        )}
       </div>
     </div>
   );
