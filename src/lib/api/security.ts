@@ -87,7 +87,7 @@ export const requireAuth = async () => {
 
 // Secure data access function - wraps supabase calls with error handling and auth checks
 export const secureDataAccess = {
-  // Fixed the return type to avoid deep instantiation
+  // Using concrete return type and breaking the type recursion
   select: async <T = any>(table: TableName, columns: string = '*', query?: Record<string, any>): Promise<T[]> => {
     try {
       await requireAuth();
@@ -102,7 +102,7 @@ export const secureDataAccess = {
       const { data, error } = await request;
       
       if (error) throw error;
-      return data as T[];
+      return (data || []) as T[];
     } catch (error) {
       console.error(`Error accessing ${table}:`, error);
       throw error;
