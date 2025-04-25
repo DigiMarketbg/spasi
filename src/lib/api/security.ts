@@ -87,7 +87,8 @@ export const requireAuth = async () => {
 
 // Secure data access function - wraps supabase calls with error handling and auth checks
 export const secureDataAccess = {
-  select: async <T>(table: TableName, columns: string = '*', query?: Record<string, any>) => {
+  // Fixed the return type to avoid deep instantiation
+  select: async <T = any>(table: TableName, columns: string = '*', query?: Record<string, any>): Promise<T[]> => {
     try {
       await requireAuth();
       let request = supabase.from(table).select(columns);
@@ -108,6 +109,7 @@ export const secureDataAccess = {
     }
   },
   
+  // Fixed the type handling for insert operations
   insert: async <T extends Record<string, any>>(
     table: TableName, 
     data: T, 
@@ -115,7 +117,7 @@ export const secureDataAccess = {
   ) => {
     try {
       const session = await requireAuth();
-      let dataToInsert: Record<string, any> = { ...data };
+      let dataToInsert = { ...data } as any;
       
       if (options.withUserId) {
         dataToInsert.user_id = session.user.id;
