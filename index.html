@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bg">
   <head>
@@ -30,49 +31,65 @@
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(async function() {
-        await OneSignal.init({
-          appId: "5e8423e4-9749-42ba-b564-f4dc70d93066",
-          allowLocalhostAsSecureOrigin: true,
-          autoResubscribe: true,
-          notifyButton: {
-            enable: false, // Disable the built-in button, use our own
-          },
-          persistNotification: false,
-          promptOptions: {
-            slidedown: {
-              prompts: [
-                {
-                  type: "push",
-                  autoPrompt: false,
-                  text: {
-                    actionMessage: "Искате ли да получавате известия за спешни случаи?",
-                    acceptButton: "Разреши",
-                    cancelButton: "Не сега",
-                  },
-                }
-              ]
+        try {
+          console.log("Initializing OneSignal...");
+          await OneSignal.init({
+            appId: "5e8423e4-9749-42ba-b564-f4dc70d93066",
+            allowLocalhostAsSecureOrigin: true,
+            autoResubscribe: true,
+            notifyButton: {
+              enable: false, // We use our own button
+            },
+            persistNotification: true, // Enable persistent notifications
+            promptOptions: {
+              slidedown: {
+                prompts: [
+                  {
+                    type: "push",
+                    autoPrompt: false,
+                    text: {
+                      actionMessage: "Искате ли да получавате известия за спешни случаи?",
+                      acceptButton: "Разреши",
+                      cancelButton: "Не сега",
+                    },
+                  }
+                ]
+              }
+            },
+            // Updated domain configuration
+            subdomainName: null, // Remove subdomain restriction
+            serviceWorkerParam: { scope: "/" },
+            serviceWorkerPath: "/sw.js",
+            safari_web_id: "web.onesignal.auto.2c58bfb7-deb3-4a0c-bd57-09c9e81c4ae0",
+            // Allow access from multiple origins for testing and production
+            allowedOrigins: [
+              "https://spasi.bg", 
+              window.location.origin, // Current origin
+              "http://localhost:8080", 
+              "http://localhost:3000"
+            ],
+            welcomeNotification: {
+              disable: true
             }
-          },
-          // Updated domain configuration
-          subdomainName: "spasi",
-          serviceWorkerParam: { scope: "/" },
-          serviceWorkerPath: "/sw.js",
-          safari_web_id: "web.onesignal.auto.2c58bfb7-deb3-4a0c-bd57-09c9e81c4ae0",
-          // Set the allowed origin to spasi.bg
-          allowedOrigins: ["https://spasi.bg"],
-          welcomeNotification: {
-            disable: true
-          }
-        });
-        
-        console.log("OneSignal initialized with config");
-        
-        // Check subscription status after initialization
-        setTimeout(() => {
-          OneSignal.isPushNotificationsEnabled(function(isEnabled) {
-            console.log("OneSignal subscription status:", isEnabled ? "Active" : "Inactive");
           });
-        }, 2000);
+          
+          console.log("OneSignal initialized successfully");
+          
+          // Register for notification permission changes
+          OneSignal.on('notificationPermissionChange', function(permissionChange) {
+            console.log("Notification permission changed:", permissionChange);
+          });
+          
+          // Register for subscription changes
+          OneSignal.on('subscriptionChange', function(isSubscribed) {
+            console.log("Subscription changed:", isSubscribed ? "Subscribed" : "Unsubscribed");
+            // Store subscription state in localStorage for component access
+            localStorage.setItem('onesignal_subscription', isSubscribed ? 'true' : 'false');
+          });
+          
+        } catch (error) {
+          console.error("Error initializing OneSignal:", error);
+        }
       });
     </script>
     
@@ -121,8 +138,9 @@
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     
     <script>
-      // Enhanced Service Worker Registration with update handling
+      // Enhanced Service Worker Registration with update handling and OneSignal integration
       if ('serviceWorker' in navigator) {
+        // Handle splash screen for PWA
         if (window.matchMedia('(display-mode: standalone)').matches) {
           const splashScreen = document.getElementById('splash-screen');
           if (splashScreen) {
@@ -136,7 +154,7 @@
           }
         }
       
-        // Define a function to handle updates
+        // Define a function to handle service worker registration and updates
         const registerServiceWorker = async () => {
           try {
             console.log("Registering Service Worker...");
@@ -145,6 +163,16 @@
               scope: '/' // Explicit scope setting
             });
             console.log('Service worker registered successfully.', registration);
+            
+            // Listen for user interactions to request permission at the right time
+            document.addEventListener('click', () => {
+              // This will be triggered by any click on the document
+              // For mobile browsers that require user interaction before requesting permission
+              if (window.OneSignal && !localStorage.getItem('interaction_recorded')) {
+                localStorage.setItem('interaction_recorded', 'true');
+                console.log('User interaction recorded, can request permissions now');
+              }
+            }, { once: true });
             
             // Check for updates immediately
             registration.update();
@@ -177,14 +205,24 @@
               }
             });
             
+            // Let service worker know that the page is fully loaded
+            if (navigator.serviceWorker.controller) {
+              navigator.serviceWorker.controller.postMessage({
+                type: 'PAGE_LOADED'
+              });
+            }
+            
           } catch (error) {
             console.error('Service Worker registration failed:', error);
           }
         };
         
-        // Run the service worker registration
+        // Run the service worker registration on load
         window.addEventListener('load', () => {
-          registerServiceWorker();
+          // Small delay to ensure OneSignal has a chance to initialize first
+          setTimeout(() => {
+            registerServiceWorker();
+          }, 1000);
         });
       }
     </script>

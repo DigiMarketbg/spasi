@@ -1,5 +1,6 @@
+
 // Cache name - update version to force refresh
-const CACHE_NAME = 'spasi-bg-v13';
+const CACHE_NAME = 'spasi-bg-v14';
 
 // Files to cache
 const urlsToCache = [
@@ -105,21 +106,36 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
+// Message Handler - for communication with main thread
+self.addEventListener('message', (event) => {
+  console.log('🟢 Service Worker: received message', event.data);
+  
+  if (event.data && event.data.type === 'PAGE_LOADED') {
+    console.log('🟢 Service Worker: page loaded');
+    // You can perform additional tasks here when the page is loaded
+  }
+});
+
 // Service Worker handling of push notifications
 self.addEventListener('push', function(event) {
   console.log('🟢 Service Worker: push notification received:', event);
   
-  // Let OneSignal handle the push event if it's from OneSignal
-  if (event.data && event.data.text().includes('onesignal')) {
-    console.log('🟢 OneSignal push event detected');
-    return;
-  }
-  
-  // Otherwise handle it ourselves
-  if (self.registration.pushManager) {
-    console.log('🟢 Push Manager is available');
-    
-    // You could implement custom notification handling here if needed
+  try {
+    // Let OneSignal handle the push event if it's from OneSignal
+    if (event.data) {
+      const data = event.data.text();
+      console.log('🟢 Push data:', data);
+      
+      if (data.includes('onesignal') || data.includes('OneSignal')) {
+        console.log('🟢 OneSignal push event detected, letting OneSignal handle it');
+        return;
+      }
+      
+      // If not from OneSignal, we could handle it ourselves
+      // This is a fallback if needed in the future
+    }
+  } catch (error) {
+    console.error('🔴 Error processing push event:', error);
   }
 });
 
@@ -127,16 +143,38 @@ self.addEventListener('push', function(event) {
 self.addEventListener('notificationclick', function(event) {
   console.log('🟢 Service Worker: notification clicked:', event);
   
+  // Close the notification
   event.notification.close();
+  
+  // Store the notification data if available
+  const notificationData = event.notification.data || {};
+  console.log('🟢 Notification data:', notificationData);
   
   // This looks to see if the current is open and focuses if it is
   event.waitUntil(
     clients.matchAll({ type: "window" }).then(function(clientList) {
-      if (clientList.length > 0) {
-        return clientList[0].focus();
+      // If we have a URL to navigate to (from notification data)
+      const urlToOpen = notificationData.url || '/';
+      
+      // Check if a window client is already open
+      for (const client of clientList) {
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
       }
       
-      return clients.openWindow('/');
+      // If no window client is open or no matching URL, open a new one
+      return clients.openWindow(urlToOpen);
     })
   );
+});
+
+// Handle notification close events
+self.addEventListener('notificationclose', function(event) {
+  console.log('🟢 Service Worker: notification closed', event);
+});
+
+// Handle errors that might occur during push events
+self.addEventListener('error', function(event) {
+  console.error('🔴 Service Worker Error:', event.error);
 });
