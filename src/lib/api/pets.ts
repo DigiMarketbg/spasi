@@ -1,4 +1,6 @@
+
 import { supabase } from "@/integrations/supabase/client";
+import { secureDataAccess } from "./security";
 
 export interface PetPost {
   id: string;
@@ -11,7 +13,7 @@ export interface PetPost {
   status: string;
 }
 
-// Fetch approved pet posts
+// Fetch approved pet posts - public function, no auth required
 export const fetchApprovedPetPosts = async (): Promise<PetPost[]> => {
   const { data, error } = await supabase
     .from("pet_posts")
@@ -22,45 +24,79 @@ export const fetchApprovedPetPosts = async (): Promise<PetPost[]> => {
   return data as PetPost[];
 };
 
-// Fetch all pet posts (for admin)
+// Fetch all pet posts (for admin) - secure version
 export const fetchAllPetPosts = async (): Promise<PetPost[]> => {
-  const { data, error } = await supabase
-    .from("pet_posts")
-    .select("*")
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return data as PetPost[];
+  try {
+    const data = await secureDataAccess.select<PetPost>("pet_posts");
+    return data;
+  } catch (error) {
+    console.error("Error fetching all pet posts:", error);
+    throw error;
+  }
 };
 
-// Add a new pet post
+// Add a new pet post - secure version with automatic user_id
 export const addPetPost = async (
-  userId: string,
   title: string,
   description: string,
   imageUrl?: string | null
 ): Promise<void> => {
-  const { error } = await supabase.from("pet_posts").insert({
-    user_id: userId,
-    title,
-    description,
-    image_url: imageUrl || null,
-    is_approved: false,
-    status: "pending",
-  });
-  if (error) throw error;
+  try {
+    await secureDataAccess.insert(
+      "pet_posts", 
+      {
+        title,
+        description,
+        image_url: imageUrl || null,
+        is_approved: false,
+        status: "pending",
+      },
+      { withUserId: true }
+    );
+  } catch (error) {
+    console.error("Error adding pet post:", error);
+    throw error;
+  }
 };
 
-// Approve a pet post by id (update is_approved and status)
+// Approve a pet post by id (update is_approved and status) - secure admin function
 export const approvePetPostById = async (id: string): Promise<void> => {
   if (!id) throw new Error("ID is required");
 
-  const { error } = await supabase
-    .from("pet_posts")
-    .update({ 
+  try {
+    // Check if user is admin first
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      throw new Error("Only admins can approve pet posts");
+    }
+    
+    await secureDataAccess.update("pet_posts", id, { 
       is_approved: true,
       status: "approved",
-    })
-    .eq("id", id);
-
-  if (error) throw error;
+    });
+  } catch (error) {
+    console.error("Error approving pet post:", error);
+    throw error;
+  }
 };
+
+// Helper function to check if user is admin - imported from our new security file
+async function isCurrentUserAdmin(): Promise<boolean> {
+  try {
+    const { data } = await supabase.auth.getSession();
+    if (!data.session?.user) return false;
+    
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', data.session.user.id)
+      .single();
+    
+    if (error || !profile) return false;
+    
+    return profile.is_admin === true;
+  } catch (error) {
+    console.error("Error checking admin status:", error);
+    return false;
+  }
+}

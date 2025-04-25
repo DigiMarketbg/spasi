@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import { useToast } from '@/hooks/use-toast';
 import { VolunteerFormValues } from '../schema/volunteerFormSchema';
+import { secureDataAccess } from '@/lib/api/security';
 
 export const useVolunteerSubmit = (onSuccess: () => void) => {
   const { user } = useAuth();
@@ -23,19 +24,16 @@ export const useVolunteerSubmit = (onSuccess: () => void) => {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from('volunteers')
-        .upsert({
-          user_id: user.id,
-          full_name: values.full_name,
-          email: values.email,
-          phone: values.phone || null,
-          city: values.city,
-          can_help_with: values.can_help_with,
-          motivation: values.motivation || null,
-        });
-
-      if (error) throw error;
+      // Use our secure data access helper for the insert operation
+      await secureDataAccess.insert('volunteers', {
+        user_id: user.id, // Explicitly set user_id
+        full_name: values.full_name,
+        email: values.email,
+        phone: values.phone || null,
+        city: values.city,
+        can_help_with: values.can_help_with,
+        motivation: values.motivation || null,
+      });
 
       toast({
         title: "Успешно подадена заявка",

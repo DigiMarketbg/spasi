@@ -8,3 +8,6 @@ export * from './storage';
 export * from './dangerous-areas';
 export * from './witnesses';
 export * from './good-deeds';
+export * from './security';
+export * from './pets';
+

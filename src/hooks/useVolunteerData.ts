@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Volunteer } from '@/types/volunteer';
 import { getApprovedVolunteersByCity } from '@/lib/api';
+import { requireAuth } from '@/lib/api/security';
 
 interface UseVolunteerDataProps {
   userId: string | undefined;
@@ -26,6 +27,14 @@ export const useVolunteerData = ({ userId }: UseVolunteerDataProps) => {
       
       try {
         setLoading(true);
+        
+        // First ensure user is authenticated
+        const session = await supabase.auth.getSession();
+        if (!session.data.session) {
+          setLoading(false);
+          return;
+        }
+        
         const { data, error } = await supabase
           .from('volunteers')
           .select('*')
@@ -75,19 +84,26 @@ export const useVolunteerData = ({ userId }: UseVolunteerDataProps) => {
   const handleFormSuccess = async () => {
     if (!userId) return;
     
-    const { data, error } = await supabase
-      .from('volunteers')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
+    try {
+      // Verify authentication first
+      await requireAuth();
+      
+      const { data, error } = await supabase
+        .from('volunteers')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
 
-    if (error) {
-      console.error('Error fetching volunteer record:', error.message);
-      return;
-    }
-    
-    if (data) {
-      setVolunteer(data as Volunteer);
+      if (error) {
+        console.error('Error fetching volunteer record:', error.message);
+        return;
+      }
+      
+      if (data) {
+        setVolunteer(data as Volunteer);
+      }
+    } catch (error) {
+      console.error('Error in handleFormSuccess:', error);
     }
   };
 

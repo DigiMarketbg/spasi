@@ -9,4 +9,32 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+export const supabase = createClient<Database>(
+  SUPABASE_URL, 
+  SUPABASE_PUBLISHABLE_KEY, 
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      storageKey: 'spasi-auth-token',
+    },
+    global: {
+      headers: {
+        'X-Client-Info': 'spasi-bg-app',
+      },
+    },
+  }
+);
+
+// Helper to check if a user is authenticated
+export const isAuthenticated = async (): Promise<boolean> => {
+  const { data } = await supabase.auth.getSession();
+  return !!data.session;
+};
+
+// Get the current user ID safely
+export const getCurrentUserId = async (): Promise<string | null> => {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.user?.id || null;
+};
+

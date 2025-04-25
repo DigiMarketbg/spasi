@@ -51,6 +51,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         console.log('Auth state changed:', event, currentSession?.user?.id);
+        
+        // Only update state with synchronous operations
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
@@ -76,7 +78,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(currentSession?.user ?? null);
       
       if (currentSession?.user) {
-        fetchProfile(currentSession.user.id);
+        // Defer profile fetch to prevent auth state issues
+        setTimeout(() => {
+          fetchProfile(currentSession.user.id);
+        }, 0);
       }
       
       setLoading(false);
@@ -86,7 +91,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      // Clear local session data first
+      setUser(null);
+      setProfile(null);
+      setSession(null);
+      setIsAdmin(false);
+      setIsModerator(false);
+      
+      // Then sign out from Supabase
+      await supabase.auth.signOut();
+      
+      // Force reload to clear any cached data
+      window.location.href = '/';
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   const value = {
