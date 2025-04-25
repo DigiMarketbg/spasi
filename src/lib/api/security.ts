@@ -91,7 +91,7 @@ export const secureDataAccess = {
     table: TableName, 
     columns: string = '*', 
     query?: Record<string, any>
-  ): Promise<unknown[]> => {
+  ): Promise<any[]> => {
     try {
       await requireAuth();
       let request = supabase.from(table).select(columns);
@@ -112,9 +112,9 @@ export const secureDataAccess = {
     }
   },
   
-  insert: async <T extends Record<string, any>>(
+  insert: async (
     table: TableName, 
-    data: T, 
+    data: Record<string, any>, 
     options: { withUserId?: boolean } = {}
   ) => {
     try {
@@ -138,10 +138,10 @@ export const secureDataAccess = {
     }
   },
   
-  update: async <T extends Record<string, any>>(
+  update: async (
     table: TableName, 
     id: string, 
-    data: Partial<T>
+    data: Record<string, any>
   ) => {
     try {
       await requireAuth();

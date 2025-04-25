@@ -27,8 +27,8 @@ export const fetchApprovedPetPosts = async (): Promise<PetPost[]> => {
 // Fetch all pet posts (for admin) - secure version
 export const fetchAllPetPosts = async (): Promise<PetPost[]> => {
   try {
-    const data = await secureDataAccess.select<PetPost>("pet_posts");
-    return data;
+    const data = await secureDataAccess.select("pet_posts");
+    return data as PetPost[];
   } catch (error) {
     console.error("Error fetching all pet posts:", error);
     throw error;
