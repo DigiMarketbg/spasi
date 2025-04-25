@@ -85,41 +85,47 @@ export const requireAuth = async () => {
   return data.session;
 };
 
+// Fix the type instantiation issue by using more specific types
+interface QueryFilters {
+  [key: string]: any;
+}
+
 // Secure data access function - wraps supabase calls with error handling and auth checks
 export const secureDataAccess = {
-  select: async (
+  select: async <T = any>(
     table: TableName, 
     columns: string = '*', 
-    query?: Record<string, any>
-  ): Promise<any[]> => {
+    query?: QueryFilters
+  ): Promise<T[]> => {
     try {
       await requireAuth();
       let request = supabase.from(table).select(columns);
       
       if (query) {
-        request = Object.entries(query).reduce((req, [key, value]) => {
-          return req.eq(key, value);
-        }, request);
+        // Use Object.entries instead of direct reduction to avoid deep type issues
+        Object.entries(query).forEach(([key, value]) => {
+          request = request.eq(key, value);
+        });
       }
       
       const { data, error } = await request;
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as T[];
     } catch (error) {
       console.error(`Error accessing ${table}:`, error);
       throw error;
     }
   },
   
-  insert: async (
+  insert: async <T = any>(
     table: TableName, 
     data: Record<string, unknown>, 
     options: { withUserId?: boolean } = {}
-  ) => {
+  ): Promise<T> => {
     try {
       const session = await requireAuth();
-      const dataToInsert = { ...data } as any;
+      const dataToInsert = { ...data };
       
       if (options.withUserId) {
         dataToInsert.user_id = session.user.id;
@@ -127,22 +133,22 @@ export const secureDataAccess = {
       
       const { data: insertedData, error } = await supabase
         .from(table)
-        .insert(dataToInsert)
+        .insert(dataToInsert as any)
         .select();
       
       if (error) throw error;
-      return insertedData;
+      return insertedData as unknown as T;
     } catch (error) {
       console.error(`Error inserting into ${table}:`, error);
       throw error;
     }
   },
   
-  update: async (
+  update: async <T = any>(
     table: TableName, 
     id: string, 
     data: Record<string, unknown>
-  ) => {
+  ): Promise<T> => {
     try {
       await requireAuth();
       
@@ -153,14 +159,14 @@ export const secureDataAccess = {
         .select();
       
       if (error) throw error;
-      return updatedData;
+      return updatedData as unknown as T;
     } catch (error) {
       console.error(`Error updating ${table}:`, error);
       throw error;
     }
   },
   
-  delete: async (table: TableName, id: string) => {
+  delete: async (table: TableName, id: string): Promise<boolean> => {
     try {
       await requireAuth();
       
