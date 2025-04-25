@@ -87,8 +87,8 @@ export const requireAuth = async () => {
 
 // Secure data access function - wraps supabase calls with error handling and auth checks
 export const secureDataAccess = {
-  // Using concrete return type and breaking the type recursion
-  select: async <T = any>(table: TableName, columns: string = '*', query?: Record<string, any>): Promise<T[]> => {
+  // Using explicit any[] return type to avoid deep type instantiation issues
+  select: async <T>(table: TableName, columns: string = '*', query?: Record<string, any>): Promise<any[]> => {
     try {
       await requireAuth();
       let request = supabase.from(table).select(columns);
@@ -102,14 +102,14 @@ export const secureDataAccess = {
       const { data, error } = await request;
       
       if (error) throw error;
-      return (data || []) as T[];
+      return data || [];
     } catch (error) {
       console.error(`Error accessing ${table}:`, error);
       throw error;
     }
   },
   
-  // Fixed the type handling for insert operations
+  // Using type assertion for insert operations
   insert: async <T extends Record<string, any>>(
     table: TableName, 
     data: T, 
@@ -117,7 +117,7 @@ export const secureDataAccess = {
   ) => {
     try {
       const session = await requireAuth();
-      let dataToInsert = { ...data } as any;
+      let dataToInsert: any = { ...data };
       
       if (options.withUserId) {
         dataToInsert.user_id = session.user.id;
@@ -125,7 +125,7 @@ export const secureDataAccess = {
       
       const { data: insertedData, error } = await supabase
         .from(table)
-        .insert(dataToInsert)
+        .insert(dataToInsert as any)
         .select();
       
       if (error) throw error;
@@ -146,7 +146,7 @@ export const secureDataAccess = {
       
       const { data: updatedData, error } = await supabase
         .from(table)
-        .update(data)
+        .update(data as any)
         .eq('id', id)
         .select();
       
