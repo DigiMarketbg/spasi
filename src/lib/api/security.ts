@@ -114,12 +114,12 @@ export const secureDataAccess = {
   
   insert: async (
     table: TableName, 
-    data: Record<string, any>, 
+    data: Record<string, unknown>, 
     options: { withUserId?: boolean } = {}
   ) => {
     try {
       const session = await requireAuth();
-      const dataToInsert = { ...data };
+      const dataToInsert = { ...data } as any;
       
       if (options.withUserId) {
         dataToInsert.user_id = session.user.id;
@@ -141,14 +141,14 @@ export const secureDataAccess = {
   update: async (
     table: TableName, 
     id: string, 
-    data: Record<string, any>
+    data: Record<string, unknown>
   ) => {
     try {
       await requireAuth();
       
       const { data: updatedData, error } = await supabase
         .from(table)
-        .update(data)
+        .update(data as any)
         .eq('id', id)
         .select();
       

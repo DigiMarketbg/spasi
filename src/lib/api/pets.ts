@@ -80,23 +80,5 @@ export const approvePetPostById = async (id: string): Promise<void> => {
   }
 };
 
-// Helper function to check if user is admin - imported from our new security file
-async function isCurrentUserAdmin(): Promise<boolean> {
-  try {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session?.user) return false;
-    
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('id', data.session.user.id)
-      .single();
-    
-    if (error || !profile) return false;
-    
-    return profile.is_admin === true;
-  } catch (error) {
-    console.error("Error checking admin status:", error);
-    return false;
-  }
-}
+// Helper function to check if user is admin - imported from our security file
+import { isCurrentUserAdmin } from "./security";
