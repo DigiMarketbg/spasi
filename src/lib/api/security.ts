@@ -1,5 +1,9 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+// Table names type for type safety
+type TableName = keyof Database['public']['Tables'];
 
 // Check if the current user has admin privileges
 export const isCurrentUserAdmin = async (): Promise<boolean> => {
@@ -45,7 +49,7 @@ export const isCurrentUserModerator = async (): Promise<boolean> => {
 
 // Check if a specific record belongs to the current user
 export const isRecordOwner = async (
-  table: string, 
+  table: TableName, 
   recordId: string,
   userIdField: string = 'user_id'
 ): Promise<boolean> => {
@@ -81,22 +85,9 @@ export const requireAuth = async () => {
   return data.session;
 };
 
-// Add userId to any data being inserted
-export const withUserId = <T extends Record<string, any>>(data: T): T & { user_id: string } => {
-  const userId = supabase.auth.getUser()
-    .then(({ data }) => data.user?.id)
-    .catch(() => null);
-  
-  if (!userId) {
-    throw new Error("User ID not available. User might not be authenticated.");
-  }
-  
-  return { ...data, user_id: userId };
-};
-
 // Secure data access function - wraps supabase calls with error handling and auth checks
 export const secureDataAccess = {
-  select: async <T>(table: string, columns: string = '*', query?: any) => {
+  select: async <T>(table: TableName, columns: string = '*', query?: Record<string, any>) => {
     try {
       await requireAuth();
       let request = supabase.from(table).select(columns);
@@ -117,13 +108,17 @@ export const secureDataAccess = {
     }
   },
   
-  insert: async <T extends Record<string, any>>(table: string, data: T, options: { withUserId?: boolean } = {}) => {
+  insert: async <T extends Record<string, any>>(
+    table: TableName, 
+    data: T, 
+    options: { withUserId?: boolean } = {}
+  ) => {
     try {
       const session = await requireAuth();
-      let dataToInsert = data;
+      let dataToInsert: Record<string, any> = { ...data };
       
       if (options.withUserId) {
-        dataToInsert = { ...dataToInsert, user_id: session.user.id };
+        dataToInsert.user_id = session.user.id;
       }
       
       const { data: insertedData, error } = await supabase
@@ -139,7 +134,11 @@ export const secureDataAccess = {
     }
   },
   
-  update: async <T extends Record<string, any>>(table: string, id: string, data: Partial<T>) => {
+  update: async <T extends Record<string, any>>(
+    table: TableName, 
+    id: string, 
+    data: Partial<T>
+  ) => {
     try {
       await requireAuth();
       
@@ -157,7 +156,7 @@ export const secureDataAccess = {
     }
   },
   
-  delete: async (table: string, id: string) => {
+  delete: async (table: TableName, id: string) => {
     try {
       await requireAuth();
       

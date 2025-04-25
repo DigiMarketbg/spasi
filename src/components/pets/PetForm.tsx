@@ -74,7 +74,7 @@ const PetForm: React.FC<PetFormProps> = ({ onSuccess }) => {
         `Телефон за връзка: ${data.contactPhone}\n\n` +
         data.description;
 
-      await addPetPost(user.id, data.title, fullDescription, data.imageUrl?.trim() || null);
+      await addPetPost(data.title, fullDescription, data.imageUrl?.trim() || null);
 
       toast({
         title: "Успешно изпратено",
