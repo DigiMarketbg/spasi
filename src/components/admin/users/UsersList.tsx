@@ -19,6 +19,7 @@ interface UserData {
   created_at: string | null;
   is_admin: boolean | null;
   role: "user" | "moderator" | "admin" | null;
+  phone_number: string | null; // Add phone number
 }
 
 interface UsersListProps {
@@ -34,6 +35,7 @@ const UsersList: React.FC<UsersListProps> = ({ users, onRefresh, formatDate }) =
         <TableRow>
           <TableHead>Име</TableHead>
           <TableHead>Имейл</TableHead>
+          <TableHead>Телефон</TableHead>
           <TableHead>Регистриран на</TableHead>
           <TableHead>Роля</TableHead>
           <TableHead>Действия</TableHead>
@@ -44,6 +46,7 @@ const UsersList: React.FC<UsersListProps> = ({ users, onRefresh, formatDate }) =
           <TableRow key={user.id}>
             <TableCell className="font-medium">{user.full_name || 'Неизвестно'}</TableCell>
             <TableCell>{user.email || 'Неизвестно'}</TableCell>
+            <TableCell>{user.phone_number || 'Не е посочен'}</TableCell>
             <TableCell>{formatDate(user.created_at)}</TableCell>
             <TableCell>
               {user.is_admin ? (

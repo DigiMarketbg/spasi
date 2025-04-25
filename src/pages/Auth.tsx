@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,12 +10,16 @@ import { toast } from '@/hooks/use-toast';
 import Logo from '@/components/Logo';
 import AuthBackground from '@/components/AuthBackground';
 
+// Bulgarian phone number regex
+const bulgarianPhoneRegex = /^(\+359|0)?(87|88|89|98|99|42|43|48|49|35|37|39|52|53|54|55|56|57|58|59)\d{7}$/;
+
 const Auth = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [resetPassword, setResetPassword] = useState(false);
 
   useEffect(() => {
@@ -48,7 +51,17 @@ const Auth = () => {
     if (!email || !password || !fullName) {
       toast({
         title: "Грешка",
-        description: "Моля, попълнете всички полета",
+        description: "Моля, попълнете всички задължителни полета",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate phone number if provided
+    if (phoneNumber && !bulgarianPhoneRegex.test(phoneNumber)) {
+      toast({
+        title: "Невалиден телефонен номер",
+        description: "Моля, въведете валиден български телефонен номер",
         variant: "destructive",
       });
       return;
@@ -63,6 +76,7 @@ const Auth = () => {
         options: {
           data: {
             full_name: fullName,
+            phone_number: phoneNumber || null,
           },
         },
       });
@@ -314,19 +328,34 @@ const Auth = () => {
                         className="bg-background/50"
                       />
                     </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-spasi-green hover:bg-spasi-green/90"
-                      disabled={loading}
-                    >
-                      {loading ? "Регистриране..." : "Регистрирай се"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        )}
+                    
+                <div className="space-y-2">
+                  <Label htmlFor="register-phone">Телефонен номер (по желание)</Label>
+                  <Input
+                    id="register-phone"
+                    type="tel"
+                    placeholder="+359887123456"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="bg-background/50"
+                    pattern="^(\+359|0)?(87|88|89|98|99|42|43|48|49|35|37|39|52|53|54|55|56|57|58|59)\d{7}$"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Форматът трябва да бъде +359887123456 или 0887123456
+                  </p>
+                </div>
+
+                <Button 
+                  type="submit" 
+                  className="w-full bg-spasi-green hover:bg-spasi-green/90"
+                  disabled={loading}
+                >
+                  {loading ? "Регистриране..." : "Регистрирай се"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </div>
     </div>
   );

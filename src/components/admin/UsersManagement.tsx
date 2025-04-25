@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -21,6 +20,7 @@ interface UserData {
   created_at: string | null;
   is_admin: boolean | null;
   role: "user" | "moderator" | "admin" | null;
+  phone_number: string | null; // Add phone number to the interface
 }
 
 interface UsersManagementProps {

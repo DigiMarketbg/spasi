@@ -10,11 +10,13 @@ import {
 interface UserProfileCardProps {
   email: string | undefined;
   fullName: string | null | undefined;
+  phoneNumber?: string | null;
 }
 
 export const UserProfileCard: React.FC<UserProfileCardProps> = ({ 
   email, 
-  fullName 
+  fullName,
+  phoneNumber 
 }) => {
   return (
     <Card>
@@ -25,6 +27,7 @@ export const UserProfileCard: React.FC<UserProfileCardProps> = ({
         <div className="space-y-2">
           <p><strong>Имейл:</strong> {email}</p>
           {fullName && <p><strong>Име:</strong> {fullName}</p>}
+          {phoneNumber && <p><strong>Телефон:</strong> {phoneNumber}</p>}
         </div>
       </CardContent>
     </Card>
