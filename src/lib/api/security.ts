@@ -85,9 +85,9 @@ export const requireAuth = async () => {
   return data.session;
 };
 
-// Fix the type instantiation issue by using more specific types
+// Simple non-recursive type definition for query filters
 interface QueryFilters {
-  [key: string]: any;
+  [key: string]: string | number | boolean | null;
 }
 
 // Secure data access function - wraps supabase calls with error handling and auth checks
@@ -101,8 +101,8 @@ export const secureDataAccess = {
       await requireAuth();
       let request = supabase.from(table).select(columns);
       
+      // Apply filters if provided
       if (query) {
-        // Use Object.entries instead of direct reduction to avoid deep type issues
         Object.entries(query).forEach(([key, value]) => {
           request = request.eq(key, value);
         });
