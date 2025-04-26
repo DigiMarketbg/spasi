@@ -1,6 +1,6 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
 
 // Table names type for type safety
 type TableName = keyof Database['public']['Tables'];
@@ -86,8 +86,9 @@ export const requireAuth = async () => {
 };
 
 // Simple non-recursive type definition for query filters
+type SimpleValue = string | number | boolean | null;
 interface QueryFilters {
-  [key: string]: string | number | boolean | null;
+  [key: string]: SimpleValue;
 }
 
 // Secure data access function - wraps supabase calls with error handling and auth checks
@@ -99,16 +100,20 @@ export const secureDataAccess = {
   ): Promise<T[]> => {
     try {
       await requireAuth();
-      let request = supabase.from(table).select(columns);
+      
+      // Create base query
+      let queryBuilder = supabase
+        .from(table)
+        .select(columns) as PostgrestFilterBuilder<Database['public']['Tables'][TableName], any, any>;
       
       // Apply filters if provided
       if (query) {
         Object.entries(query).forEach(([key, value]) => {
-          request = request.eq(key, value);
+          queryBuilder = queryBuilder.eq(key, value);
         });
       }
       
-      const { data, error } = await request;
+      const { data, error } = await queryBuilder;
       
       if (error) throw error;
       return (data || []) as T[];
