@@ -63,7 +63,6 @@ const AdminTabs: React.FC<AdminTabsProps> = ({
       <div className="mt-6">
         {/* Signals Tab */}
         <SignalsTabContent 
-          value="signals" 
           signals={signals} 
           loadingSignals={loadingSignals}
           onRefresh={refresh?.signals}
@@ -71,7 +70,6 @@ const AdminTabs: React.FC<AdminTabsProps> = ({
         
         {/* Users Tab */}
         <UsersTabContent 
-          value="users" 
           users={users} 
           loadingUsers={loadingUsers}
           onRefresh={refresh?.users}
@@ -79,7 +77,6 @@ const AdminTabs: React.FC<AdminTabsProps> = ({
         
         {/* Partners Tab */}
         <PartnersTabContent 
-          value="partners" 
           partnerRequests={partnerRequests}
           loadingPartnerRequests={loadingPartnerRequests}
           onRefresh={refresh?.partnerRequests}
@@ -87,7 +84,6 @@ const AdminTabs: React.FC<AdminTabsProps> = ({
         
         {/* Messages Tab */}
         <MessagesTabContent 
-          value="messages"
           contactMessages={contactMessages}
           loadingMessages={loadingMessages}
           onRefresh={refresh?.contactMessages}
@@ -95,18 +91,14 @@ const AdminTabs: React.FC<AdminTabsProps> = ({
         
         {/* Dangerous Areas Tab */}
         <DangerousAreasTabContent 
-          value="dangerous-areas"
           onRefresh={refresh?.dangerousAreas}
         />
         
         {/* Good Deeds Tab */}
-        <GoodDeedsTabContent 
-          value="good-deeds"
-        />
+        <GoodDeedsTabContent />
         
         {/* Pets Tab */}
         <PetsTabContent 
-          value="pets"
           onRefresh={refresh?.signals}
         />
         
