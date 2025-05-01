@@ -21,6 +21,10 @@ import Moderator from './pages/Moderator';
 import Volunteers from './pages/Volunteers';
 import GoodDeeds from './pages/GoodDeeds';
 import Witnesses from './pages/Witnesses';
+import Signals from './pages/Signals';
+import Pets from './pages/Pets';
+import Info from './pages/Info';
+import SubmitSignal from './pages/SubmitSignal';
 
 // Import AuthProvider and QueryClient
 import { AuthProvider } from './components/AuthProvider';
@@ -61,6 +65,10 @@ function App() {
                 <Route path="/volunteers" element={<Volunteers />} />
                 <Route path="/good-deeds" element={<GoodDeeds />} />
                 <Route path="/witnesses" element={<Witnesses />} />
+                <Route path="/signals" element={<Signals />} />
+                <Route path="/pets" element={<Pets />} />
+                <Route path="/info" element={<Info />} />
+                <Route path="/submit-signal" element={<SubmitSignal />} />
                 
                 {/* 404 Route */}
                 <Route path="*" element={<NotFound />} />
