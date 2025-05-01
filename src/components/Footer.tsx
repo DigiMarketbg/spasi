@@ -5,11 +5,12 @@ import { useTheme } from './ThemeProvider';
 import { Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-import PrivacyPolicyLink from './gdpr/PrivacyPolicyLink';
+import { useGDPR } from './gdpr/GDPRProvider';
 
 const Footer = () => {
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
+  const { openConsentDialog } = useGDPR();
   
   const footerLinks = [
     { name: 'Подай сигнал', href: '/submit-signal' },
@@ -55,7 +56,13 @@ const Footer = () => {
         
         <div className="text-center text-sm text-muted-foreground mt-8">
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-2">
-            <PrivacyPolicyLink />
+            <button 
+              onClick={openConsentDialog}
+              className="flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <span className="h-4 w-4 mr-1" />
+              Политика за поверителност
+            </button>
           </div>
           <p>© 2025 Spasi.bg. Всички права запазени.</p>
         </div>

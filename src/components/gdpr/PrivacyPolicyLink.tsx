@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { useGDPRConsent } from './GDPRConsentDialog';
+import { useGDPR } from './GDPRProvider';
 import { Info } from 'lucide-react';
 
 const PrivacyPolicyLink: React.FC = () => {
-  const { openConsentDialog } = useGDPRConsent();
+  const { openConsentDialog } = useGDPR();
   
   return (
     <button 

@@ -29,6 +29,7 @@ import SubmitSignal from './pages/SubmitSignal';
 // Import AuthProvider and QueryClient
 import { AuthProvider } from './components/AuthProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GDPRProvider } from './components/gdpr/GDPRProvider';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -48,34 +49,36 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ThemeProvider>
-          <Router>
-            <ScrollToTop />
-            <div className="App">
-              <Routes>
-                {/* Home route */}
-                <Route path="/" element={<Index />} />
-                
-                {/* Admin Routes */}
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/witnesses-management" element={<WitnessesManagementPage />} />
-                <Route path="/moderator" element={<Moderator />} />
-                
-                {/* Content Routes */}
-                <Route path="/videos" element={<Videos />} />
-                <Route path="/volunteers" element={<Volunteers />} />
-                <Route path="/good-deeds" element={<GoodDeeds />} />
-                <Route path="/witnesses" element={<Witnesses />} />
-                <Route path="/signals" element={<Signals />} />
-                <Route path="/pets" element={<Pets />} />
-                <Route path="/info" element={<Info />} />
-                <Route path="/submit-signal" element={<SubmitSignal />} />
-                
-                {/* 404 Route */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
-            <Toaster />
-          </Router>
+          <GDPRProvider>
+            <Router>
+              <ScrollToTop />
+              <div className="App">
+                <Routes>
+                  {/* Home route */}
+                  <Route path="/" element={<Index />} />
+                  
+                  {/* Admin Routes */}
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/witnesses-management" element={<WitnessesManagementPage />} />
+                  <Route path="/moderator" element={<Moderator />} />
+                  
+                  {/* Content Routes */}
+                  <Route path="/videos" element={<Videos />} />
+                  <Route path="/volunteers" element={<Volunteers />} />
+                  <Route path="/good-deeds" element={<GoodDeeds />} />
+                  <Route path="/witnesses" element={<Witnesses />} />
+                  <Route path="/signals" element={<Signals />} />
+                  <Route path="/pets" element={<Pets />} />
+                  <Route path="/info" element={<Info />} />
+                  <Route path="/submit-signal" element={<SubmitSignal />} />
+                  
+                  {/* 404 Route */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
+              <Toaster />
+            </Router>
+          </GDPRProvider>
         </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
