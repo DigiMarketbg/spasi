@@ -29,12 +29,18 @@ const WitnessesManagement: React.FC<WitnessesManagementProps> = ({ onRefresh }) 
     queryFn: fetchAllWitnesses
   });
   
+  // Console log for debugging
+  useEffect(() => {
+    console.log("Witnesses data:", witnesses);
+  }, [witnesses]);
+  
   const handleRefresh = async () => {
     try {
       await refetch();
       if (onRefresh) onRefresh();
       toast.success("Обявите са обновени успешно");
     } catch (error) {
+      console.error("Error refreshing witnesses:", error);
       toast.error("Грешка при обновяване на обявите");
     }
   };
@@ -52,6 +58,7 @@ const WitnessesManagement: React.FC<WitnessesManagementProps> = ({ onRefresh }) 
       refetch();
       if (onRefresh) onRefresh();
     } catch (error) {
+      console.error("Error approving witness:", error);
       toast.error("Грешка при одобряване на обявата");
     } finally {
       setProcessingId(null);
@@ -66,6 +73,7 @@ const WitnessesManagement: React.FC<WitnessesManagementProps> = ({ onRefresh }) 
       refetch();
       if (onRefresh) onRefresh();
     } catch (error) {
+      console.error("Error rejecting witness:", error);
       toast.error("Грешка при отхвърляне на обявата");
     } finally {
       setProcessingId(null);
@@ -80,6 +88,7 @@ const WitnessesManagement: React.FC<WitnessesManagementProps> = ({ onRefresh }) 
   });
   
   if (error) {
+    console.error("Error loading witnesses:", error);
     return (
       <div className="text-center py-16 bg-destructive/10 rounded-lg border border-destructive/20">
         <AlertCircle className="h-10 w-10 text-destructive mx-auto mb-4" />
