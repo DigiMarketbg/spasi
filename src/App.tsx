@@ -14,12 +14,13 @@ import './App.css';
 // Page imports
 import Admin from './pages/Admin';
 import Index from './pages/Index';
-import WitnessesPage from './pages/WitnessesManagement';
+import WitnessesManagementPage from './pages/WitnessesManagement';
 import NotFound from './pages/NotFound';
 import Videos from './pages/Videos';
 import Moderator from './pages/Moderator';
 import Volunteers from './pages/Volunteers';
 import GoodDeeds from './pages/GoodDeeds';
+import Witnesses from './pages/Witnesses';
 
 // Import AuthProvider and QueryClient
 import { AuthProvider } from './components/AuthProvider';
@@ -52,14 +53,14 @@ function App() {
                 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<Admin />} />
-                <Route path="/witnesses-management" element={<WitnessesPage />} />
+                <Route path="/witnesses-management" element={<WitnessesManagementPage />} />
                 <Route path="/moderator" element={<Moderator />} />
                 
                 {/* Content Routes */}
                 <Route path="/videos" element={<Videos />} />
                 <Route path="/volunteers" element={<Volunteers />} />
                 <Route path="/good-deeds" element={<GoodDeeds />} />
-                <Route path="/witnesses" element={<WitnessesPage />} />
+                <Route path="/witnesses" element={<Witnesses />} />
                 
                 {/* 404 Route */}
                 <Route path="*" element={<NotFound />} />
