@@ -1,99 +1,126 @@
 
 import React from 'react';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { Tabs } from '@/components/ui/tabs';
 import AdminTabsList from './components/AdminTabsList';
 import SignalsTabContent from './tab-contents/SignalsTabContent';
 import UsersTabContent from './tab-contents/UsersTabContent';
 import PartnersTabContent from './tab-contents/PartnersTabContent';
-import MessagesTabContent from './tab-contents/MessagesTabContent';
 import DangerousAreasTabContent from './tab-contents/DangerousAreasTabContent';
+import MessagesTabContent from './tab-contents/MessagesTabContent';
 import NotificationsTabContent from './tab-contents/NotificationsTabContent';
-import GoodDeedsTabContent from './tab-contents/GoodDeedsTabContent';
 import PetsTabContent from './components/PetsTabContent';
+import GoodDeedsTabContent from './tab-contents/GoodDeedsTabContent';
+import WitnessesTabContent from './components/WitnessesTabContent';
 
-// Add new tab in the AdminTabs component and show badge with pending count
+interface AdminTabsProps {
+  signals?: any[];
+  loadingSignals?: boolean;
+  users?: any[];
+  loadingUsers?: boolean;
+  partnerRequests?: any[];
+  loadingPartnerRequests?: boolean;
+  contactMessages?: any[];
+  loadingMessages?: boolean;
+  pendingGoodDeedsCount?: number;
+  witnesses?: any[];
+  loadingWitnesses?: boolean;
+  refresh?: {
+    signals: () => Promise<void>;
+    users: () => Promise<void>;
+    partnerRequests: () => Promise<void>;
+    contactMessages: () => Promise<void>;
+    dangerousAreas: () => Promise<void>;
+    witnesses: () => Promise<void>;
+  };
+  pendingRequestsCount?: number;
+  unreadMessagesCount?: number;
+}
 
-const AdminTabs = ({
-  signals,
-  users,
-  partnerRequests,
-  contactMessages,
-  loadingSignals,
-  loadingUsers,
-  loadingPartnerRequests,
-  loadingContactMessages,
-  loadingDangerousAreas,
-  unreadCount,
-  pendingRequestsCount,
-  pendingDangerousAreasCount,
+const AdminTabs: React.FC<AdminTabsProps> = ({
+  signals = [],
+  loadingSignals = false,
+  users = [],
+  loadingUsers = false,
+  partnerRequests = [],
+  loadingPartnerRequests = false,
+  contactMessages = [],
+  loadingMessages = false,
+  witnesses = [],
+  loadingWitnesses = false,
+  refresh,
+  pendingRequestsCount = 0,
+  unreadMessagesCount = 0,
   pendingGoodDeedsCount = 0,
-  onRefreshSignals,
-  onRefreshUsers,
-  onRefreshPartnerRequests,
-  onRefreshContactMessages,
-}: any) => {
+}) => {
   return (
-    <Tabs defaultValue="signals">
-      <AdminTabsList
-        unreadCount={unreadCount}
+    <Tabs defaultValue="signals" className="w-full">
+      <AdminTabsList 
         pendingRequestsCount={pendingRequestsCount}
-        pendingDangerousAreasCount={pendingDangerousAreasCount}
+        unreadMessagesCount={unreadMessagesCount}
         pendingGoodDeedsCount={pendingGoodDeedsCount}
       />
       
-      <TabsContent value="signals" className="mt-6">
+      <div className="mt-6">
+        {/* Signals Tab */}
         <SignalsTabContent 
+          value="signals" 
           signals={signals} 
-          loadingSignals={loadingSignals} 
-          onRefresh={onRefreshSignals} 
+          loadingSignals={loadingSignals}
+          onRefresh={refresh?.signals}
         />
-      </TabsContent>
-      
-      <TabsContent value="users" className="mt-6">
+        
+        {/* Users Tab */}
         <UsersTabContent 
+          value="users" 
           users={users} 
-          loadingUsers={loadingUsers} 
-          onRefresh={onRefreshUsers} 
+          loadingUsers={loadingUsers}
+          onRefresh={refresh?.users}
         />
-      </TabsContent>
-      
-      <TabsContent value="partners" className="mt-6">
+        
+        {/* Partners Tab */}
         <PartnersTabContent 
-          requests={partnerRequests} 
-          loadingRequests={loadingPartnerRequests} 
-          onRefresh={onRefreshPartnerRequests}
-          pendingRequestsCount={pendingRequestsCount}
+          value="partners" 
+          partnerRequests={partnerRequests}
+          loadingPartnerRequests={loadingPartnerRequests}
+          onRefresh={refresh?.partnerRequests}
         />
-      </TabsContent>
-      
-      <TabsContent value="messages" className="mt-6">
+        
+        {/* Messages Tab */}
         <MessagesTabContent 
-          messages={contactMessages} 
-          loadingMessages={loadingContactMessages} 
-          onRefresh={onRefreshContactMessages}
-          unreadCount={unreadCount}
+          value="messages"
+          contactMessages={contactMessages}
+          loadingMessages={loadingMessages}
+          onRefresh={refresh?.contactMessages}
         />
-      </TabsContent>
-      
-      <TabsContent value="dangerous-areas" className="mt-6">
+        
+        {/* Dangerous Areas Tab */}
         <DangerousAreasTabContent 
-          onRefresh={onRefreshSignals} 
-          loading={loadingDangerousAreas}
-          pendingCount={pendingDangerousAreasCount}
+          value="dangerous-areas"
+          onRefresh={refresh?.dangerousAreas}
         />
-      </TabsContent>
-
-      <TabsContent value="good-deeds" className="mt-6">
-        <GoodDeedsTabContent />
-      </TabsContent>
-
-      <TabsContent value="pets" className="mt-6">
-        <PetsTabContent />
-      </TabsContent>
-
-      <TabsContent value="notifications" className="mt-6">
-        <NotificationsTabContent />
-      </TabsContent>
+        
+        {/* Good Deeds Tab */}
+        <GoodDeedsTabContent 
+          value="good-deeds"
+        />
+        
+        {/* Pets Tab */}
+        <PetsTabContent 
+          value="pets"
+          onRefresh={refresh?.signals}
+        />
+        
+        {/* Witnesses Tab */}
+        <WitnessesTabContent 
+          value="witnesses"
+          onRefresh={refresh?.witnesses}
+        />
+        
+        {/* Notifications Tab */}
+        <NotificationsTabContent 
+          value="notifications"
+        />
+      </div>
     </Tabs>
   );
 };
