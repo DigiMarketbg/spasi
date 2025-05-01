@@ -1,12 +1,10 @@
 
-// Changed PetsTabContent to use supabase update for approval via lib/api/pets.ts
-
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { fetchAllPetPosts, PetPost, approvePetPostById } from "@/lib/api/pets";
+import { fetchAllPetPosts, PetPost, approvePetPostById, deletePetPostById } from "@/lib/api/pets";
 
 interface PetsTabContentProps {
   onRefresh?: () => void;
@@ -42,25 +40,20 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
     }
   };
 
-  const rejectPetPost = async (id: string): Promise<void> => {
-    const res = await fetch(`/api/admin/pet-posts/${id}`, { method: "DELETE" });
-    if (!res.ok) throw new Error("Неуспешно отхвърляне");
-  };
-
   const rejectPet = async (id: string) => {
     setProcessingId(id);
     try {
-      await rejectPetPost(id);
+      await deletePetPostById(id);
       toast({
         title: "Успешно",
-        description: "Домашният любимец е отхвърлен.",
+        description: "Домашният любимец е изтрит.",
       });
       await refetch();
       onRefresh?.();
     } catch (e: any) {
       toast({
         title: "Грешка",
-        description: e.message || "Възникна грешка при отхвърляне.",
+        description: e.message || "Възникна грешка при изтриване.",
         variant: "destructive",
       });
     } finally {
@@ -133,4 +126,3 @@ const PetsTabContent: React.FC<PetsTabContentProps> = ({ onRefresh }) => {
 };
 
 export default PetsTabContent;
-

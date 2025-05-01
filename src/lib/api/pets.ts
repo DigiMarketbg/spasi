@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { secureDataAccess } from "./security";
+import { secureDataAccess, isCurrentUserAdmin } from "./security";
 
 export interface PetPost {
   id: string;
@@ -76,6 +76,27 @@ export const approvePetPostById = async (id: string): Promise<void> => {
     });
   } catch (error) {
     console.error("Error approving pet post:", error);
+    throw error;
+  }
+};
+
+// Delete a pet post by id - secure admin function
+export const deletePetPostById = async (id: string): Promise<void> => {
+  if (!id) throw new Error("ID is required");
+
+  try {
+    // Check if user is admin first
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      throw new Error("Only admins can delete pet posts");
+    }
+    
+    const success = await secureDataAccess.delete("pet_posts", id);
+    if (!success) {
+      throw new Error("Failed to delete pet post");
+    }
+  } catch (error) {
+    console.error("Error deleting pet post:", error);
     throw error;
   }
 };

@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
@@ -102,42 +101,33 @@ export const secureDataAccess = {
     try {
       await requireAuth();
       
-      // Build the query with filters directly
-      let queryResult;
+      // Start with base query
+      const baseQuery = supabase
+        .from(table)
+        .select(columns);
       
-      if (!query) {
-        // No filters, just run a simple select
-        queryResult = await supabase
-          .from(table)
-          .select(columns);
+      // Apply filters if provided
+      let queryResult;
+      if (!query || Object.keys(query).length === 0) {
+        // No filters, execute the base query directly
+        queryResult = await baseQuery;
       } else {
-        // With filters, build the query step by step 
-        // without reassigning the query builder variable
-        const baseQuery = supabase
-          .from(table)
-          .select(columns);
-          
-        // Create an array of filter conditions
-        const filters = Object.entries(query);
+        // Apply filters one by one using array to avoid deep type nesting
+        const filterEntries = Object.entries(query);
         
-        if (filters.length === 0) {
-          // No filters, execute the base query
-          queryResult = await baseQuery;
-        } else {
-          // Apply first filter
-          const [firstKey, firstValue] = filters[0];
-          let filteredQuery = baseQuery.eq(firstKey, firstValue);
-          
-          // Apply any remaining filters sequentially
-          for (let i = 1; i < filters.length; i++) {
-            const [key, value] = filters[i];
-            // Use explicit any type to avoid deep inference issues
-            filteredQuery = (filteredQuery as any).eq(key, value);
-          }
-          
-          // Execute the query
-          queryResult = await filteredQuery;
+        // Get first filter
+        const [firstKey, firstValue] = filterEntries[0];
+        // Start with first filter applied
+        let builder = baseQuery.eq(firstKey, firstValue);
+        
+        // Apply remaining filters with type assertion to avoid deep nesting
+        for (let i = 1; i < filterEntries.length; i++) {
+          const [key, value] = filterEntries[i];
+          // Use type assertion to avoid the TypeScript type inference issue
+          builder = (builder as any).eq(key, value);
         }
+        
+        queryResult = await builder;
       }
       
       const { data, error } = queryResult;
