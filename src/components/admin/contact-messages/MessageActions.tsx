@@ -13,35 +13,23 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useMessages } from './MessagesContext';
+import { ContactMessageData } from '../hooks/useContactMessages';
 
 interface MessageActionsProps {
-  message: any;
-  onView: (message: any) => void;
-  onMarkAsRead: (id: string) => void;
-  onDelete: (id: string) => void;
-  processingId: string | null;
+  message: ContactMessageData;
 }
 
-const MessageActions = ({ 
-  message, 
-  onView, 
-  onMarkAsRead, 
-  onDelete, 
-  processingId 
-}: MessageActionsProps) => {
+const MessageActions = ({ message }: MessageActionsProps) => {
   const [open, setOpen] = useState(false);
-
-  const handleDelete = () => {
-    onDelete(message.id);
-    setOpen(false);
-  };
+  const { handleViewDetails, handleMarkAsRead, handleDelete, processingId } = useMessages();
 
   return (
     <div className="flex justify-end gap-2">
       <Button 
         variant="ghost" 
         size="sm"
-        onClick={() => onView(message)}
+        onClick={() => handleViewDetails(message)}
       >
         <Eye className="h-4 w-4" />
       </Button>
@@ -51,7 +39,7 @@ const MessageActions = ({
           variant="outline"
           size="sm"
           className="text-blue-600"
-          onClick={() => onMarkAsRead(message.id)}
+          onClick={() => handleMarkAsRead(message.id)}
           disabled={processingId === message.id}
         >
           {processingId === message.id ? (
@@ -86,7 +74,13 @@ const MessageActions = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Отказ</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+            <AlertDialogAction 
+              onClick={() => {
+                handleDelete(message.id);
+                setOpen(false);
+              }} 
+              className="bg-red-600 hover:bg-red-700"
+            >
               Изтрий
             </AlertDialogAction>
           </AlertDialogFooter>
