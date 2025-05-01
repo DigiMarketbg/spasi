@@ -4,17 +4,17 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import PartnerRequestsManagement from '@/components/admin/PartnerRequestsManagement';
 
 interface PartnersTabContentProps {
-  partnerRequests?: any[];
-  loadingPartnerRequests?: boolean;
-  onRefresh?: () => void;
-  pendingRequestsCount?: number;
+  requests: any[];
+  loadingRequests: boolean;
+  onRefresh: () => void;
+  pendingRequestsCount: number;
 }
 
 const PartnersTabContent = ({ 
-  partnerRequests = [], 
-  loadingPartnerRequests = false, 
-  onRefresh = () => {}, 
-  pendingRequestsCount = 0
+  requests, 
+  loadingRequests, 
+  onRefresh,
+  pendingRequestsCount
 }: PartnersTabContentProps) => {
   return (
     <Card>
@@ -26,8 +26,8 @@ const PartnersTabContent = ({
       </CardHeader>
       <CardContent>
         <PartnerRequestsManagement 
-          requests={partnerRequests} 
-          loadingRequests={loadingPartnerRequests} 
+          requests={requests} 
+          loadingRequests={loadingRequests} 
           onRefresh={onRefresh} 
         />
       </CardContent>

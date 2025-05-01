@@ -47,14 +47,7 @@ const AdminTabs: React.FC<AdminTabsProps> = ({
   loadingMessages = false,
   witnesses = [],
   loadingWitnesses = false,
-  refresh = {
-    signals: async () => {},
-    users: async () => {},
-    partnerRequests: async () => {},
-    contactMessages: async () => {},
-    dangerousAreas: async () => {},
-    witnesses: async () => {},
-  },
+  refresh,
   pendingRequestsCount = 0,
   unreadMessagesCount = 0,
   pendingGoodDeedsCount = 0,
@@ -70,56 +63,63 @@ const AdminTabs: React.FC<AdminTabsProps> = ({
       <div className="mt-6">
         {/* Signals Tab */}
         <SignalsTabContent 
+          value="signals" 
           signals={signals} 
           loadingSignals={loadingSignals}
-          onRefresh={refresh.signals}
+          onRefresh={refresh?.signals}
         />
         
         {/* Users Tab */}
         <UsersTabContent 
+          value="users" 
           users={users} 
           loadingUsers={loadingUsers}
-          onRefresh={refresh.users}
+          onRefresh={refresh?.users}
         />
         
         {/* Partners Tab */}
         <PartnersTabContent 
+          value="partners" 
           partnerRequests={partnerRequests}
           loadingPartnerRequests={loadingPartnerRequests}
-          onRefresh={refresh.partnerRequests}
-          pendingRequestsCount={pendingRequestsCount}
+          onRefresh={refresh?.partnerRequests}
         />
         
         {/* Messages Tab */}
         <MessagesTabContent 
+          value="messages"
           contactMessages={contactMessages}
           loadingMessages={loadingMessages}
-          onRefresh={refresh.contactMessages}
-          unreadMessagesCount={unreadMessagesCount}
+          onRefresh={refresh?.contactMessages}
         />
         
         {/* Dangerous Areas Tab */}
         <DangerousAreasTabContent 
-          onRefresh={refresh.dangerousAreas}
+          value="dangerous-areas"
+          onRefresh={refresh?.dangerousAreas}
         />
         
         {/* Good Deeds Tab */}
-        <GoodDeedsTabContent />
+        <GoodDeedsTabContent 
+          value="good-deeds"
+        />
         
         {/* Pets Tab */}
         <PetsTabContent 
-          onRefresh={refresh.signals}
+          value="pets"
+          onRefresh={refresh?.signals}
         />
         
         {/* Witnesses Tab */}
         <WitnessesTabContent 
-          witnesses={witnesses}
-          loadingWitnesses={loadingWitnesses}
-          onRefresh={refresh.witnesses}
+          value="witnesses"
+          onRefresh={refresh?.witnesses}
         />
         
         {/* Notifications Tab */}
-        <NotificationsTabContent />
+        <NotificationsTabContent 
+          value="notifications"
+        />
       </div>
     </Tabs>
   );
