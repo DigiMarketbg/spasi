@@ -13,23 +13,35 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useMessages } from './MessagesContext';
-import { ContactMessageData } from '../hooks/useContactMessages';
 
 interface MessageActionsProps {
-  message: ContactMessageData;
+  message: any;
+  onView: (message: any) => void;
+  onMarkAsRead: (id: string) => void;
+  onDelete: (id: string) => void;
+  processingId: string | null;
 }
 
-const MessageActions = ({ message }: MessageActionsProps) => {
+const MessageActions = ({ 
+  message, 
+  onView, 
+  onMarkAsRead, 
+  onDelete, 
+  processingId 
+}: MessageActionsProps) => {
   const [open, setOpen] = useState(false);
-  const { handleViewDetails, handleMarkAsRead, handleDelete, processingId } = useMessages();
+
+  const handleDelete = () => {
+    onDelete(message.id);
+    setOpen(false);
+  };
 
   return (
     <div className="flex justify-end gap-2">
       <Button 
         variant="ghost" 
         size="sm"
-        onClick={() => handleViewDetails(message)}
+        onClick={() => onView(message)}
       >
         <Eye className="h-4 w-4" />
       </Button>
@@ -39,7 +51,7 @@ const MessageActions = ({ message }: MessageActionsProps) => {
           variant="outline"
           size="sm"
           className="text-blue-600"
-          onClick={() => handleMarkAsRead(message.id)}
+          onClick={() => onMarkAsRead(message.id)}
           disabled={processingId === message.id}
         >
           {processingId === message.id ? (
@@ -74,13 +86,7 @@ const MessageActions = ({ message }: MessageActionsProps) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Отказ</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={() => {
-                handleDelete(message.id);
-                setOpen(false);
-              }} 
-              className="bg-red-600 hover:bg-red-700"
-            >
+            <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
               Изтрий
             </AlertDialogAction>
           </AlertDialogFooter>

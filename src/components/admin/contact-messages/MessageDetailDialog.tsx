@@ -22,21 +22,27 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useMessages } from './MessagesContext';
 
-const MessageDetailDialog = () => {
-  const { 
-    selectedMessage, 
-    isDetailOpen, 
-    setIsDetailOpen,
-    handleMarkAsRead,
-    handleDelete,
-    processingId
-  } = useMessages();
-  
+interface MessageDetailDialogProps {
+  message: any;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onMarkAsRead: (id: string) => void;
+  onDelete: (id: string) => void;
+  processingId: string | null;
+}
+
+const MessageDetailDialog = ({
+  message,
+  isOpen,
+  onOpenChange,
+  onMarkAsRead,
+  onDelete,
+  processingId,
+}: MessageDetailDialogProps) => {
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
   
-  if (!selectedMessage) return null;
+  if (!message) return null;
 
   const formatDate = (dateString: string) => {
     try {
@@ -46,60 +52,65 @@ const MessageDetailDialog = () => {
     }
   };
 
+  const handleDelete = () => {
+    onDelete(message.id);
+    setDeleteAlertOpen(false);
+  };
+
   return (
-    <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <DialogTitle>Детайли за съобщението</DialogTitle>
           <DialogDescription>
-            Съобщение от {selectedMessage?.name}
+            Съобщение от {message?.name}
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 mt-2">
           <div className="flex justify-between items-center">
             <div className="font-semibold text-lg">
-              {selectedMessage.subject || "Общо запитване"}
+              {message.subject || "Общо запитване"}
             </div>
             <div className="text-sm text-muted-foreground">
-              {formatDate(selectedMessage.created_at)}
+              {formatDate(message.created_at)}
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <div className="text-sm text-muted-foreground">От:</div>
-              <div>{selectedMessage.name}</div>
+              <div>{message.name}</div>
             </div>
             
             <div>
               <div className="text-sm text-muted-foreground">Имейл:</div>
-              <div className="break-all">{selectedMessage.email}</div>
+              <div className="break-all">{message.email}</div>
             </div>
           </div>
           
-          {selectedMessage.phone && (
+          {message.phone && (
             <div>
               <div className="text-sm text-muted-foreground">Телефон:</div>
-              <div>{selectedMessage.phone}</div>
+              <div>{message.phone}</div>
             </div>
           )}
           
           <div>
             <div className="text-sm text-muted-foreground">Съобщение:</div>
             <div className="mt-2 p-4 bg-muted rounded-md whitespace-pre-wrap">
-              {selectedMessage.message}
+              {message.message}
             </div>
           </div>
           
           <div className="flex justify-end gap-2 pt-4">
-            {!selectedMessage.is_read && (
+            {!message.is_read && (
               <Button 
                 variant="outline"
-                onClick={() => handleMarkAsRead(selectedMessage.id)}
-                disabled={processingId === selectedMessage.id}
+                onClick={() => onMarkAsRead(message.id)}
+                disabled={processingId === message.id}
               >
-                {processingId === selectedMessage.id ? (
+                {processingId === message.id ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : null}
                 Маркирай като прочетено
@@ -110,9 +121,9 @@ const MessageDetailDialog = () => {
               <AlertDialogTrigger asChild>
                 <Button 
                   variant="destructive"
-                  disabled={processingId === selectedMessage.id}
+                  disabled={processingId === message.id}
                 >
-                  {processingId === selectedMessage.id ? (
+                  {processingId === message.id ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   ) : null}
                   Изтрий
@@ -127,9 +138,7 @@ const MessageDetailDialog = () => {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Отказ</AlertDialogCancel>
-                  <AlertDialogAction 
-                    onClick={() => handleDelete(selectedMessage.id)} 
-                    className="bg-red-600 hover:bg-red-700">
+                  <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
                     Изтрий
                   </AlertDialogAction>
                 </AlertDialogFooter>

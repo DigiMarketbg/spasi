@@ -12,14 +12,22 @@ import {
 } from '@/components/ui/table';
 import MessageStatusBadge from './MessageStatusBadge';
 import MessageActions from './MessageActions';
-import { useMessages } from './MessagesContext';
-import { ContactMessageData } from '../hooks/useContactMessages';
 
 interface MessagesTableProps {
-  messages: ContactMessageData[];
+  messages: any[];
+  onViewMessage: (message: any) => void;
+  onMarkAsRead: (id: string) => void;
+  onDelete: (id: string) => void;
+  processingId: string | null;
 }
 
-const MessagesTable = ({ messages }: MessagesTableProps) => {
+const MessagesTable = ({
+  messages,
+  onViewMessage,
+  onMarkAsRead,
+  onDelete,
+  processingId,
+}: MessagesTableProps) => {
   const formatDate = (dateString: string) => {
     try {
       return format(new Date(dateString), 'd MMMM yyyy, HH:mm', { locale: bg });
@@ -50,7 +58,13 @@ const MessagesTable = ({ messages }: MessagesTableProps) => {
               <TableCell>{message.subject || "Общо запитване"}</TableCell>
               <TableCell>{formatDate(message.created_at)}</TableCell>
               <TableCell className="text-right">
-                <MessageActions message={message} />
+                <MessageActions 
+                  message={message} 
+                  onView={onViewMessage}
+                  onMarkAsRead={onMarkAsRead}
+                  onDelete={onDelete}
+                  processingId={processingId}
+                />
               </TableCell>
             </TableRow>
           ))}
