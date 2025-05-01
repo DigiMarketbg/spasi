@@ -1,140 +1,29 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { toast } from '@/hooks/use-toast';
-import { getPendingGoodDeeds, getGoodDeedsStats, approveGoodDeedById } from '@/lib/api/good-deeds';
-
-interface GoodDeed {
-  id: string;
-  description?: string;
-  author_name?: string | null;
-  created_at?: string;
+interface GoodDeedsTabContentProps {
+  pendingCount?: number;
 }
 
-const GoodDeedsTabContent = () => {
-  const [pendingGoodDeeds, setPendingGoodDeeds] = useState<GoodDeed[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState<{ total_count: number; today_count: number; pending_count: number }>({
-    total_count: 0,
-    today_count: 0,
-    pending_count: 0,
-  });
-
-  const loadPendingGoodDeeds = async () => {
-    try {
-      setLoading(true);
-      const [pending, statData] = await Promise.all([getPendingGoodDeeds(), getGoodDeedsStats()]);
-      setPendingGoodDeeds(pending);
-      setStats(statData);
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Грешка при зареждане',
-        description: error instanceof Error ? error.message : 'Възникна грешка при зареждане на добрите дела',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadPendingGoodDeeds();
-  }, []);
-
-  const handleApprove = async (id: string) => {
-    setLoading(true);
-    try {
-      await approveGoodDeedById(id);
-
-      toast({
-        title: 'Одобрено',
-        description: 'Доброто дело беше успешно одобрено.',
-      });
-      await loadPendingGoodDeeds();
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Грешка при одобрение',
-        description: error instanceof Error ? error.message : 'Възникна грешка при одобрението',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      setLoading(true);
-      const res = await fetch('https://hmcbxrssyqkiimazipvo.functions.supabase.co/delete-good-deed', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      });
-
-      const json = await res.json();
-
-      if (!res.ok || (json.error && json.error.length > 0)) {
-        throw new Error(json.error || 'Неуспешно изтриване');
-      }
-
-      toast({
-        title: 'Изтрито',
-        description: 'Доброто дело беше успешно изтрито.',
-      });
-      await loadPendingGoodDeeds();
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Грешка при изтриване',
-        description: error instanceof Error ? error.message : 'Възникна грешка при изтриването',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
+const GoodDeedsTabContent = ({ pendingCount = 0 }: GoodDeedsTabContentProps) => {
   return (
-    <div>
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold">
-          Одобрение на добри дела (чакащи: {stats.pending_count})
-        </h2>
-      </div>
-      {loading ? (
-        <p>Зареждане...</p>
-      ) : pendingGoodDeeds.length === 0 ? (
-        <p>Няма чакащи добри дела за одобрение.</p>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Описание</TableHead>
-              <TableHead>Автор</TableHead>
-              <TableHead>Дата</TableHead>
-              <TableHead>Действие</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {pendingGoodDeeds.map((deed) => (
-              <TableRow key={deed.id}>
-                <TableCell>{deed.description || '-'}</TableCell>
-                <TableCell>{deed.author_name || 'Анонимен'}</TableCell>
-                <TableCell>{deed.created_at ? new Date(deed.created_at).toLocaleDateString('bg-BG') : '-'}</TableCell>
-                <TableCell className="flex space-x-2">
-                  <Button onClick={() => handleApprove(deed.id)} size="sm" disabled={loading}>
-                    Одобри
-                  </Button>
-                  <Button variant="destructive" onClick={() => handleDelete(deed.id)} size="sm" disabled={loading}>
-                    Изтрий
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Добри дела</CardTitle>
+        <CardDescription>
+          Управление на добрите дела в платформата
+          {pendingCount > 0 && (
+            <span className="ml-2 text-green-600 font-medium">
+              ({pendingCount} чакащи одобрение)
+            </span>
+          )}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {/* Good deeds management content will go here */}
+        <p>Тук ще бъде интегрирано управлението на добри дела.</p>
+      </CardContent>
+    </Card>
   );
 };
 
