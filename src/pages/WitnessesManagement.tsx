@@ -23,7 +23,10 @@ const WitnessesPage = () => {
   }
 
   return (
-    <AdminLayout title="Управление на обяви за свидетели" backLink="/admin">
+    <AdminLayout 
+      title="Управление на обяви за свидетели" 
+      backLink="/admin"
+    >
       <div className="space-y-6">
         <h2 className="text-2xl font-semibold tracking-tight">
           Управление на обяви за свидетели
