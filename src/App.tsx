@@ -25,6 +25,7 @@ import Signals from './pages/Signals';
 import Pets from './pages/Pets';
 import Info from './pages/Info';
 import SubmitSignal from './pages/SubmitSignal';
+import Auth from './pages/Auth';
 
 // Import AuthProvider and QueryClient
 import { AuthProvider } from './components/AuthProvider';
@@ -56,6 +57,9 @@ function App() {
                 <Routes>
                   {/* Home route */}
                   <Route path="/" element={<Index />} />
+                  
+                  {/* Authentication */}
+                  <Route path="/auth" element={<Auth />} />
                   
                   {/* Admin Routes */}
                   <Route path="/admin" element={<Admin />} />

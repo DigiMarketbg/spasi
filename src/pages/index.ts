@@ -13,3 +13,4 @@ export { default as Index } from './Index';
 export { default as NotFound } from './NotFound';
 export { default as Moderator } from './Moderator';
 export { default as SubmitSignal } from './SubmitSignal';
+export { default as Auth } from './Auth';
