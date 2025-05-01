@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import GDPRConsentDialog, { useGDPRConsent } from './GDPRConsentDialog';
+import GDPRConsentDialog from './GDPRConsentDialog';
+import { useGDPRConsent } from './hooks/useGDPRConsent';
 
 interface GDPRContextType {
   hasConsented: boolean;
