@@ -102,21 +102,30 @@ export const secureDataAccess = {
     try {
       await requireAuth();
       
-      // Create base query without explicit type casting
-      let queryBuilder = supabase.from(table).select(columns);
+      // Create base query with explicit type
+      const queryBuilder = supabase.from(table).select(columns);
       
-      // Apply filters if provided
+      // Apply filters one at a time if provided
       if (query) {
-        // Apply each filter one by one
-        for (const [key, value] of Object.entries(query)) {
-          queryBuilder = queryBuilder.eq(key, value);
+        let filteredQuery = queryBuilder;
+        
+        // Apply each filter one by one without chaining method returns
+        for (const key in query) {
+          if (Object.prototype.hasOwnProperty.call(query, key)) {
+            filteredQuery = filteredQuery.eq(key, query[key]);
+          }
         }
+        
+        // Execute the query
+        const { data, error } = await filteredQuery;
+        if (error) throw error;
+        return (data || []) as T[];
+      } else {
+        // Execute the query without filters
+        const { data, error } = await queryBuilder;
+        if (error) throw error;
+        return (data || []) as T[];
       }
-      
-      const { data, error } = await queryBuilder;
-      
-      if (error) throw error;
-      return (data || []) as T[];
     } catch (error) {
       console.error(`Error accessing ${table}:`, error);
       throw error;
