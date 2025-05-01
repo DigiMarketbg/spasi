@@ -7,7 +7,6 @@ import UsersTabContent from './tab-contents/UsersTabContent';
 import PartnersTabContent from './tab-contents/PartnersTabContent';
 import MessagesTabContent from './tab-contents/MessagesTabContent';
 import DangerousAreasTabContent from './tab-contents/DangerousAreasTabContent';
-import NotificationsTabContent from './tab-contents/NotificationsTabContent';
 import GoodDeedsTabContent from './tab-contents/GoodDeedsTabContent';
 import PetsTabContent from './components/PetsTabContent';
 
@@ -89,10 +88,6 @@ const AdminTabs = ({
 
       <TabsContent value="pets" className="mt-6">
         <PetsTabContent />
-      </TabsContent>
-
-      <TabsContent value="notifications" className="mt-6">
-        <NotificationsTabContent />
       </TabsContent>
     </Tabs>
   );
