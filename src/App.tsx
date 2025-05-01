@@ -19,6 +19,7 @@ import NotFound from './pages/NotFound';
 import Videos from './pages/Videos';
 import Moderator from './pages/Moderator';
 import Volunteers from './pages/Volunteers';
+import GoodDeeds from './pages/GoodDeeds';
 
 // Import AuthProvider and QueryClient
 import { AuthProvider } from './components/AuthProvider';
@@ -57,6 +58,8 @@ function App() {
                 {/* Content Routes */}
                 <Route path="/videos" element={<Videos />} />
                 <Route path="/volunteers" element={<Volunteers />} />
+                <Route path="/good-deeds" element={<GoodDeeds />} />
+                <Route path="/witnesses" element={<WitnessesPage />} />
                 
                 {/* 404 Route */}
                 <Route path="*" element={<NotFound />} />
