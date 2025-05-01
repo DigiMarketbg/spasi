@@ -4,17 +4,17 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import ContactMessagesManagement from '@/components/admin/ContactMessagesManagement';
 
 interface MessagesTabContentProps {
-  messages: any[];
+  messages?: any[];
   loadingMessages: boolean;
   onRefresh: () => void;
-  unreadCount: number;
+  unreadCount?: number;
 }
 
 const MessagesTabContent = ({ 
-  messages, 
+  messages = [], // Provide default value
   loadingMessages, 
   onRefresh,
-  unreadCount
+  unreadCount = 0
 }: MessagesTabContentProps) => {
   return (
     <Card>
@@ -22,6 +22,11 @@ const MessagesTabContent = ({
         <CardTitle>Съобщения от контактната форма</CardTitle>
         <CardDescription>
           Преглед и управление на съобщенията от контактната форма.
+          {unreadCount > 0 && (
+            <span className="ml-2 text-blue-600 font-medium">
+              ({unreadCount} непрочетени)
+            </span>
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent>

@@ -14,23 +14,23 @@ import PetsTabContent from './components/PetsTabContent';
 // Add new tab in the AdminTabs component and show badge with pending count
 
 const AdminTabs = ({
-  signals,
-  users,
-  partnerRequests,
-  contactMessages,
-  loadingSignals,
-  loadingUsers,
-  loadingPartnerRequests,
-  loadingContactMessages,
-  loadingDangerousAreas,
-  unreadCount,
-  pendingRequestsCount,
-  pendingDangerousAreasCount,
+  signals = [],
+  users = [],
+  partnerRequests = [],
+  contactMessages = [],
+  loadingSignals = false,
+  loadingUsers = false,
+  loadingPartnerRequests = false,
+  loadingContactMessages = false,
+  loadingDangerousAreas = false,
+  unreadCount = 0,
+  pendingRequestsCount = 0,
+  pendingDangerousAreasCount = 0,
   pendingGoodDeedsCount = 0,
-  onRefreshSignals,
-  onRefreshUsers,
-  onRefreshPartnerRequests,
-  onRefreshContactMessages,
+  onRefreshSignals = () => {},
+  onRefreshUsers = () => {},
+  onRefreshPartnerRequests = () => {},
+  onRefreshContactMessages = () => {},
 }: any) => {
   return (
     <Tabs defaultValue="signals">
@@ -84,7 +84,7 @@ const AdminTabs = ({
       </TabsContent>
 
       <TabsContent value="good-deeds" className="mt-6">
-        <GoodDeedsTabContent />
+        <GoodDeedsTabContent pendingCount={pendingGoodDeedsCount} />
       </TabsContent>
 
       <TabsContent value="pets" className="mt-6">

@@ -21,13 +21,13 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface ContactMessagesProps {
-  messages: any[];
+  messages: any[] | undefined;
   loadingMessages: boolean;
   onRefresh: () => void;
 }
 
 const ContactMessagesManagement = ({
-  messages,
+  messages = [], // Provide a default empty array
   loadingMessages,
   onRefresh,
 }: ContactMessagesProps) => {
@@ -155,6 +155,9 @@ const ContactMessagesManagement = ({
     }
   };
 
+  // Ensure messages is an array before trying to access its length
+  const messagesCount = messages?.length || 0;
+
   return (
     <div>
       <div className="mb-4 flex justify-between">
@@ -164,7 +167,7 @@ const ContactMessagesManagement = ({
               variant="destructive" 
               size="sm" 
               className="flex items-center gap-1"
-              disabled={messages.length === 0 || isDeletingAll}
+              disabled={messagesCount === 0 || isDeletingAll}
             >
               <Trash2 className="h-4 w-4" />
               Изтрий всички съобщения
@@ -174,7 +177,7 @@ const ContactMessagesManagement = ({
             <AlertDialogHeader>
               <AlertDialogTitle>Изтриване на всички съобщения</AlertDialogTitle>
               <AlertDialogDescription>
-                Сигурни ли сте, че искате да изтриете ВСИЧКИ съобщения? Това действие не може да бъде отменено и ще изтрие всички {messages.length} съобщения.
+                Сигурни ли сте, че искате да изтриете ВСИЧКИ съобщения? Това действие не може да бъде отменено и ще изтрие всички {messagesCount} съобщения.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -197,11 +200,11 @@ const ContactMessagesManagement = ({
 
       {loadingMessages ? (
         <LoadingState />
-      ) : messages.length === 0 ? (
+      ) : messagesCount === 0 ? (
         <EmptyState />
       ) : (
         <MessagesTable 
-          messages={messages}
+          messages={messages || []}
           onViewMessage={handleViewDetails}
           onMarkAsRead={handleMarkAsRead}
           onDelete={handleDelete}
