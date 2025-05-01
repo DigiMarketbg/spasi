@@ -86,7 +86,7 @@ export const requireAuth = async () => {
   return data.session;
 };
 
-// Simple non-recursive type definition for query filters
+// Simple type definition for query filters
 type SimpleValue = string | number | boolean | null;
 interface QueryFilters {
   [key: string]: SimpleValue;
@@ -102,30 +102,48 @@ export const secureDataAccess = {
     try {
       await requireAuth();
       
-      // Create base query with explicit type
-      const queryBuilder = supabase.from(table).select(columns);
+      // Build the query with filters directly
+      let queryResult;
       
-      // Apply filters one at a time if provided
-      if (query) {
-        let filteredQuery = queryBuilder;
-        
-        // Apply each filter one by one without chaining method returns
-        for (const key in query) {
-          if (Object.prototype.hasOwnProperty.call(query, key)) {
-            filteredQuery = filteredQuery.eq(key, query[key]);
-          }
-        }
-        
-        // Execute the query
-        const { data, error } = await filteredQuery;
-        if (error) throw error;
-        return (data || []) as T[];
+      if (!query) {
+        // No filters, just run a simple select
+        queryResult = await supabase
+          .from(table)
+          .select(columns);
       } else {
-        // Execute the query without filters
-        const { data, error } = await queryBuilder;
-        if (error) throw error;
-        return (data || []) as T[];
+        // With filters, build the query step by step 
+        // without reassigning the query builder variable
+        const baseQuery = supabase
+          .from(table)
+          .select(columns);
+          
+        // Create an array of filter conditions
+        const filters = Object.entries(query);
+        
+        if (filters.length === 0) {
+          // No filters, execute the base query
+          queryResult = await baseQuery;
+        } else {
+          // Apply first filter
+          const [firstKey, firstValue] = filters[0];
+          let filteredQuery = baseQuery.eq(firstKey, firstValue);
+          
+          // Apply any remaining filters sequentially
+          for (let i = 1; i < filters.length; i++) {
+            const [key, value] = filters[i];
+            // Use explicit any type to avoid deep inference issues
+            filteredQuery = (filteredQuery as any).eq(key, value);
+          }
+          
+          // Execute the query
+          queryResult = await filteredQuery;
+        }
       }
+      
+      const { data, error } = queryResult;
+      if (error) throw error;
+      
+      return (data || []) as T[];
     } catch (error) {
       console.error(`Error accessing ${table}:`, error);
       throw error;
