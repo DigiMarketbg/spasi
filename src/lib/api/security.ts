@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { PostgrestFilterBuilder } from "@supabase/postgrest-js";
@@ -101,16 +102,15 @@ export const secureDataAccess = {
     try {
       await requireAuth();
       
-      // Create base query
-      let queryBuilder = supabase
-        .from(table)
-        .select(columns) as PostgrestFilterBuilder<Database['public']['Tables'][TableName], any, any>;
+      // Create base query without explicit type casting
+      let queryBuilder = supabase.from(table).select(columns);
       
       // Apply filters if provided
       if (query) {
-        Object.entries(query).forEach(([key, value]) => {
+        // Apply each filter one by one
+        for (const [key, value] of Object.entries(query)) {
           queryBuilder = queryBuilder.eq(key, value);
-        });
+        }
       }
       
       const { data, error } = await queryBuilder;
