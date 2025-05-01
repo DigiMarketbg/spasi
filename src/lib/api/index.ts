@@ -8,5 +8,5 @@ export * from './storage';
 export * from './dangerous-areas';
 export * from './witnesses';
 export * from './good-deeds';
-export * from './security'; // This now exports from the security/index.ts file
+export * from './security';
 export * from './pets';
