@@ -77,21 +77,24 @@ const AdminTabs: React.FC<AdminTabsProps> = ({
         
         {/* Partners Tab */}
         <PartnersTabContent 
-          partnerRequests={partnerRequests}
-          loadingPartnerRequests={loadingPartnerRequests}
+          requests={partnerRequests}
+          loadingRequests={loadingPartnerRequests}
           onRefresh={refresh?.partnerRequests}
+          pendingRequestsCount={pendingRequestsCount}
         />
         
         {/* Messages Tab */}
         <MessagesTabContent 
-          contactMessages={contactMessages}
+          messages={contactMessages}
           loadingMessages={loadingMessages}
           onRefresh={refresh?.contactMessages}
+          unreadCount={unreadMessagesCount}
         />
         
         {/* Dangerous Areas Tab */}
         <DangerousAreasTabContent 
           onRefresh={refresh?.dangerousAreas}
+          pendingCount={0} // We don't have this data yet
         />
         
         {/* Good Deeds Tab */}
@@ -109,9 +112,7 @@ const AdminTabs: React.FC<AdminTabsProps> = ({
         />
         
         {/* Notifications Tab */}
-        <NotificationsTabContent 
-          value="notifications"
-        />
+        <NotificationsTabContent />
       </div>
     </Tabs>
   );
