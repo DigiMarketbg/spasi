@@ -12,7 +12,7 @@ const WitnessesTabContent = ({ pendingCount = 0 }: WitnessesTabContentProps) => 
   const navigate = useNavigate();
 
   const goToWitnessesManagement = () => {
-    navigate('/witnesses');
+    navigate('/witnesses-management');
   };
 
   return (

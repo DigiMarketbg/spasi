@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { AlertCircle } from 'lucide-react';
@@ -37,6 +38,11 @@ const WitnessesManagement: React.FC<WitnessesManagementProps> = ({ onRefresh }) 
       toast.error("Грешка при обновяване на обявите");
     }
   };
+  
+  // Call refresh when component mounts
+  useEffect(() => {
+    handleRefresh();
+  }, []);
   
   const handleApprove = async (id: string) => {
     setProcessingId(id);
@@ -98,7 +104,7 @@ const WitnessesManagement: React.FC<WitnessesManagementProps> = ({ onRefresh }) 
   }
   
   return (
-    <div>
+    <div className="space-y-4">
       <WitnessFilters 
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
