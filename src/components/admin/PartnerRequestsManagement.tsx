@@ -24,13 +24,13 @@ import {
 } from '@/components/ui/dialog';
 
 interface PartnerRequestsProps {
-  requests: any[];
+  requests?: any[];
   loadingRequests: boolean;
   onRefresh: () => void;
 }
 
 const PartnerRequestsManagement = ({
-  requests,
+  requests = [],
   loadingRequests,
   onRefresh,
 }: PartnerRequestsProps) => {
