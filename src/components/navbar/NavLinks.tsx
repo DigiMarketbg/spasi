@@ -20,7 +20,10 @@ const NavLinks = ({ className }: NavLinksProps) => {
   const links = [
     { path: '/', label: 'Начало' },
     { path: '/signals', label: 'Сигнали' },
+    { path: '/witnesses', label: 'Свидетели' },
     { path: '/good-deeds', label: 'Добрини' },
+    { path: '/volunteers', label: 'Доброволци' },
+    { path: '/videos', label: 'Видео' },
     { path: '/info', label: 'Информация' }
   ];
   
