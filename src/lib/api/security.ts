@@ -106,34 +106,27 @@ export const secureDataAccess = {
         .from(table)
         .select(columns);
       
-      // Apply filters if provided
-      let queryResult;
+      // Apply filters if provided - refactored to avoid deep type nesting
       if (!query || Object.keys(query).length === 0) {
         // No filters, execute the base query directly
-        queryResult = await baseQuery;
+        const { data, error } = await baseQuery;
+        if (error) throw error;
+        return (data || []) as T[];
       } else {
-        // Apply filters one by one using array to avoid deep type nesting
+        // Apply filters manually in a way that avoids deep type nesting
         const filterEntries = Object.entries(query);
+        let builder = baseQuery;
         
-        // Get first filter
-        const [firstKey, firstValue] = filterEntries[0];
-        // Start with first filter applied
-        let builder = baseQuery.eq(firstKey, firstValue);
-        
-        // Apply remaining filters with type assertion to avoid deep nesting
-        for (let i = 1; i < filterEntries.length; i++) {
-          const [key, value] = filterEntries[i];
-          // Use type assertion to avoid the TypeScript type inference issue
+        // Apply all filters in a loop
+        for (const [key, value] of filterEntries) {
+          // Use type assertion to avoid TypeScript complaints
           builder = (builder as any).eq(key, value);
         }
         
-        queryResult = await builder;
+        const { data, error } = await builder;
+        if (error) throw error;
+        return (data || []) as T[];
       }
-      
-      const { data, error } = queryResult;
-      if (error) throw error;
-      
-      return (data || []) as T[];
     } catch (error) {
       console.error(`Error accessing ${table}:`, error);
       throw error;

@@ -101,5 +101,4 @@ export const deletePetPostById = async (id: string): Promise<void> => {
   }
 };
 
-// Helper function to check if user is admin - imported from our security file
-import { isCurrentUserAdmin } from "./security";
+// Removed the duplicate import at the bottom
