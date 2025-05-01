@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { User } from '@supabase/supabase-js';
 import { useSignalsData } from './useSignalsData';
@@ -5,6 +6,8 @@ import { useUsersData } from './useUsersData';
 import { usePartnerRequests } from './usePartnerRequests';
 import { useContactMessages } from './useContactMessages';
 import { getGoodDeedsStats } from '@/lib/api/good-deeds';
+import { useVolunteersData } from './useVolunteersData';
+import { useWitnessesData } from './useWitnessesData';
 
 export const useAdminData = (isEnabled: boolean, user: User | null) => {
   const { 
@@ -35,6 +38,18 @@ export const useAdminData = (isEnabled: boolean, user: User | null) => {
 
   const [pendingGoodDeedsCount, setPendingGoodDeedsCount] = useState(0);
 
+  const {
+    pendingVolunteersCount,
+    loadingVolunteers,
+    fetchVolunteersCount
+  } = useVolunteersData(isEnabled);
+
+  const {
+    pendingWitnessesCount,
+    loadingWitnesses,
+    fetchWitnessesCount
+  } = useWitnessesData(isEnabled);
+
   const fetchGoodDeedsStats = useCallback(async () => {
     try {
       const stats = await getGoodDeedsStats();
@@ -51,8 +66,20 @@ export const useAdminData = (isEnabled: boolean, user: User | null) => {
       fetchPartnerRequests();
       fetchContactMessages();
       fetchGoodDeedsStats();
+      fetchVolunteersCount();
+      fetchWitnessesCount();
     }
-  }, [isEnabled, user, fetchSignals, fetchUsers, fetchPartnerRequests, fetchContactMessages, fetchGoodDeedsStats]);
+  }, [
+    isEnabled, 
+    user, 
+    fetchSignals, 
+    fetchUsers, 
+    fetchPartnerRequests, 
+    fetchContactMessages, 
+    fetchGoodDeedsStats,
+    fetchVolunteersCount,
+    fetchWitnessesCount
+  ]);
 
   return {
     // Signals data
@@ -79,5 +106,13 @@ export const useAdminData = (isEnabled: boolean, user: User | null) => {
 
     // Good deeds pending count
     pendingGoodDeedsCount,
+
+    // Volunteers data
+    pendingVolunteersCount,
+    loadingVolunteers,
+
+    // Witnesses data
+    pendingWitnessesCount,
+    loadingWitnesses,
   };
 };

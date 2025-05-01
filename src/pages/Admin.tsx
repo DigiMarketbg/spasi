@@ -26,7 +26,10 @@ const Admin = () => {
     fetchPartnerRequests,
     fetchContactMessages,
     unreadCount,
-    pendingRequestsCount
+    pendingRequestsCount,
+    pendingGoodDeedsCount,
+    pendingVolunteersCount,
+    pendingWitnessesCount
   } = useAdminData(isAdmin || false, user);
   
   // Use our custom hook to fetch dangerous areas
@@ -63,6 +66,9 @@ const Admin = () => {
         unreadCount={unreadCount}
         pendingRequestsCount={pendingRequestsCount}
         pendingDangerousAreasCount={pendingDangerousAreas}
+        pendingGoodDeedsCount={pendingGoodDeedsCount}
+        pendingVolunteersCount={pendingVolunteersCount}
+        pendingWitnessesCount={pendingWitnessesCount}
         onRefreshSignals={fetchSignals}
         onRefreshUsers={fetchUsers}
         onRefreshPartnerRequests={fetchPartnerRequests}

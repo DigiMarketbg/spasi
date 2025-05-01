@@ -9,8 +9,8 @@ import MessagesTabContent from './tab-contents/MessagesTabContent';
 import DangerousAreasTabContent from './tab-contents/DangerousAreasTabContent';
 import GoodDeedsTabContent from './tab-contents/GoodDeedsTabContent';
 import PetsTabContent from './components/PetsTabContent';
-
-// Add new tab in the AdminTabs component and show badge with pending count
+import VolunteersTabContent from './tab-contents/VolunteersTabContent';
+import WitnessesTabContent from './tab-contents/WitnessesTabContent';
 
 const AdminTabs = ({
   signals = [],
@@ -26,6 +26,8 @@ const AdminTabs = ({
   pendingRequestsCount = 0,
   pendingDangerousAreasCount = 0,
   pendingGoodDeedsCount = 0,
+  pendingVolunteersCount = 0,
+  pendingWitnessesCount = 0,
   onRefreshSignals = () => {},
   onRefreshUsers = () => {},
   onRefreshPartnerRequests = () => {},
@@ -38,6 +40,8 @@ const AdminTabs = ({
         pendingRequestsCount={pendingRequestsCount}
         pendingDangerousAreasCount={pendingDangerousAreasCount}
         pendingGoodDeedsCount={pendingGoodDeedsCount}
+        pendingVolunteersCount={pendingVolunteersCount}
+        pendingWitnessesCount={pendingWitnessesCount}
       />
       
       <TabsContent value="signals" className="mt-6">
@@ -88,6 +92,14 @@ const AdminTabs = ({
 
       <TabsContent value="pets" className="mt-6">
         <PetsTabContent />
+      </TabsContent>
+
+      <TabsContent value="volunteers" className="mt-6">
+        <VolunteersTabContent pendingCount={pendingVolunteersCount} />
+      </TabsContent>
+
+      <TabsContent value="witnesses" className="mt-6">
+        <WitnessesTabContent pendingCount={pendingWitnessesCount} />
       </TabsContent>
     </Tabs>
   );
