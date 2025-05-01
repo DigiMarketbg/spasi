@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { User } from '@supabase/supabase-js';
 import { useSignalsData } from './useSignalsData';
@@ -6,7 +5,6 @@ import { useUsersData } from './useUsersData';
 import { usePartnerRequests } from './usePartnerRequests';
 import { useContactMessages } from './useContactMessages';
 import { getGoodDeedsStats } from '@/lib/api/good-deeds';
-import { fetchAllWitnesses } from '@/lib/api/witnesses';
 
 export const useAdminData = (isEnabled: boolean, user: User | null) => {
   const { 
@@ -36,8 +34,6 @@ export const useAdminData = (isEnabled: boolean, user: User | null) => {
   } = useContactMessages(isEnabled);
 
   const [pendingGoodDeedsCount, setPendingGoodDeedsCount] = useState(0);
-  const [witnesses, setWitnesses] = useState([]);
-  const [loadingWitnesses, setLoadingWitnesses] = useState(false);
 
   const fetchGoodDeedsStats = useCallback(async () => {
     try {
@@ -48,20 +44,6 @@ export const useAdminData = (isEnabled: boolean, user: User | null) => {
     }
   }, []);
 
-  const fetchWitnesses = useCallback(async () => {
-    if (!isEnabled || !user) return;
-    
-    setLoadingWitnesses(true);
-    try {
-      const data = await fetchAllWitnesses();
-      setWitnesses(data);
-    } catch (error) {
-      console.error('Failed to fetch witnesses', error);
-    } finally {
-      setLoadingWitnesses(false);
-    }
-  }, [isEnabled, user]);
-
   useEffect(() => {
     if (isEnabled && user) {
       fetchSignals();
@@ -69,9 +51,8 @@ export const useAdminData = (isEnabled: boolean, user: User | null) => {
       fetchPartnerRequests();
       fetchContactMessages();
       fetchGoodDeedsStats();
-      fetchWitnesses();
     }
-  }, [isEnabled, user, fetchSignals, fetchUsers, fetchPartnerRequests, fetchContactMessages, fetchGoodDeedsStats, fetchWitnesses]);
+  }, [isEnabled, user, fetchSignals, fetchUsers, fetchPartnerRequests, fetchContactMessages, fetchGoodDeedsStats]);
 
   return {
     // Signals data
@@ -98,10 +79,5 @@ export const useAdminData = (isEnabled: boolean, user: User | null) => {
 
     // Good deeds pending count
     pendingGoodDeedsCount,
-    
-    // Witnesses data
-    witnesses,
-    loadingWitnesses,
-    fetchWitnesses,
   };
 };
