@@ -58,7 +58,7 @@ const FeatureButtons = () => {
           onClick={navigateToVolunteers}
         >
           <Users className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-          <span className="text-[0.75rem] w-full text-center">Доброволци</span>
+          <span className="text-[0.7rem] w-full text-center">Доброволци</span>
         </Button>
       
         {/* Button 3: Опасни участъци */}
