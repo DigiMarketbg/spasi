@@ -49,7 +49,7 @@ const FeatureButtons = () => {
           onClick={navigateToRescuers}
         >
           <Shield className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-          <span className="text-[0.8rem] truncate w-[70px] text-center">Спасители</span>
+          <span className="text-[0.75rem] w-full text-center">Спасители</span>
         </Button>
         
         {/* Button 2: Доброволци */}
@@ -58,7 +58,7 @@ const FeatureButtons = () => {
           onClick={navigateToVolunteers}
         >
           <Users className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-          <span className="text-[0.8rem] truncate w-[70px] text-center">Доброволци</span>
+          <span className="text-[0.75rem] w-full text-center">Доброволци</span>
         </Button>
       
         {/* Button 3: Опасни участъци */}
@@ -67,7 +67,7 @@ const FeatureButtons = () => {
           onClick={navigateToDangerousAreas}
         >
           <Star className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-          <span className="text-[0.7rem] truncate w-[70px] text-center leading-tight flex flex-col">
+          <span className="text-[0.7rem] w-full text-center leading-tight flex flex-col">
             <span>Опасни</span>
             <span>Участъци</span>
           </span>
@@ -82,7 +82,7 @@ const FeatureButtons = () => {
           onClick={navigateToWitnesses}
         >
           <Eye className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-          <span className="text-[0.8rem] truncate w-[70px] text-center">Свидетели</span>
+          <span className="text-[0.75rem] w-full text-center">Свидетели</span>
         </Button>
         
         {/* Button 5: Към добрините */}
@@ -91,7 +91,7 @@ const FeatureButtons = () => {
           onClick={navigateToGoodDeeds}
         >
           <HandHeart className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-          <span className="text-[0.7rem] truncate w-[70px] text-center leading-tight flex flex-col">
+          <span className="text-[0.7rem] w-full text-center leading-tight flex flex-col">
             <span>Към</span>
             <span>добрините</span>
           </span>
@@ -103,7 +103,7 @@ const FeatureButtons = () => {
           onClick={navigateToPets}
         >
           <Dog className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-          <span className="text-[0.7rem] truncate w-[70px] text-center leading-tight flex flex-col">
+          <span className="text-[0.7rem] w-full text-center leading-tight flex flex-col">
             <span>Домашни</span>
             <span>любимци</span>
           </span>
