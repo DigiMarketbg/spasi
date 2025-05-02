@@ -6,6 +6,7 @@ import { Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useGDPR } from './gdpr/GDPRProvider';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const { theme, toggleTheme } = useTheme();
@@ -20,8 +21,44 @@ const Footer = () => {
     { name: 'Контакт', href: '/contact' },
   ];
 
+  if (isMobile) {
+    // Опростен футър за мобилни устройства
+    return (
+      <footer className="py-10 px-4 border-t bg-black text-white text-center pb-32">
+        <div className="container mx-auto">
+          <div className="flex flex-col items-center mb-6">
+            <Logo className="mb-6 scale-110" />
+            
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-center">
+              {footerLinks.map((link) => (
+                <Link 
+                  key={link.name} 
+                  to={link.href}
+                  className="text-white hover:text-gray-300 transition-colors"
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+          
+          <div className="text-sm text-gray-400 mt-6">
+            <button 
+              onClick={openConsentDialog}
+              className="block mx-auto mb-2 text-gray-400 hover:text-white transition-colors"
+            >
+              Политика за поверителност
+            </button>
+            <p>© 2025 Spasi.bg. Всички права запазени.</p>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  // Десктоп версия на футъра
   return (
-    <footer className={`py-10 px-4 md:px-6 lg:px-8 border-t ${isMobile ? 'pb-32' : ''}`}>
+    <footer className="py-10 px-4 md:px-6 lg:px-8 border-t">
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <Logo className="mb-2 md:mb-0" />
@@ -38,20 +75,18 @@ const Footer = () => {
             ))}
           </div>
           
-          {!isMobile && (
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="rounded-full" 
-              onClick={toggleTheme}
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
-          )}
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="rounded-full" 
+            onClick={toggleTheme}
+          >
+            {theme === 'dark' ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </Button>
         </div>
         
         <div className="text-center text-sm text-muted-foreground mt-8">

@@ -36,18 +36,18 @@ const FeatureButtons = () => {
 
   // Style for feature buttons based on theme
   const featureButtonStyle = theme === 'light' 
-    ? "w-[80px] h-[80px] bg-spasi-red/10 backdrop-blur-sm border-2 border-spasi-red text-black rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-spasi-red/20"
-    : "w-[80px] h-[80px] bg-background/10 backdrop-blur-sm border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105 hover:bg-background/20";
+    ? "w-[100px] h-[100px] bg-background border-2 border-spasi-red text-black rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105"
+    : "w-[100px] h-[100px] bg-black border-2 border-spasi-red text-white rounded-lg text-xs font-medium flex flex-col items-center justify-center transition-transform hover:scale-105";
 
   return (
-    <div className="flex flex-row flex-wrap justify-center gap-2 mt-6 animate-fade-in" style={{animationDelay: '0.5s'}}>
+    <div className="grid grid-cols-3 gap-4 justify-center mt-6 animate-fade-in px-4" style={{animationDelay: '0.5s'}}>
       {/* Button 1: Спасители */}
       <Button 
         className={featureButtonStyle}
         onClick={navigateToRescuers}
       >
-        <Shield className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-        <span className="text-[0.6rem] truncate w-[60px] text-center">Спасители</span>
+        <Shield className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
+        <span className="text-[0.7rem] truncate w-[80px] text-center">Спасители</span>
       </Button>
       
       {/* Button 2: Доброволци */}
@@ -55,8 +55,8 @@ const FeatureButtons = () => {
         className={featureButtonStyle}
         onClick={navigateToVolunteers}
       >
-        <Users className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-        <span className="text-[0.6rem] truncate w-[60px] text-center">Доброволци</span>
+        <Users className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
+        <span className="text-[0.7rem] truncate w-[80px] text-center">Доброволци</span>
       </Button>
     
       {/* Button 3: Опасни участъци */}
@@ -64,8 +64,8 @@ const FeatureButtons = () => {
         className={featureButtonStyle}
         onClick={navigateToDangerousAreas}
       >
-        <Star className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-        <span className="text-[0.5rem] truncate w-[60px] text-center leading-tight flex flex-col">
+        <Star className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
+        <span className="text-[0.6rem] truncate w-[80px] text-center leading-tight flex flex-col">
           <span>Опасни</span>
           <span>Участъци</span>
         </span>
@@ -76,8 +76,8 @@ const FeatureButtons = () => {
         className={featureButtonStyle}
         onClick={navigateToWitnesses}
       >
-        <Eye className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-        <span className="text-[0.6rem] truncate w-[60px] text-center">Свидетели</span>
+        <Eye className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
+        <span className="text-[0.7rem] truncate w-[80px] text-center">Свидетели</span>
       </Button>
       
       {/* Button 5: Към добрините */}
@@ -85,8 +85,8 @@ const FeatureButtons = () => {
         className={featureButtonStyle}
         onClick={navigateToGoodDeeds}
       >
-        <HandHeart className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-        <span className="text-[0.5rem] truncate w-[60px] text-center leading-tight flex flex-col">
+        <HandHeart className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
+        <span className="text-[0.6rem] truncate w-[80px] text-center leading-tight flex flex-col">
           <span>Към</span>
           <span>добрините</span>
         </span>
@@ -97,8 +97,8 @@ const FeatureButtons = () => {
         className={featureButtonStyle}
         onClick={navigateToPets}
       >
-        <Dog className={`h-5 w-5 mb-1 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
-        <span className="text-[0.6rem] truncate w-[60px] text-center leading-tight flex flex-col">
+        <Dog className={`h-6 w-6 mb-2 ${theme === 'light' ? 'text-spasi-red' : 'text-white'}`} />
+        <span className="text-[0.6rem] truncate w-[80px] text-center leading-tight flex flex-col">
           <span>Домашни</span>
           <span>любимци</span>
         </span>
@@ -108,4 +108,3 @@ const FeatureButtons = () => {
 };
 
 export default FeatureButtons;
-
