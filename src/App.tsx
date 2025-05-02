@@ -27,6 +27,11 @@ import Info from './pages/Info';
 import SubmitSignal from './pages/SubmitSignal';
 import Auth from './pages/Auth';
 
+// Import components
+import MobileNavBar from './components/MobileNavBar';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+
 // Import AuthProvider and QueryClient
 import { AuthProvider } from './components/AuthProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -54,6 +59,7 @@ function App() {
             <Router>
               <ScrollToTop />
               <div className="App">
+                <Navbar />
                 <Routes>
                   {/* Home route */}
                   <Route path="/" element={<Index />} />
@@ -79,6 +85,8 @@ function App() {
                   {/* 404 Route */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+                <Footer />
+                <MobileNavBar />
               </div>
               <Toaster />
             </Router>
